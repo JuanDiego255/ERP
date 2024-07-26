@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         if (request()->has('lang')) {
             \App::setLocale(request()->get('lang'));
         }else{
-            \App::setLocale('pt');
+            \App::setLocale('es');
         }
 
 

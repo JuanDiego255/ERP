@@ -207,6 +207,7 @@ class ManageUserController extends Controller
             $role_id = $request->input('role');
             $role = Role::findOrFail($role_id);
             $user->assignRole($role->name);
+            dd($user);
 
             //Grant Location permissions
             $this->giveLocationPermissions($user, $request);

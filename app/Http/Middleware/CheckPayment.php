@@ -31,7 +31,7 @@ class CheckPayment
             if (!$this->moduleUtil->isSubscribed($business_id)) {
                 $output = [
                     'success' => 0,
-                    'msg' => "Realize o pagamento do plano para continuar."
+                    'msg' => "Realice el pago del ERP para continuar."
                 ];
                 return redirect('/payment')->with('status', $output);
 

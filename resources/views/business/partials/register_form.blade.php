@@ -18,7 +18,7 @@
     </div>
 
     <input type="hidden" value="" name="start_date" id="start_date">
-    <input type="hidden" value="18" name="currency_id" id="currency_id">
+    <input type="hidden" value="1" name="currency_id" id="currency_id">
 
     <div class="clearfix"></div>
     <!-- <div class="col-md-6">
@@ -288,12 +288,12 @@
     <div class="clearfix"></div>
     <div class="col-md-6">
         <div class="form-group">
-            {!! Form::label('password', 'Senha' . ':*') !!}
+            {!! Form::label('password', 'Contraseña' . ':*') !!}
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="fa fa-lock"></i>
                 </span>
-                {!! Form::password('password', ['class' => 'form-control','placeholder' => 'Senha', 'required']); !!}
+                {!! Form::password('password', ['class' => 'form-control','placeholder' => 'Contraseña', 'required']); !!}
             </div>
         </div>
     </div>

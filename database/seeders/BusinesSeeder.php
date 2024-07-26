@@ -25,7 +25,7 @@ class BusinesSeeder extends Seeder
         Business::create(
           [
               'name' => 'Slym',
-              'currency_id' => 18,
+              'currency_id' => 1,
               'tax_number_1' => '1',
               'tax_label_1' => '1',
               'owner_id' => 1

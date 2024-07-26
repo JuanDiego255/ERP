@@ -54,10 +54,10 @@
                         <?php if(!($request->segment(1) == 'business' && $request->segment(2) == 'register')): ?>
                         <!-- Register Url -->
                         <?php if(config('constants.allow_registration')): ?>
-                        <a href="<?php echo e(route('business.getRegister'), false); ?><?php if(!empty(request()->lang)): ?><?php echo e('?lang=' . request()->lang, false); ?> <?php endif; ?>" class="btn bg-maroon btn-flat" ><b>Ainda não é registrado?</b> <?php echo e(__('business.register_now'), false); ?></a>
+                        <a href="<?php echo e(route('business.getRegister'), false); ?><?php if(!empty(request()->lang)): ?><?php echo e('?lang=' . request()->lang, false); ?> <?php endif; ?>" class="btn bg-maroon btn-flat" ><b>Aún no se ha registrado?</b> <?php echo e(__('business.register_now'), false); ?></a>
                         <!-- pricing url -->
                         <?php if(Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing'): ?>
-                        &nbsp; <a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\PricingController@index'), false); ?>">Planos</a>
+                        &nbsp; <a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\PricingController@index'), false); ?>">Planes</a>
                         <?php endif; ?>
                         <?php endif; ?>
                         <?php endif; ?>

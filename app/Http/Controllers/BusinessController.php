@@ -191,7 +191,7 @@ class BusinessController extends Controller
             // die;
             $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark', 'website', 'mobile', 'alternate_number']);
 
-            $business_location['country'] = 'Brasil';
+            $business_location['country'] = 'Costa Rica';
             //Create the business
             $business_details['owner_id'] = $user->id;
             if (!empty($business_details['start_date'])) {
@@ -286,7 +286,7 @@ class BusinessController extends Controller
 
             $output = [
                 'success' => 1,
-                'msg' => 'Empresa criada com sucesso!!'
+                'msg' => 'Empresa creada con éxito'
             ];
 
             return redirect('login')->with('status', $output);

@@ -16,7 +16,7 @@ use App\Models\Transaction;
 use App\Models\Test;
 
 
-Route::middleware(['authh'])->group(function () {
+Route::middleware(['authh','language'])->group(function () {
     Route::get('/', function () {
         return view('welcome');
     });
