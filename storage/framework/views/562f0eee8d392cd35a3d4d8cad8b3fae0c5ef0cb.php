@@ -239,10 +239,10 @@
 
         <div class="col-sm-2">
             <div class="form-group">
-                <?php echo Form::label('senha_certificado', Contraseña . ':*'); ?>
+                <?php echo Form::label('senha_certificado', 'Contraseña' . ':*'); ?>
 
                 <?php echo Form::text('senha_certificado', '', ['class' => 'form-control',
-                'placeholder' => Contraseña]); ?>
+                'placeholder' => 'Contraseña']); ?>
 
             </div>
         </div>

@@ -185,9 +185,9 @@
 
         <div class="col-sm-2">
             <div class="form-group">
-                {!! Form::label('senha_certificado', Contraseña . ':*') !!}
+                {!! Form::label('senha_certificado', 'Contraseña' . ':*') !!}
                 {!! Form::text('senha_certificado', '', ['class' => 'form-control',
-                'placeholder' => Contraseña]); !!}
+                'placeholder' => 'Contraseña']); !!}
             </div>
         </div>
 
