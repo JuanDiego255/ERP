@@ -692,7 +692,7 @@ Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
 });
 
 //common route
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','language'])->group(function () {
     Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 });
 

@@ -22,7 +22,7 @@
             @endforeach
         @endif
         @if(Route::has('pricing') && config('app.env') != 'demo')
-        <li><a href="{{ action('\Modules\Superadmin\Http\Controllers\PricingController@index') }}">Planos</a></li>
+        <li><a href="{{ action('\Modules\Superadmin\Http\Controllers\PricingController@index') }}">Planes</a></li>
         @endif
         @if(Route::has('repair-status') && config('app.env') != 'demo')
         <li>

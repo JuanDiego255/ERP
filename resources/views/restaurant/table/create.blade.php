@@ -28,8 +28,8 @@
       </div>
 
       <div class="form-group">
-        {!! Form::label('description', 'Descrição breve' . ':') !!}
-          {!! Form::text('description', null, ['class' => 'form-control','placeholder' => __( 'Descrição breve' )]); !!}
+        {!! Form::label('description', 'Descripción breve' . ':') !!}
+          {!! Form::text('description', null, ['class' => 'form-control','placeholder' => __( 'Descripción breve' )]); !!}
       </div>
     </div>
 

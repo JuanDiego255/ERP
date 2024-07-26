@@ -76,8 +76,8 @@
 
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('telefone', 'Telefone' . ':*') !!}
-          {!! Form::text('telefone', null, ['class' => 'form-control', 'placeholder' => 'Telefone', 'data-mask="00 00000-0000"', 'data-mask-reverse="true"' ]); !!}
+          {!! Form::label('telefone', 'Teléfono' . ':*') !!}
+          {!! Form::text('telefone', null, ['class' => 'form-control', 'placeholder' => 'Teléfono', 'data-mask="00 00000-0000"', 'data-mask-reverse="true"' ]); !!}
           @if($errors->has('telefone'))
           <span class="text-danger">
             {{ $errors->first('telefone') }}
@@ -88,7 +88,7 @@
 
       <div class="col-md-2">
         <div class="form-group">
-          {!! Form::label('senha', 'Senha' . ':*') !!}
+          {!! Form::label('senha', Contraseña . ':*') !!}
           <input type="password" name="senha" class="form-control">
           @if($errors->has('senha'))
           <span class="text-danger">

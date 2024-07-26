@@ -32,14 +32,14 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Sobre nome</th>
-                            <th>Telefone</th>
+                            <th>Apellido</th>
+                            <th>Teléfono</th>
                             <th>Email</th>
                             <th>CPF/CNPJ</th>
 
                             <th>Ativo</th>
                             <th>Pedidos</th>
-                            <th>Ação</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

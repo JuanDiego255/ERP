@@ -10,7 +10,7 @@
     {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.dob'), 'readonly', 'id' => 'user_dob' ]); !!}
 </div>
 <div class="form-group col-md-3">
-    {!! Form::label('gender', 'Genero' . ':') !!}
+    {!! Form::label('gender', 'Género' . ':') !!}
     {!! Form::select('gender', ['male' => 'Masculino', 'female' => 'Feminino', 'others' => 'Outro'], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
 </div>
 <div class="form-group col-md-3">

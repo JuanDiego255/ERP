@@ -88,7 +88,7 @@
                     <th>Número</th>
                     <th>Chave</th>
                     <th>Estado</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
             <tbody>
@@ -144,7 +144,7 @@
                     <th>Número</th>
                     <th>Chave</th>
                     <th>Estado</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
             <tbody>

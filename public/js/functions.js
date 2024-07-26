@@ -75,7 +75,7 @@ function __currency_trans_from_en(
     precision = __currency_precision,
     is_quantity = false
 ) {
-    __p_currency_symbol = "R$"
+    __p_currency_symbol = "₡"
     __p_currency_decimal_separator = ","
     __p_currency_thousand_separator = ""
     // if (use_page_currency && __p_currency_symbol) {

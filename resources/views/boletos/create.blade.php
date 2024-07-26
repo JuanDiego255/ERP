@@ -22,10 +22,10 @@
         <h4>Email: <strong>{{$revenue->contact->email}}</strong></h4>
       </div>
       <div class="col-md-6">
-        <h4>Rua: <strong>{{$revenue->contact->rua}}</strong></h4>
+        <h4>Calle: <strong>{{$revenue->contact->rua}}</strong></h4>
         <h4>Número: <strong>{{$revenue->contact->numero}}</strong></h4>
-        <h4>Cidade: <strong>{{$revenue->contact->cidade->nome}} ({{$revenue->contact->cidade->uf}})</strong></h4>
-        <h4>Bairro: <strong>{{$revenue->contact->bairro}}</strong></h4>
+        <h4>Ciudad: <strong>{{$revenue->contact->cidade->nome}} ({{$revenue->contact->cidade->uf}})</strong></h4>
+        <h4>Barrio: <strong>{{$revenue->contact->bairro}}</strong></h4>
       </div>
       <div class="clearfix"></div>
       <hr>

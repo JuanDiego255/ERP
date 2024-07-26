@@ -475,13 +475,13 @@ class NFCeService{
 		if($somaEstadual > 0 || $somaFederal > 0 || $somaMunicipal > 0){
 			$obs .= " Trib. aprox. ";
 			if($somaFederal > 0){
-				$obs .= "R$ " . number_format($somaFederal, 2, ',', '.') ." Federal"; 
+				$obs .= "₡ " . number_format($somaFederal, 2, ',', '.') ." Federal"; 
 			}
 			if($somaEstadual > 0){
-				$obs .= ", R$ ".number_format($somaEstadual, 2, ',', '.')." Estadual"; 
+				$obs .= ", ₡ ".number_format($somaEstadual, 2, ',', '.')." Estadual"; 
 			}
 			if($somaMunicipal > 0){
-				$obs .= ", R$ ".number_format($somaMunicipal, 2, ',', '.')." Municipal"; 
+				$obs .= ", ₡ ".number_format($somaMunicipal, 2, ',', '.')." Municipal"; 
 			}
 			$obs .= " FONTE: " . ($ibpt->versao ?? '');
 		}

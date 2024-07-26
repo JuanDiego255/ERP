@@ -40,7 +40,7 @@
                     <th>Produto predominante</th>
                     <th>Data prevista de entrega</th>
                     <th>Estado</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

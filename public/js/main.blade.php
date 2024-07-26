@@ -115,7 +115,7 @@ table tbody{
 						</div>
 
 						<div class="col s6">
-							<a href="/frenteCaixa/list" style="width: 100%;" class="btn-large green lighten-1">Lista de Vendas</a>
+							<a href="/frenteCaixa/list" style="width: 100%;" class="btn-large green lighten-1">Lista de Ventas</a>
 						</div>
 					</div>
 					
@@ -259,7 +259,7 @@ table tbody{
 			</div>
 			<div class="row">
 				<div class="col s12">
-					<h5>Vendas:</h5>
+					<h5>Ventas:</h5>
 					<div id="fluxo_vendas"></div>
 				</div>
 			</div>

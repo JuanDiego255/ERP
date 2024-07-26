@@ -74,11 +74,11 @@
 
         <div class="box box-success" id="box-remetente" style="display: none">
           <div class="box-body">
-            <h5>Nome: <strong id="remetente-nome"></strong></h5>
+            <h5>Nombre: <strong id="remetente-nome"></strong></h5>
             <h5>CNPJ: <strong id="remetente-cnpj"></strong></h5>
             <h5>IE: <strong id="remetente-ie"></strong></h5>
             <h5>Endereço: <strong id="remetente-endereco"></strong></h5>
-            <h5>Cidade: <strong id="remetente-cidade"></strong></h5>
+            <h5>Ciudad: <strong id="remetente-cidade"></strong></h5>
           </div>
         </div>
       </div>
@@ -90,11 +90,11 @@
         </div>
         <div class="box box-danger" id="box-destinatario" style="display: none">
           <div class="box-body">
-            <h5>Nome: <strong id="destinatario-nome"></strong></h5>
+            <h5>Nombre: <strong id="destinatario-nome"></strong></h5>
             <h5>CNPJ: <strong id="destinatario-cnpj"></strong></h5>
             <h5>IE: <strong id="destinatario-ie"></strong></h5>
             <h5>Endereço: <strong id="destinatario-endereco"></strong></h5>
-            <h5>Cidade: <strong id="destinatario-cidade"></strong></h5>
+            <h5>Ciudad: <strong id="destinatario-cidade"></strong></h5>
 
           </div>
         </div>
@@ -171,8 +171,8 @@
 
                     <div class="col-md-4">
                       <div class="form-group">
-                        {!! Form::label('descOutros', 'Descrição do Doc.' . ':*') !!}
-                        {!! Form::text('descOutros', null, ['class' => 'form-control type-ref', 'placeholder' => 'Descrição do Doc.' ]); !!}
+                        {!! Form::label('descOutros', 'Descripción do Doc.' . ':*') !!}
+                        {!! Form::text('descOutros', null, ['class' => 'form-control type-ref', 'placeholder' => 'Descripción do Doc.' ]); !!}
                       </div>
                     </div>
 
@@ -287,7 +287,7 @@
                 <th>Código Unidade</th>
                 <th>Tipo de Medida</th>
                 <th>Quantidade</th>
-                <th>Ação</th>
+                <th>Compartir</th>
               </tr>
             </thead>
             <tbody>
@@ -340,7 +340,7 @@
                 <th>Item</th>
                 <th>Componente</th>
                 <th>Valor</th>
-                <th>Ação</th>
+                <th>Compartir</th>
               </tr>
             </thead>
             <tbody>
@@ -375,8 +375,8 @@
       </div>
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('rua_tomador', 'Rua' . ':*') !!}
-          {!! Form::text('rua_tomador', null, ['class' => 'form-control', 'required', 'placeholder' => 'Rua' ]); !!}
+          {!! Form::label('rua_tomador', 'Calle' . ':*') !!}
+          {!! Form::text('rua_tomador', null, ['class' => 'form-control', 'required', 'placeholder' => 'Calle' ]); !!}
         </div>
       </div>
       <div class="col-md-2">
@@ -395,8 +395,8 @@
 
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('bairro_tomador', 'Bairro' . ':*') !!}
-          {!! Form::text('bairro_tomador', null, ['class' => 'form-control', 'required', 'placeholder' => 'Bairro' ]); !!}
+          {!! Form::label('bairro_tomador', 'Barrio' . ':*') !!}
+          {!! Form::text('bairro_tomador', null, ['class' => 'form-control', 'required', 'placeholder' => 'Barrio' ]); !!}
         </div>
       </div>
 

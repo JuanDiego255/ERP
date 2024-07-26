@@ -19,7 +19,7 @@
 	</div>
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("method_$row_index" , 'Forma de pagamento' . ':*') !!}
+			{!! Form::label("method_$row_index" , 'Forma de pago' . ':*') !!}
 			<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fas fa-list"></i>
@@ -58,7 +58,7 @@
 		@include('sale_pos.partials.payment_type_details')
 	<div class="col-md-12">
 		<div class="form-group">
-			{!! Form::label("note_$row_index", 'Observação de pagamento:') !!}
+			{!! Form::label("note_$row_index", 'Observaciones de pago') !!}
 			{!! Form::textarea("payment[$row_index][note]", $payment_line['note'], ['class' => 'form-control', 'rows' => 3, 'id' => "note_$row_index"]); !!}
 		</div>
 	</div>

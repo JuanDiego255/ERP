@@ -191,8 +191,8 @@
 
                     <tr>
                         <td>23</td>
-                        <td>CIDADE ID <small class="text-muted">(Obrigatório)</small></td>
-                        <td>Código da cidade consulte a lista <a target="_blank" href="/cidades">clique aqui</a> </td>
+                        <td>Ciudad ID <small class="text-muted">(Obrigatório)</small></td>
+                        <td>Consulte la lista <a target="_blank" href="/cidades"> aquí</a> </td>
                     </tr>
 
                     <tr>
@@ -221,7 +221,7 @@
 
                     <tr>
                         <td>27</td>
-                        <td>BAIRRO <small class="text-muted">(Obrigatório)</small></td>
+                        <td>BARRIO <small class="text-muted">(Obrigatório)</small></td>
                         <td>&nbsp;</td>
                     </tr>
 

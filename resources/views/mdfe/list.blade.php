@@ -47,7 +47,7 @@
                     <th>Quantidade da carga</th>
                     <th>Veículo de tração</th>
                     <th>Estado</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

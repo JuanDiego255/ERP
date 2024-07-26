@@ -806,13 +806,13 @@ class NFeService{
 		if($somaEstadual > 0 || $somaFederal > 0 || $somaMunicipal > 0){
 			$obs .= " Trib. aprox. ";
 			if($somaFederal > 0){
-				$obs .= "R$ " . number_format($somaFederal, 2, ',', '.') ." Federal"; 
+				$obs .= "₡ " . number_format($somaFederal, 2, ',', '.') ." Federal"; 
 			}
 			if($somaEstadual > 0){
-				$obs .= ", R$ ".number_format($somaEstadual, 2, ',', '.')." Estadual"; 
+				$obs .= ", ₡ ".number_format($somaEstadual, 2, ',', '.')." Estadual"; 
 			}
 			if($somaMunicipal > 0){
-				$obs .= ", R$ ".number_format($somaMunicipal, 2, ',', '.')." Municipal"; 
+				$obs .= ", ₡ ".number_format($somaMunicipal, 2, ',', '.')." Municipal"; 
 			}
 
 			$obs .= " FONTE: " . ($ibpt->versao ?? '');
@@ -836,7 +836,7 @@ class NFeService{
 		$std->CNPJ = getenv('RESP_CNPJ'); //CNPJ da pessoa jurídica responsável pelo sistema utilizado na emissão do documento fiscal eletrônico
 		$std->xContato= getenv('RESP_NOME'); //Nome da pessoa a ser contatada
 		$std->email = getenv('RESP_EMAIL'); //E-mail da pessoa jurídica a ser contatada
-		$std->fone = getenv('RESP_FONE'); //Telefone da pessoa jurídica/física a ser contatada
+		$std->fone = getenv('RESP_FONE'); //Teléfono da pessoa jurídica/física a ser contatada
 		$nfe->taginfRespTec($std);
 
 		if($venda->referencia_nfe != ''){

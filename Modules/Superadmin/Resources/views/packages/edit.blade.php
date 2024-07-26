@@ -33,7 +33,7 @@
 
 				<div class="col-sm-9">
 					<div class="form-group">
-						{!! Form::label('description', 'Descrição:') !!}
+						{!! Form::label('description', 'Descripción:') !!}
 						{!! Form::text('description', $packages->description, ['class' => 'form-control', 'required']); !!}
 					</div>
 				</div>
@@ -169,7 +169,7 @@
 					<div class="checkbox">
 						<label>
 							{!! Form::checkbox('is_active', 1, $packages->is_active, ['class' => 'input-icheck']); !!}
-							Ativo
+							Activo
 						</label>
 					</div>
 				</div>
@@ -178,7 +178,7 @@
 					<div class="checkbox">
 						<label>
 							{!! Form::checkbox('is_visible', 1, $packages->is_visible, ['class' => 'input-icheck']); !!}
-							Visível para clientes
+							Visible para clientes
 						</label>
 					</div>
 				</div>
@@ -197,7 +197,7 @@
 			<div class="pos-tab-content">
 				<div class="row">
 					@if(!empty($modules))
-					<h4>Módulos do plano</h4>
+					<h4>Módulos del plan</h4>
 					@foreach($modules as $k => $v)
 					<div class="col-sm-4">
 						<div class="form-group">

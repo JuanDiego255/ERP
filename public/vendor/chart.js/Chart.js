@@ -3542,15 +3542,15 @@ var element_line = core_element.extend({
 
 var valueOrDefault$2 = helpers$1.valueOrDefault;
 
-var defaultColor$1 = core_defaults.global.defaultColor;
+var defaultColo₡1 = core_defaults.global.defaultColor;
 
 core_defaults._set('global', {
 	elements: {
 		point: {
 			radius: 3,
 			pointStyle: 'circle',
-			backgroundColor: defaultColor$1,
-			borderColor: defaultColor$1,
+			backgroundColor: defaultColo₡1,
+			borderColor: defaultColo₡1,
 			borderWidth: 1,
 			// Hover
 			hitRadius: 1,
@@ -3626,13 +3626,13 @@ var element_point = core_element.extend({
 	}
 });
 
-var defaultColor$2 = core_defaults.global.defaultColor;
+var defaultColo₡2 = core_defaults.global.defaultColor;
 
 core_defaults._set('global', {
 	elements: {
 		rectangle: {
-			backgroundColor: defaultColor$2,
-			borderColor: defaultColor$2,
+			backgroundColor: defaultColo₡2,
+			borderColor: defaultColo₡2,
 			borderSkipped: 'bottom',
 			borderWidth: 0
 		}

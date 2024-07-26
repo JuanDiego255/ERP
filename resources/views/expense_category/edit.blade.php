@@ -15,7 +15,7 @@
       </div>
 
       <div class="form-group">
-        {!! Form::label('code', 'Código da categoria:') !!}
+        {!! Form::label('code', 'Código de categoría:') !!}
           {!! Form::text('code', $expense_category->code, ['class' => 'form-control', 'placeholder' => __( 'expense.category_code' )]); !!}
       </div>
     <div class="modal-footer">

@@ -29,8 +29,8 @@
             </div>
             <div class="col-md-5">
                 <div class="form-group">
-                  {!! Form::label('last_name', 'Sobre nome' . ':') !!}
-                    {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => 'Sobre nome' ]); !!}
+                  {!! Form::label('last_name', 'Apellido' . ':') !!}
+                    {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => 'Apellido' ]); !!}
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -88,8 +88,8 @@
             @endif
             <div class="col-md-4">
                 <div class="form-group">
-                  {!! Form::label('password', 'Senha' . ':') !!}
-                    {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Senha', 'required' => empty($user->allow_login) ? true : false ]); !!}
+                  {!! Form::label('password', 'Contraseña' . ':') !!}
+                    {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Contraseña', 'required' => empty($user->allow_login) ? true : false ]); !!}
                     <p class="help-block">@lang('user.leave_password_blank')</p>
                 </div>
             </div>
@@ -104,7 +104,7 @@
             <div class="clearfix"></div>
             <div class="col-md-6">
                 <div class="form-group">
-                  {!! Form::label('role', 'Nível de acesso:*') !!} @show_tooltip(__('lang_v1.admin_role_location_permission_help'))
+                  {!! Form::label('role', 'Nível de Acceso:*') !!} @show_tooltip(__('lang_v1.admin_role_location_permission_help'))
                     {!! Form::select('role', $roles, !empty($user->roles->first()->id) ? $user->roles->first()->id : null, ['class' => 'form-control select2', 'style' => 'width: 100%;']); !!}
                 </div>
             </div>
@@ -148,8 +148,8 @@
 
             <div class="col-md-4">
                 <div class="form-group">
-                  {!! Form::label('max_sales_discount_percent', 'Porcentagem de desconto máximo de vendas' . ':') !!} @show_tooltip('Porcentagem máxima de desconto que um usuário pode dar durante a venda. Deixe em branco sem restrições')
-                    {!! Form::text('max_sales_discount_percent', !is_null($user->max_sales_discount_percent) ? @num_format($user->max_sales_discount_percent) : null, ['class' => 'form-control input_number', 'placeholder' => 'Porcentagem de desconto máximo de vendas' ]); !!}
+                  {!! Form::label('max_sales_discount_percent', 'Porcentaje máximo de descuento en ventas' . ':') !!} @show_tooltip('Porcentagem máxima de desconto que um usuário pode dar durante a venda. Deixe em branco sem restrições')
+                    {!! Form::text('max_sales_discount_percent', !is_null($user->max_sales_discount_percent) ? @num_format($user->max_sales_discount_percent) : null, ['class' => 'form-control input_number', 'placeholder' => 'Porcentaje máximo de descuento en ventas' ]); !!}
                 </div>
             </div>
             <div class="clearfix"></div>

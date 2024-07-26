@@ -125,7 +125,7 @@
                     {{ __('lang_v1.purchase_sell_report_formula') }}  @show_tooltip(__('tooltip.over_all_sell_purchase'))
                 @endslot
                 <h3 class="text-muted">
-                    Vendas - Compras: 
+                    Ventas - Compras: 
                     <span class="sell_minus_purchase">
                         <i class="fas fa-sync fa-spin fa-fw"></i>
                     </span>

@@ -224,7 +224,7 @@ class BusinessController extends Controller
             $business = $this->businessUtil->createNewBusiness($business_details);
 
             if($package != null){
-            // seta plano para empresa
+            // seta Planes para empresa
 
                 $dates = $this->_get_package_dates($business->id, $package);
                 $subscription = [

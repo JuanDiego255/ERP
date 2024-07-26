@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Natureza de Operação')
+@section('title', 'Editar Naturaleza de la operación')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>Editar Natureza de Operação</h1>
+  <h1>Editar Naturaleza de la operación</h1>
 </section>
 
 <!-- Main content -->
@@ -20,22 +20,22 @@
       
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('natureza', 'Natureza' . ':*') !!}
-          {!! Form::text('natureza', $natureza->natureza, ['class' => 'form-control', 'required', 'placeholder' => 'Natureza' ]); !!}
+          {!! Form::label('natureza', 'Naturaleza' . ':*') !!}
+          {!! Form::text('natureza', $natureza->natureza, ['class' => 'form-control', 'required', 'placeholder' => 'Naturaleza' ]); !!}
         </div>
       </div>
 
       <div class="col-md-3 customer_fields">
         <div class="form-group">
 
-          {!! Form::label('sobrescreve_cfop', 'Sobrescrever CFOP do produto' . ':') !!}
-          {!! Form::select('sobrescreve_cfop', ['0' => 'Não', '1' => 'Sim'], $natureza->sobrescreve_cfop, ['id' => 'sobrescreve_cfop', 'class' => 'form-control select2', 'required']); !!}
+          {!! Form::label('sobrescreve_cfop', 'Sobrescribir CFOP del producto' . ':') !!}
+          {!! Form::select('sobrescreve_cfop', ['0' => 'No', '1' => 'Sí'], $natureza->sobrescreve_cfop, ['id' => 'sobrescreve_cfop', 'class' => 'form-control select2', 'required']); !!}
         </div>
       </div>
       
       <div class="col-md-2 customer_fields">
         <div class="form-group">
-          {!! Form::label('finNFe', 'Finalidade' . ':') !!}
+          {!! Form::label('finNFe', 'Finalidad' . ':') !!}
           {!! Form::select('finNFe', App\Models\NaturezaOperacao::finalidades(), $natureza->finNFe, ['id' => 'finNFe', 'class' => 'form-control select2', 'required']); !!}
         </div>
       </div>
@@ -44,7 +44,7 @@
         <div class="form-group">
 
           {!! Form::label('tipo', 'Tipo' . ':') !!}
-          {!! Form::select('tipo', ['1' => 'Saída', '0' => 'Entrada'], $natureza->tipo, ['id' => 'tipo', 'class' => 'form-control select2', 'required']); !!}
+          {!! Form::select('tipo', ['1' => 'Salida', '0' => 'Entrada'], $natureza->tipo, ['id' => 'tipo', 'class' => 'form-control select2', 'required']); !!}
         </div>
       </div>
 
@@ -59,20 +59,20 @@
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('cfop_saida_estadual', 'CFOP saida estadual' . '*:') !!}
-          {!! Form::text('cfop_saida_estadual', $natureza->cfop_saida_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP saida estadual' ]); !!}
+          {!! Form::label('cfop_saida_estadual', 'CFOP salida estadual' . '*:') !!}
+          {!! Form::text('cfop_saida_estadual', $natureza->cfop_saida_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP salida estadual' ]); !!}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('cfop_entrada_inter_estadual', 'CFOP entrada outro estado' . '*:') !!}
-          {!! Form::text('cfop_entrada_inter_estadual', $natureza->cfop_entrada_inter_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP entrada outro estado' ]); !!}
+          {!! Form::label('cfop_entrada_inter_estadual', 'CFOP entrada otro estado' . '*:') !!}
+          {!! Form::text('cfop_entrada_inter_estadual', $natureza->cfop_entrada_inter_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP entrada otro estado' ]); !!}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('cfop_saida_inter_estadual', 'CFOP saida outro estado' . '*:') !!}
-          {!! Form::text('cfop_saida_inter_estadual', $natureza->cfop_saida_inter_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP saida outro estado' ]); !!}
+          {!! Form::label('cfop_saida_inter_estadual', 'CFOP salida otro estado' . '*:') !!}
+          {!! Form::text('cfop_saida_inter_estadual', $natureza->cfop_saida_inter_estadual, ['class' => 'form-control', 'required', 'placeholder' => 'CFOP salida otro estado' ]); !!}
         </div>
       </div>
 

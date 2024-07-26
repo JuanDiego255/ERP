@@ -23,7 +23,7 @@
 
         <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff;">Ambiente: 
           <strong>
-            {{auth()->user()->business->ambiente == 2 ? 'Homologação' : 'Produção'}}
+            {{auth()->user()->business->ambiente == 2 ? 'Homologado' : 'Produção'}}
           </strong>
         </div>
 

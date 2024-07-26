@@ -5,7 +5,7 @@
 "contact" => "Contato",
 "manage_your_contact" => "Gerenciar seus: contatos",
 "all_your_contact" => "Todos os seus: contatos",
-"add_contact" => "Adicionar um novo contato",
+"add_contact" => "Adicionar um Nuevo Contacto",
 "contact_type" => "Tipo de contato",
 "tax_no" => "Número do imposto",
 "pay_term" => "Prazo de pagamento",

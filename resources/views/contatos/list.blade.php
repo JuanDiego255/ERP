@@ -6,7 +6,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>Ecommerce
-        <small>Contatos</small>
+        <small>Contactos</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -29,7 +29,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Email</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

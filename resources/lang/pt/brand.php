@@ -5,7 +5,7 @@
 "all_your_brands" => "Todas as suas marcas",
 "note" => "Nota",
 "brand_name" => "nome da marca",
-"short_description" => "Breve descrição",
+"short_description" => "Breve Descripción",
 "added_success" => "Marca adicionada com sucesso",
 "updated_success" => "Marca atualizada com sucesso",
 "deleted_success" => "Marcar excluído com sucesso",

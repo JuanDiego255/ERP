@@ -74,7 +74,7 @@
 
         <div class="col-sm-4">
           <div class="form-group">
-            {!! Form::label('cidade_id', 'Cidade:*') !!}<br>
+            {!! Form::label('cidade_id', 'Ciudades:*') !!}<br>
             {!! Form::select('cidade_id', $cities, $location->cidade ? $location->cidade->id : null, ['class' => 'form-control select2', 'required', 'style' => 'width: 100%']); !!}
           </div>
         </div>
@@ -91,9 +91,9 @@
 
         <div class="col-sm-6">
           <div class="form-group">
-            {!! Form::label('rua', 'Rua' . ':*') !!}
+            {!! Form::label('rua', 'Calle' . ':*') !!}
             {!! Form::text('rua', $location->rua, ['class' => 'form-control', 'required',
-            'placeholder' => 'Rua']); !!}
+            'placeholder' => 'Calle']); !!}
           </div>
         </div>
 
@@ -107,18 +107,18 @@
 
         <div class="col-sm-3">
           <div class="form-group">
-            {!! Form::label('bairro', 'Bairro' . ':*') !!}
+            {!! Form::label('bairro', 'Barrio' . ':*') !!}
             {!! Form::text('bairro', $location->bairro, ['class' => 'form-control', 'required',
-            'placeholder' => 'Bairro']); !!}
+            'placeholder' => 'Barrio']); !!}
           </div>
         </div>
 
 
         <div class="col-sm-4">
           <div class="form-group">
-            {!! Form::label('telefone', 'Telefone' . ':*') !!}
+            {!! Form::label('telefone', 'Teléfono' . ':*') !!}
             {!! Form::text('telefone', $location->telefone, ['class' => 'form-control', 'required', 'data-mask="00 000000000"',
-            'placeholder' => 'Telefone']); !!}
+            'placeholder' => 'Teléfono']); !!}
           </div>
         </div>
 
@@ -192,7 +192,7 @@
           <div class="form-group">
 
             {!! Form::label('ambiente', 'Ambiente' . ':') !!}
-            {!! Form::select('ambiente', ['1' => 'Produção', '2' => 'Homologação'], $location->ambiente, ['class' => 'form-control select2', 'required']); !!}
+            {!! Form::select('ambiente', ['1' => 'Produção', '2' => 'Homologado'], $location->ambiente, ['class' => 'form-control select2', 'required']); !!}
           </div>
         </div>
 

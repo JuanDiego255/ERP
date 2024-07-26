@@ -1,18 +1,18 @@
 @extends('layouts.app')
-@section('title', 'Lista de contas bancárias')
+@section('title', 'Lista de Cuentas bancarias')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-	<h1>Contas bancárias
+	<h1>Cuentas bancarias
 		<small>Gerencia contas</small>
 	</h1>
 </section>
 
 <!-- Main content -->
 <section class="content">
-	@component('components.widget', ['class' => 'box-primary', 'title' => 'Todas as Contas Bancárias'])
+	@component('components.widget', ['class' => 'box-primary', 'title' => 'Todas las cuentas bancarias'])
 	@can('user.create')
 	@slot('tool')
 	<div class="box-tools">
@@ -31,7 +31,7 @@
 					<th>Agência</th>
 					<th>Conta</th>
 					<th>Títular</th>
-					<th>Ação</th>
+					<th>Compartir</th>
 				</tr>
 			</thead>
 		</table>

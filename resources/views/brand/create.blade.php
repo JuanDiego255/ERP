@@ -10,7 +10,7 @@
 
     <div class="modal-body">
       <div class="form-group">
-        {!! Form::label('name', 'Nome:*') !!}
+        {!! Form::label('name', 'Nombre:*') !!}
           {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'brand.brand_name' ) ]); !!}
       </div>
 

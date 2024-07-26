@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Controle de acesso')
+@section('title', 'Controles de acceso')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Controle de acesso
+    <h1>Controles de acceso
         <small>@lang( 'user.manage_roles' )</small>
     </h1>
     <!-- <ol class="breadcrumb">
@@ -31,7 +31,7 @@
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Ação</th>
+                        <th>Compartir</th>
                     </tr>
                 </thead>
             </table>

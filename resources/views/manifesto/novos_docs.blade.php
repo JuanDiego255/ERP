@@ -21,7 +21,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Manifesto
+    <h1>Manifiesto
 
     </h1>
     <!-- <ol class="breadcrumb">
@@ -56,22 +56,22 @@
 
     </div>
 
-    <p style="display: none" id="aguarde" class="text-info">Consultado novos documentos, aguarde ...</p>
-    <p id="sem-resultado" style="display: none" class="center-align text-danger">Nenhum novo resultado...</p>
+    <p style="display: none" id="aguarde" class="text-info">Después de haber consultado nuevos documentos, por favor espere...</p>
+    <p id="sem-resultado" style="display: none" class="center-align text-danger">No hay nuevos resultados...</p>
     <div style="display: none" class="loader" id="loader"></div> 
 
     <div class="table-responsive" id="tbl" style="display: none">
 
-        <p class="text-danger">*Documentos inseridos!!</p>
-        <a href="/manifesto" class="btn btn-info">Voltar</a>
+        <p class="text-danger">*¡Documentos insertados!!</p>
+        <a href="/manifesto" class="btn btn-info">Volver</a>
         <br>
         <table class="table table-bordered table-striped" id="users_table">
             <thead>
                 <tr>
-                    <th>Nome</th>
+                    <th>Nombre</th>
                     <th>Documento</th>
                     <th>Valor</th>
-                    <th>Chave</th>
+                    <th>Llave</th>
                 </tr>
             </thead>
             <tbody></tbody>

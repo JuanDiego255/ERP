@@ -35,7 +35,7 @@
                             <th>Status</th>
                             <th>Valor</th>
                             <th>Tipo</th>
-                            <th>Ação</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

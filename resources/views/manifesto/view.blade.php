@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Manifesto XML')
+@section('title', 'Manifiesto XML')
 
 @section('content')
 <!-- Content Header (Page header) -->
@@ -28,14 +28,14 @@
 	<div class="row">
 		<div class="col-sm-12">
 			<div class="form-group">
-				<h3 class="box-title">Fornecedor</h3>
+				<h3 class="box-title">Proveedor</h3>
 				@if($dadosNf['novoFornecedor'])
-				<p class="text-danger">*Este fornecedor não esta cadastrado no sistema!</p>
+				<p class="text-danger">*Este proveedor no está registrado en el sistema!</p>
 				@endif
 				<div class="row">
 					<div class="col-sm-6">
 
-						<span>Nome: <strong>{{$contact['name']}}</strong></span><br>
+						<span>Nombre: <strong>{{$contact['name']}}</strong></span><br>
 						<span>CNPJ/CPF: <strong>{{$contact['cpf_cnpj']}}</strong></span><br>
 						<span>IE/RG: <strong>{{$contact['ie_rg']}}</strong></span>
 
@@ -44,9 +44,9 @@
 
 					<div class="col-sm-6">
 
-						<span>Rua: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
-						<span>Bairro: <strong>{{$contact['bairro']}}</strong></span><br>
-						<span>Cidade: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
+						<span>Calle: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
+						<span>Barrio: <strong>{{$contact['bairro']}}</strong></span><br>
+						<span>Ciudad: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
 
 					</div>
 					<div class="col-sm-6">
@@ -57,7 +57,7 @@
 							@csrf
 							<input type="hidden" value="{{json_encode($contact)}}" name="contato">
 							<button class="btn btn-success">
-								Incluir fornecedor
+								Incluir proveedor
 							</button>
 						</form>
 						@endif
@@ -69,16 +69,16 @@
 
 		<div class="col-sm-12">
 			<div class="form-group">
-				<h3 class="box-title">Dados do Documento</h3>
+				<h3 class="box-title">Datos del documento</h3>
 
 				<div class="row">
 					<div class="col-sm-12">
 
-						<span>Chave: <strong>{{$dadosNf['chave']}}</strong></span><br>
+						<span>Llave: <strong>{{$dadosNf['chave']}}</strong></span><br>
 						<span>Valor Integral: <strong>{{$dadosNf['vProd']}}</strong></span><br>
 						<span>Número: <strong>{{$dadosNf['nNf']}}</strong></span><br>
-						<span>Valor do frete: <strong>{{$dadosNf['vFrete']}}</strong></span><br>
-						<span>Valor de desconto: <strong>{{$dadosNf['vDesc']}}</strong></span><br>
+						<span>Gastos de envío: <strong>{{$dadosNf['vFrete']}}</strong></span><br>
+						<span>Valor de descuento: <strong>{{$dadosNf['vDesc']}}</strong></span><br>
 						<span>Valor Final: <strong>{{$dadosNf['vFinal']}}</strong></span><br>
 					</div>
 
@@ -88,7 +88,7 @@
 
 		<div class="col-sm-12">
 			<div class="form-group">
-				<h3 class="box-title">Produtos</h3>
+				<h3 class="box-title">Productos</h3>
 
 
 				<div class="">
@@ -99,8 +99,8 @@
 						<div class="tab-content">
 							<div class="tab-pane active" id="product_list_tab">
 								<br><br>
-								<p class="text-danger">* Produtos em vermelho não possuem cadastro no sistema</p>
-								<p class="text-info">* Produtos em azul já atribuidos no estoque</p>
+								<p class="text-danger">* Los productos en rojo no están registrados en el sistema</p>
+								<p class="text-info">* Productos en azul ya asignados en stock</p>
 
 								<div class="table-responsive">
 									<div id="product_table_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">

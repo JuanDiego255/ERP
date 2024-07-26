@@ -18,8 +18,8 @@
       <input type="hidden" name="id" value="{{$endereco->id}}">
       <div class="col-md-6">
         <div class="form-group">
-          {!! Form::label('rua', 'Rua' . ':*') !!}
-          {!! Form::text('rua', $endereco->rua, ['class' => 'form-control', 'placeholder' => 'Rua' ]); !!}
+          {!! Form::label('rua', 'Calle' . ':*') !!}
+          {!! Form::text('rua', $endereco->rua, ['class' => 'form-control', 'placeholder' => 'Calle' ]); !!}
           @if($errors->has('rua'))
           <span class="text-danger">
             {{ $errors->first('rua') }}
@@ -42,8 +42,8 @@
 
       <div class="col-md-4">
         <div class="form-group">
-          {!! Form::label('bairro', 'Bairro' . ':*') !!}
-          {!! Form::text('bairro', $endereco->bairro, ['class' => 'form-control', 'placeholder' => 'Bairro' ]); !!}
+          {!! Form::label('bairro', 'Barrio' . ':*') !!}
+          {!! Form::text('bairro', $endereco->bairro, ['class' => 'form-control', 'placeholder' => 'Barrio' ]); !!}
           @if($errors->has('bairro'))
           <span class="text-danger">
             {{ $errors->first('bairro') }}
@@ -56,7 +56,7 @@
 
       <div class="col-md-4 customer_fields">
         <div class="form-group">
-          {!! Form::label('city_id', 'Cidade:*') !!}
+          {!! Form::label('city_id', 'Ciudades:*') !!}
           {!! Form::select('city_id', $cities, $cidade->id, ['id' => 'cidade', 'class' => 'form-control select2', 'required']); !!}
         </div>
       </div>
@@ -98,7 +98,7 @@
   <div class="row">
     <div class="col-md-12">
       <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">
-        Atualizar
+        Actualizar
       </button>
     </div>
   </div>

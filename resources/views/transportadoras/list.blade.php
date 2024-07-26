@@ -16,7 +16,7 @@
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas as transportadoras'])
+    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas Las transportadoras'])
         @can('user.create')
             @slot('tool')
                 <div class="box-tools">
@@ -31,11 +31,11 @@
                 <table class="table table-bordered table-striped" id="users_table">
                     <thead>
                         <tr>
-                            <th>Razão Social</th>
+                            <th>Razón Social</th>
                             <th>CNPJ/CPF</th>
-                            <th>Logradouro</th>
-                            <th>Cidade</th>
-                            <th>Ação</th>
+                            <th>Patio</th>
+                            <th>Ciudad</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

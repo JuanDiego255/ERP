@@ -379,7 +379,7 @@ $('#add-pag').click(() => {
 		let data = $('#data').val();
 		let valor = $('#valor_parcela').val();
 		let cifrao = valor.substring(0, 2);
-		if(cifrao == 'R$') valor = valor.substring(3, valor.length)
+		if(cifrao == '₡') valor = valor.substring(3, valor.length)
 			if(data.length > 0 && valor.length > 0 && parseFloat(valor.replace(',','.')) > 0) {
 
 				addpagamento(data, valor);
@@ -406,7 +406,7 @@ function verificaValorMaiorQueTotal(data){
 	else desconto = desconto.replace(',', '.');
 
 	let cifrao = valorParcela.substring(0, 2);
-	if(cifrao == 'R$') valorParcela = valorParcela.substring(3, valorParcela.length)
+	if(cifrao == '₡') valorParcela = valorParcela.substring(3, valorParcela.length)
 
 		console.log(valorParcela)
 

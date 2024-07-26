@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Adicionar Conta Bancária')
+@section('title', 'Agregar cuenta bancaria')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>Adicionar Conta Bancária</h1>
+  <h1>Agregar cuenta bancaria</h1>
 </section>
 
 <!-- Main content -->

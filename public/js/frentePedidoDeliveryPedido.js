@@ -237,7 +237,7 @@ function getAdicionais(){
 		let tags = [];
 		js.map((v) => {
 
-			tags[v.nome + " - R$ " + v.valor] = null
+			tags[v.nome + " - ₡ " + v.valor] = null
 		})
 
 		$('#adicionais').material_chip({
@@ -265,7 +265,7 @@ function setaTamanhosPizza(data){
 	let tags = [];
 
 	data.pizza.map((v) => {
-		tags.push({tag: v.tamanho.nome + ' - R$ ' + v.valor, item: v})
+		tags.push({tag: v.tamanho.nome + ' - ₡ ' + v.valor, item: v})
 	});
 	$('#tamanhos').material_chip({
 		data: tags,

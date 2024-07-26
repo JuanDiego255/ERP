@@ -3540,15 +3540,15 @@ var element_line = core_element.extend({
 
 var valueOrDefault$2 = helpers$1.valueOrDefault;
 
-var defaultColor$1 = core_defaults.global.defaultColor;
+var defaultColo₡1 = core_defaults.global.defaultColor;
 
 core_defaults._set('global', {
 	elements: {
 		point: {
 			radius: 3,
 			pointStyle: 'circle',
-			backgroundColor: defaultColor$1,
-			borderColor: defaultColor$1,
+			backgroundColor: defaultColo₡1,
+			borderColor: defaultColo₡1,
 			borderWidth: 1,
 			// Hover
 			hitRadius: 1,
@@ -3624,13 +3624,13 @@ var element_point = core_element.extend({
 	}
 });
 
-var defaultColor$2 = core_defaults.global.defaultColor;
+var defaultColo₡2 = core_defaults.global.defaultColor;
 
 core_defaults._set('global', {
 	elements: {
 		rectangle: {
-			backgroundColor: defaultColor$2,
-			borderColor: defaultColor$2,
+			backgroundColor: defaultColo₡2,
+			borderColor: defaultColo₡2,
 			borderSkipped: 'bottom',
 			borderWidth: 0
 		}
@@ -16509,7 +16509,7 @@ var moment = createCommonjsModule(function (module, exports) {
                 diff < 7 ? 'nextWeek' : 'sameElse';
     }
 
-    function calendar$1 (time, formats) {
+    function calenda₡1 (time, formats) {
         // We want to compare the start of today, vs this.
         // Getting start-of-today depends on whether we're local/utc/offset or not.
         var now = time || createLocal(),
@@ -17246,7 +17246,7 @@ var moment = createCommonjsModule(function (module, exports) {
     var proto = Moment.prototype;
 
     proto.add               = add;
-    proto.calendar          = calendar$1;
+    proto.calendar          = calenda₡1;
     proto.clone             = clone;
     proto.diff              = diff;
     proto.endOf             = endOf;

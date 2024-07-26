@@ -23,7 +23,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <button type="submit" class="btn btn-primary pull-right" id="submit_button">Atualizar</button>
+      <button type="submit" class="btn btn-primary pull-right" id="submit_button">Actualizar</button>
     </div>
   </div>
   {!! Form::close() !!}

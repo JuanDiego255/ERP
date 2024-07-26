@@ -1,11 +1,11 @@
-<?php $__env->startSection('title', 'Pagamento de Plano'); ?>
+<?php $__env->startSection('title', 'Pagamento de Planes'); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>Pagamento
-        <small>Plano</small>
+        <small>Planes</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -17,7 +17,7 @@
 <section class="content">
 
 
-    <?php $__env->startComponent('components.widget', ['class' => 'box-success', 'title' => 'Pagamento de plano']); ?>
+    <?php $__env->startComponent('components.widget', ['class' => 'box-success', 'title' => 'Pagamento de Planes']); ?>
     
     <div class="row">
         <div class="col-md-12">
@@ -72,7 +72,7 @@
             $('#docType2').html(s)
             $('#docType3').html(s)
         }, 2000)
-        getValorPlano()
+        getValorPlanes()
 
     });
 
@@ -97,10 +97,10 @@
         $('.fa-spin').css('display', 'inline-block')
     })
 
-    function getValorPlano(){
-        let plano_cartao_id = $('#plano_cartao_id').val();
-        if(plano_cartao_id){
-            $.get('/api/consultaValorPlano/'+plano_cartao_id)
+    function getValorPlanes(){
+        let Planes_cartao_id = $('#Planes_cartao_id').val();
+        if(Planes_cartao_id){
+            $.get('/api/consultaValorPlanes/'+Planes_cartao_id)
             .done((success) => {
                 console.log(success)
                 $('#transactionAmount').val(success)
@@ -111,15 +111,15 @@
         }
     }
 
-    $('#plano_cartao_id').change(() => {
-        getValorPlano()
+    $('#Planes_cartao_id').change(() => {
+        getValorPlanes()
     })
 
     $('#cardNumber').keyup(() => {
         let cardnumber = $('#cardNumber').val().replaceAll(" ", "");
-        let plan = $('#plano_cartao_id').val()
+        let plan = $('#Planes_cartao_id').val()
         if(!plan){
-            swal("Alerta", "Selecione o plano", "error")
+            swal("Alerta", "Selecione o Planes", "error")
             return
         }
         if (cardnumber.length >= 6) {

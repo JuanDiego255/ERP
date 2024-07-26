@@ -35,7 +35,7 @@
                     <th>Local</th>
                     <th>Chave</th>
                     <th>Protocolo</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
             <tbody>

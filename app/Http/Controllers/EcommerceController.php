@@ -183,7 +183,7 @@ class EcommerceController extends Controller
             'nome.mensagem_agradecimento' => 'Campo obrigatório.',
     		'nome.max' => '80 caracteres maximos permitidos.',
 
-    		'telefone.required' => 'O campo Telefone é obrigatório.',
+    		'telefone.required' => 'O campo Teléfono é obrigatório.',
     		'telefone.max' => '35 caracteres maximos permitidos.',
     		'rua.required' => 'O campo rua é obrigatório.',
     		'rua.max' => '80 caracteres maximos permitidos.',

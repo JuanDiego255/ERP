@@ -24,7 +24,7 @@
             <thead>
                 <tr>
                     <th>Código</th>
-                    <th>Descrição</th>
+                    <th>Descripción</th>
                     <th>Nacional/Federal</th>
                     <th>Importado/Federal</th>
                     <th>Estadual</th>

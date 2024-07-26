@@ -17,7 +17,7 @@
 
 				<div class="col-sm-3">
 					<div class="form-group">
-						{!! Form::label("tipo_pagamento" , 'Forma de pagamento' . ':*') !!}
+						{!! Form::label("tipo_pagamento" , 'Forma de pago' . ':*') !!}
 						<div class="input-group">
 							<span class="input-group-addon">
 								<i class="fas fa-list"></i>

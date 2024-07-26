@@ -21,7 +21,7 @@ label {
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Devolução
+    <h1>Devolución
         <small>Importar XML</small>
     </h1>
     <!-- <ol class="breadcrumb">

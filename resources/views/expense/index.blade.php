@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Contas a pagar')
+@section('title', 'Cuentas Por Pagar')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Contas a pagar</h1>
+    <h1>Cuentas Por Pagar</h1>
 </section>
 
 <!-- Main content -->
@@ -49,7 +49,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas as contas a pagar'])
+            @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas las cuentas por pagar'])
                 @can('expense.access')
                     @slot('tool')
                         <div class="box-tools">

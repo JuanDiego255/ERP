@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Editar Controle de acesso')
+@section('title', 'Editar Controles de acceso')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>Editar Controle de acesso</h1>
+  <h1>Editar Controles de acceso</h1>
 </section>
 
 <!-- Main content -->
@@ -15,7 +15,7 @@
   <div class="row">
     <div class="col-md-4">
       <div class="form-group">
-        {!! Form::label('name', 'Nome:*') !!}
+        {!! Form::label('name', 'Nombre:*') !!}
         {!! Form::text('name', str_replace( '#' . auth()->user()->business_id, '', $role->name) , ['class' => 'form-control', 'required', 'placeholder' => __( 'user.role_name' ) ]); !!}
       </div>
     </div>
@@ -92,7 +92,7 @@
   <hr>
   <div class="row check_group">
     <div class="col-md-3">
-      <h4>Acesso</h4>
+      <h4>Acceso</h4>
     </div>
     <div class="col-md-2">
       <div class="checkbox">
@@ -106,7 +106,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.view', in_array('roles.view', $role_permissions), 
-            [ 'class' => 'input-icheck']); !!} Ver controle de acesso
+            [ 'class' => 'input-icheck']); !!} Ver Controles de acceso
           </label>
         </div>
       </div>
@@ -114,7 +114,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.create', in_array('roles.create', $role_permissions), 
-            [ 'class' => 'input-icheck']); !!} Criar controle de acesso
+            [ 'class' => 'input-icheck']); !!} Criar Controles de acceso
           </label>
         </div>
       </div>
@@ -122,7 +122,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.update', in_array('roles.update', $role_permissions), 
-            [ 'class' => 'input-icheck']); !!} Editar controle de acesso
+            [ 'class' => 'input-icheck']); !!} Editar Controles de acceso
           </label>
         </div>
       </div>
@@ -130,7 +130,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.delete', in_array('roles.delete', $role_permissions), 
-            [ 'class' => 'input-icheck']); !!} Excluir controle de acesso
+            [ 'class' => 'input-icheck']); !!} Excluir Controles de acceso
           </label>
         </div>
       </div>
@@ -372,7 +372,7 @@
   @endif
   <div class="row check_group">
     <div class="col-md-3">
-      <h4>Vendas</h4>
+      <h4>Ventas</h4>
     </div>
     <div class="col-md-2">
       <div class="checkbox">

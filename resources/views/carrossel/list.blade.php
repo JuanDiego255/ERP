@@ -35,7 +35,7 @@
                             <th>Título</th>
                             <th>Link</th>
                             <!-- <th>Cor</th> -->
-                            <th>Ação</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

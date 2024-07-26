@@ -23,16 +23,16 @@
 				<div class="row">
 					<div class="col-sm-6">
 
-						<span>Nome: <strong>{{$purchase->contact->name}}</strong></span><br>
+						<span>Nombre: <strong>{{$purchase->contact->name}}</strong></span><br>
 						<span>CNPJ/CPF: <strong>{{$purchase->contact->cpf_cnpj}}</strong></span><br>
 						<span>IE/RG: <strong>{{$purchase->contact->ie_rg}}</strong></span>
 					</div>
 
 					<div class="col-sm-6">
 
-						<span>Rua: <strong>{{$purchase->contact->rua}}, {{$purchase->contact->numero}}</strong></span><br>
-						<span>Bairro: <strong>{{$purchase->contact->bairro}}</strong></span><br>
-						<span>Cidade: <strong>{{$purchase->contact->cidade->nome}} ({{$purchase->contact->cidade->uf}})</strong></span>
+						<span>Calle: <strong>{{$purchase->contact->rua}}, {{$purchase->contact->numero}}</strong></span><br>
+						<span>Barrio: <strong>{{$purchase->contact->bairro}}</strong></span><br>
+						<span>Ciudad: <strong>{{$purchase->contact->cidade->nome}} ({{$purchase->contact->cidade->uf}})</strong></span>
 
 					</div>
 				</div>
@@ -184,7 +184,7 @@
 							<div class="col-sm-3"></div>
 
 							<div class="col-sm-3">
-								<h4>TOTAL: R$ <strong>{{number_format($purchase->total_before_tax, 2, ',', '.')}}</strong></h4>
+								<h4>TOTAL: ₡ <strong>{{number_format($purchase->total_before_tax, 2, ',', '.')}}</strong></h4>
 							</div>
 
 						</div>

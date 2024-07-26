@@ -36,7 +36,7 @@
             			<tr>
             				<th>@lang( 'restaurant.table' )</th>
                             <th>@lang( 'purchase.business_location' )</th>
-            				<th>Descrição</th>
+            				<th>Descripción</th>
             				<th>@lang( 'messages.action' )</th>
             			</tr>
             		</thead>

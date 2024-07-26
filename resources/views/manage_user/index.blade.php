@@ -33,7 +33,7 @@
                         <tr>
                             <th>@lang( 'business.username' )</th>
                             <th>@lang( 'user.name' )</th>
-                            <th>Acesso</th>
+                            <th>Acceso</th>
                             <th>@lang( 'business.email' )</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>

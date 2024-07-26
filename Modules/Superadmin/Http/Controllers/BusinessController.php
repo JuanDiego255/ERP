@@ -132,7 +132,7 @@ class BusinessController extends BaseController
             
             $business = $this->businessUtil->createNewBusiness($business_details);
 
-            //seta plano teste
+            //seta Planes teste
 
             
             //Update user with business id

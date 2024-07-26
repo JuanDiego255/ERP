@@ -14,7 +14,7 @@
       </div>
 
       <div class="form-group">
-        {!! Form::label('code', 'Código da categoria:') !!}
+        {!! Form::label('code', 'Código de categoría:') !!}
           {!! Form::text('code', null, ['class' => 'form-control', 'placeholder' => __( 'expense.category_code' )]); !!}
       </div>
     </div>

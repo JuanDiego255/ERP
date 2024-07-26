@@ -42,7 +42,7 @@ class AdminSidebarMenu
                         if (auth()->user()->can('roles.view')) {
                             $sub->url(
                                 action('RoleController@index'),
-                                'Controle de acesso',
+                                'Controles de acceso',
                                 ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
                             );
                         }
@@ -237,7 +237,7 @@ if (in_array('purchases', $enabled_modules) && (auth()->user()->can('purchase.vi
 
             $sub->url(
                 '/manifesto',
-                'Manifesto Fiscal',
+                'Manifiesto Fiscal',
                 ['icon' => 'fa fas fa-file', 'active' => request()->segment(1) == 'purchase-xml']
             );
         },
@@ -247,7 +247,7 @@ if (in_array('purchases', $enabled_modules) && (auth()->user()->can('purchase.vi
             //Sell dropdown
 if (auth()->user()->can('sell.view') || auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access') ||  auth()->user()->can('view_own_sell_only')) {
     $menu->dropdown(
-        'Vendas',
+        'Ventas',
 
         function ($sub) use ($enabled_modules) {
 
@@ -399,16 +399,16 @@ if (in_array('stock_adjustment', $enabled_modules) && (auth()->user()->can('purc
             //Expense dropdown
 if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense'))) {
     $menu->dropdown(
-        'Contas a pagar',
+        'Cuentas por pagar',
         function ($sub) {
             $sub->url(
                 action('ExpenseController@index'),
-                'Lista de contas a pagar',
+                'Lista de cuentas por pagar',
                 ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]
             );
             $sub->url(
                 action('ExpenseController@create'),
-                'Adicionar conta a pagar',
+                'Agregar cuenta por pagar',
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']
             );
             $sub->url(
@@ -423,11 +423,11 @@ if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.acce
 
 if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.access') || auth()->user()->can('revenues'))) {
     $menu->dropdown(
-        'Contas a receber',
+        'Cuentas por cobrar',
         function ($sub) {
             $sub->url(
                 action('RevenueController@index'),
-                'Lista de contas a receber',
+                'Lista de Cuentas por cobrar',
                 ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == null]
             );
             $sub->url(
@@ -442,7 +442,7 @@ if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.acc
             );
             $sub->url(
                 action('BankController@index'),
-                'Contas bancárias',
+                'Cuentas bancarias',
                 ['icon' => 'fa fas fa-university', 'active' => request()->segment(1) == 'bank']
             );
         },

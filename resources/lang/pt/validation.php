@@ -122,7 +122,7 @@ return [
         'username'              => 'user',
         'email'                 => 'email',
         'first_name'            => 'nome',
-        'last_name'             => 'sobrenome',
+        'last_name'             => 'Apellido',
         'password'              => 'password',
         'password_confirmation' => 'confirmação da senha',
         'city'                  => 'cidade',

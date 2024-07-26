@@ -29,7 +29,7 @@
 				<tr>
 					<th>Nome do arquivo</th>
 					<th>Total de boletos</th>
-					<th>Ação</th>
+					<th>Compartir</th>
 				</tr>
 			</thead>
 

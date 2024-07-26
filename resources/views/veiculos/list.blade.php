@@ -36,7 +36,7 @@
                             <th>Marca</th>
                             <th>Modelo</th>
                             <th>Cor</th>
-                            <th>Ação</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

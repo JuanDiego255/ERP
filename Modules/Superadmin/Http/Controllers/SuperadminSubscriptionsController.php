@@ -112,9 +112,10 @@ class SuperadminSubscriptionsController extends BaseController
      */
     public function store(Request $request)
     {
+        /* dd("");
         if (!auth()->user()->can('subscribe')) {
             abort(403, 'Unauthorized action.');
-        }
+        } */
 
         try {
             DB::beginTransaction();

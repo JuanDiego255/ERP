@@ -44,16 +44,16 @@
 				<div class="row">
 					<div class="col-sm-6">
 
-						<span>Nome: <strong>{{$contact['name']}}</strong></span><br>
+						<span>Nombre: <strong>{{$contact['name']}}</strong></span><br>
 						<span>CNPJ/CPF: <strong>{{$contact['cpf_cnpj']}}</strong></span><br>
 						<span>IE/RG: <strong>{{$contact['ie_rg']}}</strong></span>
 					</div>
 
 					<div class="col-sm-6">
 
-						<span>Rua: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
-						<span>Bairro: <strong>{{$contact['bairro']}}</strong></span><br>
-						<span>Cidade: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
+						<span>Calle: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
+						<span>Barrio: <strong>{{$contact['bairro']}}</strong></span><br>
+						<span>Ciudad: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
 
 					</div>
 				</div>

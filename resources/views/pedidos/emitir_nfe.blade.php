@@ -48,7 +48,7 @@
           <h4>Cliente: <strong>{{$pedido->cliente->nome}} {{$pedido->cliente->sobre_nome}}</strong></h4>
           <h4>CPF: <strong>{{$pedido->cliente->cpf}}</strong></h4>
           <h4>Email: <strong>{{$pedido->cliente->email}}</strong></h4>
-          <h4>Telefone: <strong>{{$pedido->cliente->telefone}}</strong></h4>
+          <h4>Teléfono: <strong>{{$pedido->cliente->telefone}}</strong></h4>
           <a href="/clienteEcommerce/edit/{{$pedido->cliente->id}}" class="btn btn-primary">
             <i class="fa fa-edit"></i>
           </a>
@@ -60,12 +60,12 @@
       <div class="col-sm-6">
         @component('components.widget')
 
-        <h3>Endereço de entrega</h3>
+        <h3>Dirección de envío</h3>
         <div class="col-md-12">
-          <h4>Rua: <strong>{{$pedido->endereco->rua}}, {{$pedido->endereco->numero}}</strong></h4>
-          <h4>Bairro: <strong>{{$pedido->endereco->bairro}} - {{$pedido->endereco->complemento}}</strong></h4>
+          <h4>Calle: <strong>{{$pedido->endereco->rua}}, {{$pedido->endereco->numero}}</strong></h4>
+          <h4>Barrio: <strong>{{$pedido->endereco->bairro}} - {{$pedido->endereco->complemento}}</strong></h4>
           <h4>Cep: <strong>{{$pedido->endereco->cep}}</strong></h4>
-          <h4>Cidade: <strong>{{$pedido->endereco->cidade}} ({{$pedido->endereco->uf}})</strong></h4>
+          <h4>Ciudad: <strong>{{$pedido->endereco->cidade}} ({{$pedido->endereco->uf}})</strong></h4>
           <a href="/enderecosEcommerce/edit/{{$pedido->endereco->id}}" class="btn btn-primary">
             <i class="fa fa-edit"></i>
           </a>
@@ -161,7 +161,7 @@
         </div>
 
         <div class="col-sm-12">
-          <h3>Total do pedido: <strong>R$ {{ number_format($pedido->valor_total, 2, ',', '.')}}</strong></h3>
+          <h3>Total do pedido: <strong>₡ {{ number_format($pedido->valor_total, 2, ',', '.')}}</strong></h3>
         </div>
 
         @endcomponent

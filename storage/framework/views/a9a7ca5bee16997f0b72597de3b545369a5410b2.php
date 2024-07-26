@@ -23,7 +23,7 @@
 
         <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff;">Ambiente: 
           <strong>
-            <?php echo e(auth()->user()->business->ambiente == 2 ? 'Homologação' : 'Produção', false); ?>
+            <?php echo e(auth()->user()->business->ambiente == 2 ? 'Homologado' : 'Produção', false); ?>
 
           </strong>
         </div>

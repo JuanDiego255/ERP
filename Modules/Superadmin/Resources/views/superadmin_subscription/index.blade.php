@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Superadmin Assinatura de planos')
+@section('title', 'Superadmin Planes de suscripción')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Assinatura de planos
-        <small>Gerenciar assinaturas</small>
+    <h1>Planes de suscripción
+        <small>Adminsitrar suscripciones</small>
     </h1>
 </section>
 
@@ -23,7 +23,7 @@
             		<thead>
             			<tr>
                             <th>@lang( 'superadmin::lang.business_name' )</th>
-                            <th>Plano</th>
+                            <th>Planes</th>
                             <th>@lang( 'superadmin::lang.status' )</th>
                             <th>@lang( 'superadmin::lang.start_date' )</th>
                             <th>@lang( 'superadmin::lang.trial_end_date' )</th>

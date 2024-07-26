@@ -434,8 +434,8 @@ public function availableModules()
         'pos_sale' => ['name' => 'PDV'],
         'stock_transfers' => ['name' => __('lang_v1.stock_transfers')],
         'stock_adjustment' => ['name' => __('stock_adjustment.stock_adjustment')],
-        'expenses' => ['name' => 'Contas a pagar'],
-        'revenues' => ['name' => 'Contas a receber'],
+        'expenses' => ['name' => 'Cuentas por pagar'],
+        'revenues' => ['name' => 'Cuentas por cobrar'],
         
     ];
 }

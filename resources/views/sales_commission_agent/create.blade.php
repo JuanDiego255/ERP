@@ -24,8 +24,8 @@
       </div>
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('last_name', 'Sobre nome' . ':') !!}
-            {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => 'Sobre nome' ]); !!}
+          {!! Form::label('last_name', 'Apellido' . ':') !!}
+            {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => 'Apellido' ]); !!}
         </div>
       </div>
       <div class="clearfix"></div>

@@ -343,7 +343,7 @@
 
 			<div class="col-md-3">
 				<div class="form-group">
-					{!! Form::label("forma_pagamento" , 'Forma de pagamento' . ':*') !!}
+					{!! Form::label("forma_pagamento" , 'Forma de pago' . ':*') !!}
 					<div class="input-group">
 						<span class="input-group-addon">
 							<i class="fas fa-list"></i>
@@ -366,7 +366,7 @@
 						<th>Vencimento</th>
 						<th>Valor</th>
 						<th>Forma pagamento</th>
-						<th>Ação</th>
+						<th>Compartir</th>
 					</tr>
 				</thead>
 				<tbody></tbody>

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Adicionar Controle de acesso')
+@section('title', 'Adicionar Controles de acceso')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>Adicionar Controle de acesso</h1>
+  <h1>Adicionar Controles de acceso</h1>
 </section>
 
 <!-- Main content -->
@@ -15,7 +15,7 @@
   <div class="row">
     <div class="col-md-4">
       <div class="form-group">
-        {!! Form::label('name', 'Nome:*') !!}
+        {!! Form::label('name', 'Nombre:*') !!}
         {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'user.role_name' ) ]); !!}
       </div>
     </div>
@@ -106,7 +106,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.view', false, 
-            [ 'class' => 'input-icheck']); !!} Ver controle de acesso
+            [ 'class' => 'input-icheck']); !!} Ver Controles de acceso
           </label>
         </div>
       </div>
@@ -114,7 +114,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.create', false, 
-            [ 'class' => 'input-icheck']); !!} Criar controle de acesso
+            [ 'class' => 'input-icheck']); !!} Criar Controles de acceso
           </label>
         </div>
       </div>
@@ -122,7 +122,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.update', false, 
-            [ 'class' => 'input-icheck']); !!} Editar controle de acesso
+            [ 'class' => 'input-icheck']); !!} Editar Controles de acceso
           </label>
         </div>
       </div>
@@ -130,7 +130,7 @@
         <div class="checkbox">
           <label>
             {!! Form::checkbox('permissions[]', 'roles.delete', false, 
-            [ 'class' => 'input-icheck']); !!} Deletar controle de acesso
+            [ 'class' => 'input-icheck']); !!} Deletar Controles de acceso
           </label>
         </div>
       </div>

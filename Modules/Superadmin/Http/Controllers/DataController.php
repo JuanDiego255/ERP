@@ -116,13 +116,13 @@ class DataController extends Controller
 
                     $sub->url(
                         action('\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController@index'),
-                        'Assinatura de planos',
+                        'Planes de suscripción',
                         ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'superadmin' && request()->segment(2) == 'superadmin-subscription']
                     );
 
                     $sub->url(
                         action('\Modules\Superadmin\Http\Controllers\PackagesController@index'),
-                        'Planos',
+                        'Planes',
                         ['icon' => 'fa fas fa-credit-card', 'active' => request()->segment(1) == 'superadmin' && request()->segment(2) == 'packages']
                     );
 
@@ -140,7 +140,7 @@ class DataController extends Controller
 
                     $sub->url(
                         '/cities',
-                        'Cidades',
+                        'Ciudades',
                         ['icon' => 'fa fa-map-signs', 'active' => request()->segment(1) == 'cities' && request()->segment(2) == '']
                     );
 

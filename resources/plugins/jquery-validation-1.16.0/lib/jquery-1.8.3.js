@@ -2630,7 +2630,7 @@ var rformElems = /^(?:textarea|input|select)$/i,
 	rmouseEvent = /^(?:mouse|contextmenu)|click/,
 	rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
 	hoverHack = function( events ) {
-		return jQuery.event.special.hover ? events : events.replace( rhoverHack, "mouseenter$1 mouseleave$1" );
+		return jQuery.event.special.hover ? events : events.replace( rhoverHack, "mouseente₡1 mouseleave$1" );
 	};
 
 /*

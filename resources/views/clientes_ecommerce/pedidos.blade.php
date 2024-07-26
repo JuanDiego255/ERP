@@ -29,10 +29,10 @@
                 <tr>
                     <th>Valor</th>
                     <th>Data</th>
-                    <th>Forma de pagamento</th>
+                    <th>Forma de pago</th>
                     <th>Status do pedido</th>
 
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

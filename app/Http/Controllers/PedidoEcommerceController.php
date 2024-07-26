@@ -73,7 +73,7 @@ class PedidoEcommerceController extends Controller
 			->editColumn(
 				'valor_total',
 				function ($row){
-					return "R$ " . number_format($row->valor_total, 2, ',', '.');
+					return "₡ " . number_format($row->valor_total, 2, ',', '.');
 				}
 			)
 

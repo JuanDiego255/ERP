@@ -60,7 +60,7 @@
 				Receber Conta(s)</button>
 			</div>
 			<div class="col s5">
-				<h5>Total a Selecionado: <strong class="orange-text" id="total-select">R$ 0,00</strong></h5>
+				<h5>Total a Selecionado: <strong class="orange-text" id="total-select">₡ 0,00</strong></h5>
 			</div>
 		</div>
 		

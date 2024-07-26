@@ -1106,7 +1106,7 @@ return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_
                         $contact_array['rua'] = $value[26];
                     } else {
                         $is_valid =  false;
-                        $error_msg = "Rua é obrigatório na linha $row_no";
+                        $error_msg = "Calle é obrigatório na linha $row_no";
                         break;
                     }
 
@@ -1122,7 +1122,7 @@ return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_
                         $contact_array['bairro'] = $value[28];
                     } else {
                         $is_valid =  false;
-                        $error_msg = "Bairro é obrigatório na linha $row_no";
+                        $error_msg = "Barrio é obrigatório na linha $row_no";
                         break;
                     }
 

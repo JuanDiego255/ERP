@@ -18,8 +18,8 @@
       </div>
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('first_name', 'Sobre nome' . ':*') !!}
-            {!! Form::text('first_name', $user->first_name, ['class' => 'form-control', 'required', 'placeholder' => 'Sobre nome' ]); !!}
+          {!! Form::label('first_name', 'Apellido' . ':*') !!}
+            {!! Form::text('first_name', $user->first_name, ['class' => 'form-control', 'required', 'placeholder' => 'Apellido' ]); !!}
         </div>
       </div>
       <div class="col-md-5">

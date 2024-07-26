@@ -15,8 +15,8 @@
       </div>
 
       <div class="form-group">
-        {!! Form::label('description', 'Descrição breve' . ':') !!}
-          {!! Form::text('description', $table->description, ['class' => 'form-control','placeholder' => 'Descrição breve']); !!}
+        {!! Form::label('description', 'Descripción breve' . ':') !!}
+          {!! Form::text('description', $table->description, ['class' => 'form-control','placeholder' => 'Descripción breve']); !!}
       </div>
     </div>
 

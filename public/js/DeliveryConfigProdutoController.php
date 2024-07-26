@@ -344,8 +344,8 @@ private function randomTitles(){
 
 private function randomMensagem($produto){
     $messages = [
-        $produto->produto->nome.' por apenas, R$ '.$produto->valor,
-        $produto->produto->nome. ' de R$'. $produto->valor_anterior.' por apenas R$'. 
+        $produto->produto->nome.' por apenas, ₡ '.$produto->valor,
+        $produto->produto->nome. ' de ₡'. $produto->valor_anterior.' por apenas ₡'. 
         $produto->valor,
         'Peca já o seu '.$produto->produto->nome. ' o melhor :)',
         'Promoção de hoje '. $produto->produto->nome. ' venha conferir'

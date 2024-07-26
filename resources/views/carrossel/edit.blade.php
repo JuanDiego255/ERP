@@ -42,8 +42,8 @@
 
       <div class="col-md-4">
         <div class="form-group">
-          {!! Form::label('link_acao', 'Link ação' . ':') !!}
-          {!! Form::text('link_acao', $carrossel->link_acao, ['class' => 'form-control', 'placeholder' => 'Link ação' ]); !!}
+          {!! Form::label('link_acao', 'Link Compartir' . ':') !!}
+          {!! Form::text('link_acao', $carrossel->link_acao, ['class' => 'form-control', 'placeholder' => 'Link Compartir' ]); !!}
           @if($errors->has('link_acao'))
           <span class="text-danger">
             {{ $errors->first('link_acao') }}
@@ -58,8 +58,8 @@
 
       <div class="col-md-10">
         <div class="form-group">
-          {!! Form::label('descricao', 'Descrição' . ':') !!}
-          {!! Form::text('descricao', $carrossel->descricao, ['class' => 'form-control', 'placeholder' => 'Descrição' ]); !!}
+          {!! Form::label('descricao', 'Descripción' . ':') !!}
+          {!! Form::text('descricao', $carrossel->descricao, ['class' => 'form-control', 'placeholder' => 'Descripción' ]); !!}
           @if($errors->has('descricao'))
           <span class="text-danger">
             {{ $errors->first('descricao') }}
@@ -105,7 +105,7 @@
   <div class="row">
     <div class="col-md-12">
       <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">
-        Atualizar
+        Actualizar
       </button>
     </div>
   </div>

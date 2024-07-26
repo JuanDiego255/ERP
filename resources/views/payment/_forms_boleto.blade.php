@@ -3,8 +3,8 @@
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('plano_id', 'Plano') !!}
-            {!! Form::select('plano_id', ['' => 'Selecione o plano'] + $planos->pluck('info', 'id')->all(), '', ['class' => 'form-control', 'id' => 'plano_id', 'required']); !!}
+            {!! Form::label('Planes_id', 'Planes') !!}
+            {!! Form::select('Planes_id', ['' => 'Selecione o Planes'] + $Planess->pluck('info', 'id')->all(), '', ['class' => 'form-control', 'id' => 'Planes_id', 'required']); !!}
         </div>
     </div>
 

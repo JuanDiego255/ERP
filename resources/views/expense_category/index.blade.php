@@ -12,7 +12,7 @@
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas as categorias'])
+    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas las categorias'])
         @slot('tool')
             <div class="box-tools">
                 <button type="button" class="btn btn-block btn-primary btn-modal" 
@@ -26,7 +26,7 @@
                 <thead>
                     <tr>
                         <th>@lang( 'expense.category_name' )</th>
-                        <th>Código da categoria</th>
+                        <th>Código de categoría</th>
                         <th>@lang( 'messages.action' )</th>
                     </tr>
                 </thead>

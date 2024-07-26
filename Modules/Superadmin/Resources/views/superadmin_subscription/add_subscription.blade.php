@@ -11,7 +11,7 @@
 
     <div class="modal-body">
       <div class="form-group">
-        {!! Form::label('package_id', 'Plano' . ':*') !!}
+        {!! Form::label('package_id', 'Planes' . ':*') !!}
           {!! Form::select('package_id', $packages, null, ['class' => 'form-control', 'required', 'placeholder' => __( 'messages.please_select' ) ]); !!}
       </div>
       <div class="form-group">

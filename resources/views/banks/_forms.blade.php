@@ -56,15 +56,15 @@
 
 <div class="col-md-2">
   <div class="form-group">
-    {!! Form::label('bairro', 'Bairro' . '*:') !!}
+    {!! Form::label('bairro', 'Barrio' . '*:') !!}
     {!! Form::text('bairro', isset($item) ? $item->bairro : '', 
-    ['class' => 'form-control', 'required', 'placeholder' => 'Bairro' ]); !!}
+    ['class' => 'form-control', 'required', 'placeholder' => 'Barrio' ]); !!}
   </div>
 </div>
 
 <div class="col-md-5">
   <div class="form-group">
-    {!! Form::label('cidade_id', 'Cidade:*') !!}
+    {!! Form::label('cidade_id', 'Ciudades:*') !!}
     {!! Form::select('cidade_id', ['' => 'Selecione a cidade'] + $cities, isset($item) ? $item->cidade_id : '', ['id' => 'cidade', 'class' => 'form-control select2 featured-field', 'required']); !!}
   </div>
 </div>

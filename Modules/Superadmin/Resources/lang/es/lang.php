@@ -1,6 +1,6 @@
 <?php
 return [
-    'superadmin' => 'Superadmina',
+    'superadmin' => 'Super Administrador',
     'dashboard' => 'Tablero',
     'all_business' => 'Todos los negocios',
     'manage_business' => 'Administrar todas las empresas registradas',

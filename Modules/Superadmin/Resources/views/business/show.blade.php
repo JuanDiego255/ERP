@@ -38,11 +38,11 @@
                             Status</strong>
                             @if($business->is_active == 0)
                             <p class="text-muted">
-                                Inativo
+                                Inactivo
                             </p>
                             @else
                             <p class="text-muted">
-                                Ativo
+                                Activo
                             </p>
                             @endif
 
@@ -55,7 +55,7 @@
                     <div class="col-sm-6">
                         <div class="well well-sm">
                             <strong><i class="fa fa-user-circle margin-r-5"></i> 
-                            Proprietário</strong>
+                            Propietario</strong>
                             <p class="text-muted">
                                 {{$business->owner->surname}} {{$business->owner->first_name}} {{$business->owner->last_name}}
                             </p>
@@ -95,10 +95,10 @@
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>Nome</th>
-                                    <th>ID da localização</th>
-                                    <th>Referência</th>
-                                    <th>Cidade</th>
+                                    <th>Nombre</th>
+                                    <th>ID de ubicación</th>
+                                    <th>Referencia</th>
+                                    <th>Ciudad</th>
                                     <th>CEP</th>
 
                                 </tr>
@@ -140,14 +140,14 @@
                         <h4>Clientes: <strong>{{$registros['clientes']}}</strong></h4>
                     </div>
                     <div class ="col-xs-3">
-                        <h4>Fornecedores: <strong>{{$registros['clientes']}}</strong></h4>
+                        <h4>Proveedores: <strong>{{$registros['clientes']}}</strong></h4>
                     </div>
 
                     <div class ="col-xs-3">
-                        <h4>Vendas: <strong>{{$registros['vendas']}}</strong></h4>
+                        <h4>Ventas: <strong>{{$registros['vendas']}}</strong></h4>
                     </div>
                     <div class ="col-xs-3">
-                        <h4>Vendas em PDV: <strong>{{$registros['vendas_pdv']}}</strong></h4>
+                        <h4>Ventas en PDV: <strong>{{$registros['vendas_pdv']}}</strong></h4>
                     </div>
 
                     <div class ="col-xs-3">
@@ -183,14 +183,14 @@
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>Plano</th>
+                                    <th>Planes</th>
                                     <th>Inicio</th>
-                                    <th>Fim do teste</th>
-                                    <th>Fim</th>
-                                    <th>Pagamento Via</th>
+                                    <th>Fin de la prueba</th>
+                                    <th>Fin</th>
+                                    <th>Pago vía</th>
                                     <th>ID</th>
-                                    <th>Criado</th>
-                                    <th>Usuário</th>
+                                    <th>Servidor</th>
+                                    <th>Usuario</th>
                                 </tr>
                             </thead>
 

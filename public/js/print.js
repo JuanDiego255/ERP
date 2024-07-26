@@ -51,7 +51,7 @@ function constroiComprovante(order, retorno){
   html += '<tr><td align="left"><nobr>Cliente: '+ order.client
   +'</nobr></td></tr>';
 
-  html += '<tr><td align="left"><nobr>Forma de pagamento: '+
+  html += '<tr><td align="left"><nobr>Forma de pago: '+
   order.payment_form+'</nobr></td></tr>';
 
   html += '<tr><td align="left"><nobr>Informação do pedido:</td></tr>';

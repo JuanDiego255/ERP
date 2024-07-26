@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('superadmin::lang.superadmin') . ' | ' . 'Planos')
+@section('title', __('superadmin::lang.superadmin') . ' | ' . 'Planes')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Planos <small>Todos os planos</small></h1>
+    <h1>Planes <small>Todos los planes</small></h1>
     <!-- <ol class="breadcrumb">
         <a href="#"><i class="fa fa-dashboard"></i> Level</a><br/>
         <li class="active">Here<br/>

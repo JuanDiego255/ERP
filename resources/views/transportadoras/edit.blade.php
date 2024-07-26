@@ -19,8 +19,8 @@
       
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('razao_social', 'Razão Social' . ':*') !!}
-          {!! Form::text('razao_social', $transportadora->razao_social, ['class' => 'form-control', 'required', 'placeholder' => 'Razão Social' ]); !!}
+          {!! Form::label('razao_social', 'Razón Social' . ':*') !!}
+          {!! Form::text('razao_social', $transportadora->razao_social, ['class' => 'form-control', 'required', 'placeholder' => 'Razón Social' ]); !!}
         </div>
       </div>
       
@@ -44,7 +44,7 @@
 
       <div class="col-md-4 customer_fields">
         <div class="form-group">
-          {!! Form::label('cidade_id', 'Cidade:*') !!}
+          {!! Form::label('cidade_id', 'Ciudades:*') !!}
           {!! Form::select('cidade_id', $cities, $transportadora->cidade_id, ['class' => 'form-control select2', 'required']); !!}
         </div>
       </div>

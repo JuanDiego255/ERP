@@ -24,7 +24,7 @@ class DevolucaoController extends Controller
 		$business = Business::find($business_id);
 		$erros = [];
 		if($business->cnpj == '00.000.000/0000-00'){
-			$msg = 'Informe a configuração do emitente';
+			$msg = 'Informe a Introduzca la configuración del emisor';
 			array_push($erros, $msg);
 		}
 

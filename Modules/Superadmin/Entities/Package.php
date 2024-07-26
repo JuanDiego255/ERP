@@ -18,7 +18,7 @@ class Package extends Model
     public function getInfoAttribute()
     {
 
-        return $this->name . " - R$ " . number_format($this->price, 2, ',', '.') ;
+        return $this->name . " - ₡ " . number_format($this->price, 2, ',', '.') ;
     }
     
     /**

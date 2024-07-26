@@ -329,7 +329,7 @@
                           <thead>
                             <tr>
                               <th>Municipio</th>
-                              <th>Ação</th>
+                              <th>Compartir</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -365,7 +365,7 @@
                           <thead>
                             <tr>
                               <th>UF</th>
-                              <th>Ação</th>
+                              <th>Compartir</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -413,7 +413,7 @@
                             <tr>
                               <th>Código</th>
                               <th>CPF/CNPJ</th>
-                              <th>Ação</th>
+                              <th>Compartir</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -474,7 +474,7 @@
                               <th>CPF/CNPJ do Pagador</th>
                               <th>Número da compra</th>
                               <th>Valor</th>
-                              <th>Ação</th>
+                              <th>Compartir</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -607,7 +607,7 @@
                             <thead>
                               <tr>
                                 <th>Lacre</th>
-                                <th>Ação</th>
+                                <th>Compartir</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -643,7 +643,7 @@
                             <thead>
                               <tr>
                                 <th>Lacre</th>
-                                <th>Ação</th>
+                                <th>Compartir</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -746,7 +746,7 @@
   @endif
   <div class="row">
     <div class="col-md-12">
-      <button id="finalizar" type="submit" class="btn btn-primary pull-right disabled" id="submit_user_button">@if($mdfe != null) Atualizar @else Salvar @endif MDFe</button>
+      <button id="finalizar" type="submit" class="btn btn-primary pull-right disabled" id="submit_user_button">@if($mdfe != null) Actualizar @else Salvar @endif MDFe</button>
     </div>
   </div>
   <br><br>

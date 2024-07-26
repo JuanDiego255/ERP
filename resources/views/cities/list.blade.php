@@ -34,7 +34,7 @@
                             <th>Nome</th>
                             <th>Código</th>
                             <th>UF</th>
-                            <th>Ação</th>
+                            <th>Compartir</th>
                         </tr>
                     </thead>
                 </table>

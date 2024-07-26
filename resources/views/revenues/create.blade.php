@@ -5,7 +5,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-	<h1>Nova conta a receber</h1>
+	<h1>Nueva cuenta por cobrar</h1>
 </section>
 
 <!-- Main content -->
@@ -111,7 +111,7 @@
 
 			<div class="col-sm-3">
 				<div class="form-group">
-					{!! Form::label("tipo_pagamento", 'Forma de pagamento' . ':*') !!}
+					{!! Form::label("tipo_pagamento", 'Forma de pago' . ':*') !!}
 					<div class="input-group">
 						<span class="input-group-addon">
 							<i class="fas fa-list"></i>

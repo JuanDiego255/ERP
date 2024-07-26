@@ -41,7 +41,7 @@
     <!-- <div class="clearfix"></div> -->
     <div class="col-md-6">
         <div class="form-group">
-            {!! Form::label('mobile', 'Telefone:') !!}
+            {!! Form::label('mobile', 'Teléfono:') !!}
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="fa fa-phone"></i>
@@ -252,7 +252,7 @@
 
     <div class="col-md-4">
         <div class="form-group">
-            {!! Form::label('last_name', 'Sobrenome' . ':') !!}
+            {!! Form::label('last_name', 'Apellido' . ':') !!}
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="fa fa-info"></i>

@@ -590,7 +590,7 @@ function fluxoDiario(){
 
 			elem += "<p> Horario: "
 			elem += "<strong>" + v.data_registro.substring(10, 16) + "</strong>, Valor: "
-			elem += "<strong> R$ " + formatReal(v.valor) + "</strong>, Usuario: "
+			elem += "<strong> ₡ " + formatReal(v.valor) + "</strong>, Usuario: "
 			elem += "<strong>" + v.nome_usuario + "</strong>"
 			elem += "</p>";
 			totalSangria += parseFloat(v.valor);
@@ -600,7 +600,7 @@ function fluxoDiario(){
 		getAberturaDiaria((abertura) => {
 			abertura = abertura.replace(",", ".")
 			elem = "<p> Valor: ";
-			elem += "<strong class='orange-text'>R$ "+formatReal(abertura)+"</strong>";
+			elem += "<strong class='orange-text'>₡ "+formatReal(abertura)+"</strong>";
 			elem += "</p>";
 			$('#fluxo_abertura_caixa').html(elem);
 			getVendaDiaria((vendas) => {
@@ -611,7 +611,7 @@ function fluxoDiario(){
 					console.log(v)
 					elem += "<p> Horario: "
 					elem += "<strong>" + v.data_registro.substring(10, 16) + "</strong>, Valor: "
-					elem += "<strong> R$ " + formatReal(parseFloat(v.valor_total) + parseFloat(v.acrescimo) - 
+					elem += "<strong> ₡ " + formatReal(parseFloat(v.valor_total) + parseFloat(v.acrescimo) - 
 						parseFloat(v.desconto)) + "</strong>, Tipo Pagamento: "
 					elem += "<strong>" + v.tipo_pagamento + "</strong>"
 					elem += "</p>";

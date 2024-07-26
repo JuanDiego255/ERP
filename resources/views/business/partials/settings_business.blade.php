@@ -185,9 +185,9 @@
 
         <div class="col-sm-2">
             <div class="form-group">
-                {!! Form::label('senha_certificado', 'Senha' . ':*') !!}
+                {!! Form::label('senha_certificado', Contraseña . ':*') !!}
                 {!! Form::text('senha_certificado', '', ['class' => 'form-control',
-                'placeholder' => 'Senha']); !!}
+                'placeholder' => Contraseña]); !!}
             </div>
         </div>
 
@@ -195,9 +195,9 @@
 
         <div class="col-sm-6">
             <div class="form-group">
-                {!! Form::label('rua', 'Rua' . ':*') !!}
+                {!! Form::label('rua', 'Calle' . ':*') !!}
                 {!! Form::text('rua', $business->rua, ['class' => 'form-control', 'required',
-                'placeholder' => 'Rua']); !!}
+                'placeholder' => 'Calle']); !!}
             </div>
         </div>
 
@@ -210,7 +210,7 @@
         </div>
         <div class="col-md-4 customer_fields">
             <div class="form-group">
-                {!! Form::label('cidade_id', 'Cidade:*') !!}
+                {!! Form::label('cidade_id', 'Ciudades:*') !!}
                 {!! Form::select('cidade_id', $cities, $business->cidade_id, ['class' => 'form-control select2', 'required']); !!}
             </div>
         </div>
@@ -219,9 +219,9 @@
 
         <div class="col-sm-3">
             <div class="form-group">
-                {!! Form::label('bairro', 'Bairro' . ':*') !!}
+                {!! Form::label('bairro', 'Barrio' . ':*') !!}
                 {!! Form::text('bairro', $business->bairro, ['class' => 'form-control', 'required',
-                'placeholder' => 'Bairro']); !!}
+                'placeholder' => 'Barrio']); !!}
             </div>
         </div>
 
@@ -235,9 +235,9 @@
 
         <div class="col-sm-3">
             <div class="form-group">
-                {!! Form::label('telefone', 'Telefone' . ':*') !!}
+                {!! Form::label('telefone', 'Teléfono' . ':*') !!}
                 {!! Form::text('telefone', $business->telefone, ['class' => 'form-control', 'required', 'data-mask="00 000000000"',
-                'placeholder' => 'Telefone']); !!}
+                'placeholder' => 'Teléfono']); !!}
             </div>
         </div>
 
@@ -296,7 +296,7 @@
             <div class="form-group">
 
                 {!! Form::label('ambiente', 'Ambiente' . ':') !!}
-                {!! Form::select('ambiente', ['1' => 'Produção', '2' => 'Homologação'], $business->ambiente, ['class' => 'form-control select2', 'required']); !!}
+                {!! Form::select('ambiente', ['1' => 'Produção', '2' => 'Homologado'], $business->ambiente, ['class' => 'form-control select2', 'required']); !!}
             </div>
         </div>
 

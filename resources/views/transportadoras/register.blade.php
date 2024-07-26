@@ -18,8 +18,8 @@
       
       <div class="col-md-4">
         <div class="form-group">
-          {!! Form::label('razao_social', 'Razão Social' . ':*') !!}
-          {!! Form::text('razao_social', null, ['class' => 'form-control', 'required', 'placeholder' => 'Razão Social' ]); !!}
+          {!! Form::label('razao_social', 'Razón Social' . ':*') !!}
+          {!! Form::text('razao_social', null, ['class' => 'form-control', 'required', 'placeholder' => 'Razón Social' ]); !!}
         </div>
       </div>
 
@@ -32,7 +32,7 @@
 
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('logradouro', 'Logradouro' . '*:') !!}
+          {!! Form::label('logradouro', 'Patio' . '*:') !!}
           {!! Form::text('logradouro', null, ['class' => 'form-control', 'required', 'placeholder' => 'Logradouro' ]); !!}
         </div>
       </div>
@@ -40,7 +40,7 @@
 
       <div class="col-md-4 customer_fields">
         <div class="form-group">
-          {!! Form::label('cidade_id', 'Cidade:*') !!}
+          {!! Form::label('cidade_id', 'Ciudades:*') !!}
           {!! Form::select('cidade_id', $cities, '', ['class' => 'form-control select2', 'required']); !!}
         </div>
       </div>

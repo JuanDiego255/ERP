@@ -50,7 +50,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group pull-right">
-            {{Form::submit('Atualizar', ['class'=>"btn btn-danger"])}}
+            {{Form::submit('Actualizar', ['class'=>"btn btn-danger"])}}
             </div>
         </div>
     </div>

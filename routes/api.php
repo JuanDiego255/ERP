@@ -68,7 +68,7 @@ Route::middleware(['authEcommerce'])->group(function () {
 
 Route::get('/bank/{id}', 'BankController@find');
 Route::get('/consultaPix/{transacao_id}', 'PaymentController@consultaPix');
-Route::get('/consultaValorPlano/{plano_id}', 'PaymentController@consultaValorPlano');
+Route::get('/consultaValorPlanes/{Planes_id}', 'PaymentController@consultaValorPlanes');
 
 
 Route::get('/test', 'BankController@test');

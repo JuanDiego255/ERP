@@ -93,7 +93,7 @@
                     </div>
                 </div>
                 <div class="form-group col-md-5">
-                    {!! Form::label('last_name', 'Sobre nome' . ':') !!}
+                    {!! Form::label('last_name', 'Apellido' . ':') !!}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <i class="fa fa-info"></i>

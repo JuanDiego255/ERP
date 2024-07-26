@@ -14,7 +14,7 @@
 
 	<div class="box">
         <div class="box-header">
-            <button type="button" class="btn btn-sm btn-primary pull-right" id="refresh_orders"><i class="fas fa-sync"></i> Atualizar</button>
+            <button type="button" class="btn btn-sm btn-primary pull-right" id="refresh_orders"><i class="fas fa-sync"></i> Actualizar</button>
         </div>
         <div class="box-body">
             <input type="hidden" id="orders_for" value="kitchen">

@@ -22,7 +22,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <?php endif; ?>
         <?php if(Route::has('pricing') && config('app.env') != 'demo'): ?>
-        <li><a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\PricingController@index'), false); ?>">Planos</a></li>
+        <li><a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\PricingController@index'), false); ?>">Planes</a></li>
         <?php endif; ?>
         <?php if(Route::has('repair-status') && config('app.env') != 'demo'): ?>
         <li>

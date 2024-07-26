@@ -116,7 +116,7 @@
 
 			<div class="col-sm-3">
 				<div class="form-group">
-					{!! Form::label("tipo_pagamento" , 'Forma de pagamento' . ':*') !!}
+					{!! Form::label("tipo_pagamento" , 'Forma de pago' . ':*') !!}
 					<div class="input-group">
 						<span class="input-group-addon">
 							<i class="fas fa-list"></i>
@@ -138,7 +138,7 @@
 	</div>
 	@endcomponent
 	<div class="col-sm-12">
-		<button type="submit" id="submit_button" class="btn btn-primary pull-right">Atualizar</button>
+		<button type="submit" id="submit_button" class="btn btn-primary pull-right">Actualizar</button>
 	</div>
 	{!! Form::close() !!}
 

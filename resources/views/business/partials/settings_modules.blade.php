@@ -23,7 +23,7 @@
   </div>
   <div class="row">
 
-    <h4>Módulos não inclusos neste plano</h4>
+    <h4>Módulos no incluidos en este plan</h4>
     @foreach($not_in_package as $k => $v)
     <div class="col-sm-4">
       <div class="form-group">

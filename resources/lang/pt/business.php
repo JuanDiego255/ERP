@@ -2,7 +2,7 @@
  return [
 "register_and_get_started_in_minutes" => "Registre-se e comece em minutos",
 "business_name" => "Nome Fantasia",
-"business_razao" => "Razão Social",  
+"business_razao" => "Razón Social",  
 "start_date" => "data de início",
 "currency" => "Moeda",
 "currency_placeholder" => "Selecione o tipo de moeda",
@@ -21,7 +21,7 @@
 "prefix" => "Prefixo",
 "prefix_placeholder" => "Senhor, senhora, senhorita", 
 "first_name" => "Primeiro nome",
-"last_name" => "sobrenome",
+"last_name" => "Apellido",
 "username" => "Username",
 "email" => "Email",
 "password" => "Password",

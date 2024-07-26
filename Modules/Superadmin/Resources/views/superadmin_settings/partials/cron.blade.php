@@ -1,14 +1,16 @@
 <div class="pos-tab-content">
     <div class="row">
         <div class="col-xs-12">
-            @if(config('app.env') != 'demo')
+            @if (config('app.env') != 'demo')
                 <p>
-                    To send <mark>subscription expiry alert</mark> & <mark>automated application backup</mark> process you must setup a cron job with this command:<br/>
-                    <code>{{$cron_job_command}}</code>
+                    Para enviar <mark>alerta de expiración de suscripción</mark> y el proceso de <mark>respaldo
+                        automático de la aplicación</mark> debes configurar un trabajo cron con este comando:<br />
+                    <code>{{ $cron_job_command }}</code>
                 </p>
-                
                 <p>
-                    Set it in cron jobs tab in cpanel or directadmin or similar panel. <br/>Or edit crontab if using cloud/dedicated hosting. <br/>Or contact hosting for help with cron job settings.
+                    Configúralo en la pestaña de trabajos cron en cPanel o DirectAdmin o panel similar. <br />O edita
+                    crontab si estás usando hosting en la nube/dedicado. <br />O contacta al servicio de alojamiento
+                    para obtener ayuda con la configuración de trabajos cron.
                 </p>
             @else
                 @lang('lang_v1.disabled_in_demo')

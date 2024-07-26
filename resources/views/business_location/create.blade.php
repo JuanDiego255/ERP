@@ -71,7 +71,7 @@
 
         <div class="col-sm-4">
           <div class="form-group">
-            {!! Form::label('cidade_id', 'Cidade:*') !!}<br>
+            {!! Form::label('cidade_id', 'Ciudades:*') !!}<br>
             {!! Form::select('cidade_id', $cities, '4000', ['class' => 'form-control select2', 'required', 'style' => 'width: 100%']); !!}
           </div>
         </div>
@@ -88,9 +88,9 @@
 
         <div class="col-sm-6">
           <div class="form-group">
-            {!! Form::label('rua', 'Rua' . ':*') !!}
+            {!! Form::label('rua', 'Calle' . ':*') !!}
             {!! Form::text('rua', '', ['class' => 'form-control', 'required',
-            'placeholder' => 'Rua']); !!}
+            'placeholder' => 'Calle']); !!}
           </div>
         </div>
 
@@ -104,17 +104,17 @@
 
         <div class="col-sm-3">
           <div class="form-group">
-            {!! Form::label('bairro', 'Bairro' . ':*') !!}
+            {!! Form::label('bairro', 'Barrio' . ':*') !!}
             {!! Form::text('bairro', '', ['class' => 'form-control', 'required',
-            'placeholder' => 'Bairro']); !!}
+            'placeholder' => 'Barrio']); !!}
           </div>
         </div>
 
         <div class="col-sm-4">
           <div class="form-group">
-            {!! Form::label('telefone', 'Telefone' . ':*') !!}
+            {!! Form::label('telefone', 'Teléfono' . ':*') !!}
             {!! Form::text('telefone', '', ['class' => 'form-control', 'required', 'data-mask="00 000000000"',
-            'placeholder' => 'Telefone']); !!}
+            'placeholder' => 'Teléfono']); !!}
           </div>
         </div>
 
@@ -176,7 +176,7 @@
           <div class="form-group">
 
             {!! Form::label('ambiente', 'Ambiente' . ':') !!}
-            {!! Form::select('ambiente', ['2' => 'Homologação', '1' => 'Produção'], '', ['class' => 'form-control select2', 'required']); !!}
+            {!! Form::select('ambiente', ['2' => 'Homologado', '1' => 'Produção'], '', ['class' => 'form-control select2', 'required']); !!}
           </div>
         </div>
 

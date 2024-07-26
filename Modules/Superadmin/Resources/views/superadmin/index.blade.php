@@ -4,7 +4,7 @@
 @section('content')
 	<section class="content-header">
 		<h1>
-			Olá SuperAdmin
+			Bienvenido Super Admin
 		</h1>
 	</section>
 

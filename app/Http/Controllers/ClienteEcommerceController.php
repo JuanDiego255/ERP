@@ -243,7 +243,7 @@ class ClienteEcommerceController extends Controller
 			'cpf.max' => '18 caracteres maximos permitidos.',
 			'cpf.unique' => 'Documento já registrado.',
 
-			'telefone.required' => 'O campo Telefone é obrigatório.',
+			'telefone.required' => 'O campo Teléfono é obrigatório.',
 			'telefone.max' => '15 caracteres maximos permitidos.',
 			'senha.required' => 'O campo Senha é obrigatório.',
 			'senha.min' => 'Minimo de 4 caracteres'

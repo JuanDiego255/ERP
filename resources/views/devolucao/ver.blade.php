@@ -25,7 +25,7 @@
         <h4>Estado: <strong>{{$devolucao->estado()}}</strong></h4>
         <h4>Fornecedor: <strong>{{$devolucao->contact->name}}</strong></h4>
         <h4>CPF/CNPJ: <strong>{{$devolucao->contact->cpf_cnpj}}</strong></h4>
-        <h4>Cidade: <strong>{{$devolucao->contact->cidade->nome}} ({{$devolucao->contact->cidade->uf}})</strong></h4>
+        <h4>Ciudad: <strong>{{$devolucao->contact->cidade->nome}} ({{$devolucao->contact->cidade->uf}})</strong></h4>
       </div>
 
       <input type="hidden" id="devolucao_id" value="{{$devolucao->id}}" name="">

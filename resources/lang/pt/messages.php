@@ -4,7 +4,7 @@
 "edit" => "Editar",
 "save" => "Salvar", 
 "update" => "Atualizar",
-"action" => "Ação",
+"action" => "Compartir",
 "actions" => "Ações", 
 "view" => "Ver",
 "delete" => "Excluir",

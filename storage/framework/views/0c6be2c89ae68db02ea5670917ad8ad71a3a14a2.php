@@ -4,9 +4,9 @@
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            <?php echo Form::label('plano_id', 'Plano'); ?>
+            <?php echo Form::label('Planes_id', 'Planes'); ?>
 
-            <?php echo Form::select('plano_id', ['' => 'Selecione o plano'] + $planos->pluck('info', 'id')->all(), '', ['class' => 'form-control', 'id' => 'plano_cartao_id', 'required']); ?>
+            <?php echo Form::select('Planes_id', ['' => 'Selecione o Planes'] + $Planess->pluck('info', 'id')->all(), '', ['class' => 'form-control', 'id' => 'Planes_cartao_id', 'required']); ?>
 
         </div>
     </div>

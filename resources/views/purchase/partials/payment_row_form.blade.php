@@ -19,7 +19,7 @@
 	</div>
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("method_$row_index" , 'Forma de pagamento' . ':*') !!}
+			{!! Form::label("method_$row_index" , 'Forma de pago' . ':*') !!}
 			<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fas fa-list"></i>

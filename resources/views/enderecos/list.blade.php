@@ -31,15 +31,15 @@
         <table class="table table-bordered table-striped" id="users_table">
             <thead>
                 <tr>
-                    <th>Rua</th>
+                    <th>Calle</th>
                     <th>Número</th>
-                    <th>Bairro</th>
+                    <th>Barrio</th>
                     <th>CEP</th>
                     <th>Cidade</th>
                     <th>UF</th>
                     <th>Complemento</th>
 
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

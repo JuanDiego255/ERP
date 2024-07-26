@@ -46,16 +46,16 @@
 				<div class="row">
 					<div class="col-sm-6">
 
-						<span>Nome: <strong>{{$contact['name']}}</strong></span><br>
+						<span>Nombre: <strong>{{$contact['name']}}</strong></span><br>
 						<span>CNPJ/CPF: <strong>{{$contact['cpf_cnpj']}}</strong></span><br>
 						<span>IE/RG: <strong>{{$contact['ie_rg']}}</strong></span>
 					</div>
 
 					<div class="col-sm-6">
 
-						<span>Rua: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
-						<span>Bairro: <strong>{{$contact['bairro']}}</strong></span><br>
-						<span>Cidade: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
+						<span>Calle: <strong>{{$contact['rua']}}, {{$contact['numero']}}</strong></span><br>
+						<span>Barrio: <strong>{{$contact['bairro']}}</strong></span><br>
+						<span>Ciudad: <strong>{{$cidade->nome}} ({{$cidade->uf}})</strong></span>
 
 					</div>
 				</div>
@@ -240,14 +240,14 @@
 						<div class="box-body">
 							<div class="col-md-3">
 								<div class="form-group">
-									{!! Form::label('transportadora_nome', 'Nome:' ) !!}
+									{!! Form::label('transportadora_nome', 'Nombre:' ) !!}
 									{!! Form::text('transportadora_nome', $infoFrete ? $infoFrete['transportadora_nome'] : '', ['class' => 'form-control','placeholder' => 'Nome']); !!}
 								</div>
 							</div>
 
 							<div class="col-md-3">
 								<div class="form-group">
-									{!! Form::label('transportadora_cidade', 'Cidade:' ) !!}
+									{!! Form::label('transportadora_cidade', 'Ciudad:' ) !!}
 									{!! Form::text('transportadora_cidade', $infoFrete ? $infoFrete['transportadora_cidade'] : '', ['class' => 'form-control','placeholder' => 'Cidade']); !!}
 								</div>
 							</div>

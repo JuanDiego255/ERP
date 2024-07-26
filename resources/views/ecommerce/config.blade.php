@@ -41,8 +41,8 @@
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('telefone', 'Telefone' . ':*') !!}
-          {!! Form::text('telefone', $config != null ? $config->telefone : old('telefone'), ['class' => 'form-control', 'placeholder' => 'Telefone', 'data-mask="00 00000-0000"', 'data-mask-reverse="true"' ]); !!}
+          {!! Form::label('telefone', 'Teléfono' . ':*') !!}
+          {!! Form::text('telefone', $config != null ? $config->telefone : old('telefone'), ['class' => 'form-control', 'placeholder' => 'Teléfono', 'data-mask="00 00000-0000"', 'data-mask-reverse="true"' ]); !!}
           @if($errors->has('telefone'))
           <span class="text-danger">
             {{ $errors->first('telefone') }}
@@ -56,8 +56,8 @@
 
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('rua', 'Rua' . ':*') !!}
-          {!! Form::text('rua', $config != null ? $config->rua : old('rua'), ['class' => 'form-control', 'placeholder' => 'Rua' ]); !!}
+          {!! Form::label('rua', 'Calle' . ':*') !!}
+          {!! Form::text('rua', $config != null ? $config->rua : old('rua'), ['class' => 'form-control', 'placeholder' => 'Calle' ]); !!}
           @if($errors->has('rua'))
           <span class="text-danger">
             {{ $errors->first('rua') }}
@@ -80,8 +80,8 @@
 
       <div class="col-md-3">
         <div class="form-group">
-          {!! Form::label('bairro', 'Bairro' . ':*') !!}
-          {!! Form::text('bairro', $config != null ? $config->bairro : old('bairro'), ['class' => 'form-control', 'placeholder' => 'Bairro' ]); !!}
+          {!! Form::label('bairro', 'Barrio' . ':*') !!}
+          {!! Form::text('bairro', $config != null ? $config->bairro : old('bairro'), ['class' => 'form-control', 'placeholder' => 'Barrio' ]); !!}
           @if($errors->has('bairro'))
           <span class="text-danger">
             {{ $errors->first('bairro') }}

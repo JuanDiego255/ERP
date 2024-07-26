@@ -2895,7 +2895,7 @@ var rformElems = /^(?:textarea|input|select)$/i,
 		);
 	},
 	hoverHack = function( events ) {
-		return jQuery.event.special.hover ? events : events.replace( rhoverHack, "mouseenter$1 mouseleave$1" );
+		return jQuery.event.special.hover ? events : events.replace( rhoverHack, "mouseente₡1 mouseleave$1" );
 	};
 
 /*

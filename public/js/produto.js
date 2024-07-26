@@ -230,7 +230,7 @@ function setaTamanhosPizza(data){
   let tags = [];
   getSaboresPizza();
   data.pizza.map((v) => {
-    tags.push({tag: v.tamanho.nome + ' - R$ ' + v.valor, item: v})
+    tags.push({tag: v.tamanho.nome + ' - ₡ ' + v.valor, item: v})
   });
   $('#tamanhos').material_chip({
     data: tags,

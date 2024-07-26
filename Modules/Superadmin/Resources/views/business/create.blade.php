@@ -8,7 +8,7 @@
 
 	<div class="box">
         <div class="box-header">
-        	<h3 class="box-title">Adicionar nova empresa <small>(@lang( 'superadmin::lang.add_business_help' ))</small></h3>
+        	<h3 class="box-title">Agregar nueva empresa <small>(@lang( 'superadmin::lang.add_business_help' ))</small></h3>
         </div>
 
         <div class="box-body">

@@ -1,22 +1,22 @@
 @extends('layouts.app')
-@section('title', 'Lista de Naturezas')
+@section('title', 'Lista de Naturalezas')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Naturezas
-        <small>Gerencia naturezas</small>
+    <h1>Naturalezas
+        <small>Gestiona naturalezas</small>
     </h1>
     <!-- <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-        <li class="active">Here</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Nivel</a></li>
+        <li class="active">Aquí</li>
     </ol> -->
 </section>
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas as Naturezas'])
+    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas las Naturalezas'])
         @can('user.create')
             @slot('tool')
                 <div class="box-tools">
@@ -31,12 +31,12 @@
                 <table class="table table-bordered table-striped" id="users_table">
                     <thead>
                         <tr>
-                            <th>Natureza</th>
-                            <th>CFOP saida estadual</th>
-                            <th>CFOP entrada estadual</th>
-                            <th>CFOP saida interestadual</th>
-                            <th>CFOP entrada interestadual</th>
-                            <th>Ação</th>
+                            <th>Naturaleza</th>
+                            <th>CFOP salida estatal</th>
+                            <th>CFOP entrada estatal</th>
+                            <th>CFOP salida interestatal</th>
+                            <th>CFOP entrada interestatal</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                 </table>

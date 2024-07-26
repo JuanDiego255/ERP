@@ -616,9 +616,9 @@
 
           <div class="col-sm-2">
             <div class="form-group">
-              {!! Form::label('xCor', 'Descrição da cor' . ':') !!}
+              {!! Form::label('xCor', 'Descripción da cor' . ':') !!}
               {!! Form::text('xCor', $product->xCor, ['class' => 'form-control',
-              'placeholder' => 'Descrição da cor']); !!}
+              'placeholder' => 'Descripción da cor']); !!}
             </div>
           </div>
 

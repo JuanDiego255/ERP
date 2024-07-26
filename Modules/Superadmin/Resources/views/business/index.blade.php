@@ -113,11 +113,11 @@
 
                                 @if($business->is_active == 1)
                                     <a href="{{action('\Modules\Superadmin\Http\Controllers\BusinessController@toggleActive', [$business->id, 0])}}"
-                                        class="btn btn-danger btn-xs link_confirmation">Desativar
+                                        class="btn btn-danger btn-xs link_confirmation">Desactivar
                                     </a>
                                 @else
                                     <a href="{{action('\Modules\Superadmin\Http\Controllers\BusinessController@toggleActive', [$business->id, 1])}}"
-                                        class="btn btn-success btn-xs link_confirmation">Ativar
+                                        class="btn btn-success btn-xs link_confirmation">Activar
                                     </a>
                                 @endif
 
@@ -160,7 +160,7 @@
         e.preventDefault();
         swal({
             title: LANG.sure,
-            text: "Depois de excluído, você não poderá recuperar esta empresa!",
+            text: "Una vez eliminada, no podrás recuperar esta empresa.!",
             icon: "warning",
             buttons: true,
             dangerMode: true,

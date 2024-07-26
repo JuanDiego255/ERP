@@ -36,9 +36,9 @@
           <table class="table subscription-details">
             <thead>
               <tr>
-                <th>Plano</th>
-                <th>Quantidade</th>
-                <th>Preço</th>
+                <th>Planes</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
               </tr>
             </thead>
             <body>
@@ -56,13 +56,13 @@
         <div class="col-xs-12">
           <table class="table">
             <tr>
-              <th>Criado em:</th>
+              <th>Creado en:</th>
               <td>{{@format_date($subscription->created_at)}}</td>
-              <th>Transação ID:</th>
+              <th>ID transacción</th>
               <td>{{$subscription->payment_transaction_id}}</td>
             </tr>
             <tr>
-              <th>Criado por:</th>
+              <th>Creado por:</th>
               <td>{{$subscription->created_user->user_full_name}}</td>
               <th>Pago Via:</th>
               <td>{{$subscription->paid_via}}</td>

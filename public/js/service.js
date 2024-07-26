@@ -34,7 +34,7 @@ function setDescricao(){
           
   let description = servico[1] + ", Modelo: " + modelo[1];
   $('#description').val(description);
-  alert("Setando uma sugestao de descrição de serviço!");
+  alert("Setando uma sugestao de Descripción de serviço!");
 }
 
 function getModelos(data){

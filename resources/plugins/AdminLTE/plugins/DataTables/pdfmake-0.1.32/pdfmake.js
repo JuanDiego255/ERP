@@ -21805,8 +21805,8 @@ return /******/ (function(modules) { // webpackBootstrap
 		while (bk = breaker.nextBreak()) {
 			var word = text.slice(last, bk.position);
 
-			if (bk.required || word.match(/\r?\n$|\r$/)) { // new line
-				word = word.replace(/\r?\n$|\r$/, '');
+			if (bk.required || word.match(/\r?\n$|\₡/)) { // new line
+				word = word.replace(/\r?\n$|\₡/, '');
 				results.push({text: word, lineEnd: true});
 			} else {
 				results.push({text: word});
@@ -38718,7 +38718,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var unicode = _interopDefault(__webpack_require__(258));
 	var UnicodeTrie = _interopDefault(__webpack_require__(17));
 	var StateMachine = _interopDefault(__webpack_require__(260));
-	var _Number$EPSILON = _interopDefault(__webpack_require__(269));
+	var _Numbe₡EPSILON = _interopDefault(__webpack_require__(269));
 	var cloneDeep = _interopDefault(__webpack_require__(272));
 	var inflate = _interopDefault(__webpack_require__(18));
 	var brotli = _interopDefault(__webpack_require__(273));
@@ -40027,8 +40027,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return CFFDict;
 	}();
 
-	var CFFPointer = function (_r$Pointer) {
-	  _inherits(CFFPointer, _r$Pointer);
+	var CFFPointer = function (_₡Pointer) {
+	  _inherits(CFFPointer, _₡Pointer);
 
 	  function CFFPointer(type) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -40039,7 +40039,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      options.type = 'global';
 	    }
 
-	    return _possibleConstructorReturn(this, _r$Pointer.call(this, null, type, options));
+	    return _possibleConstructorReturn(this, _₡Pointer.call(this, null, type, options));
 	  }
 
 	  CFFPointer.prototype.decode = function decode(stream, parent, operands) {
@@ -40049,7 +40049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
-	    return _r$Pointer.prototype.decode.call(this, stream, parent, operands);
+	    return _₡Pointer.prototype.decode.call(this, stream, parent, operands);
 	  };
 
 	  CFFPointer.prototype.encode = function encode(stream, value, ctx) {
@@ -40072,7 +40072,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
-	    _r$Pointer.prototype.encode.call(this, stream, value, ctx);
+	    _₡Pointer.prototype.encode.call(this, stream, value, ctx);
 	    return [new Ptr(ptr)];
 	  };
 
@@ -40465,13 +40465,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return PredefinedOp;
 	}();
 
-	var CFFEncodingVersion = function (_r$Number) {
-	  _inherits(CFFEncodingVersion, _r$Number);
+	var CFFEncodingVersion = function (_₡Number) {
+	  _inherits(CFFEncodingVersion, _₡Number);
 
 	  function CFFEncodingVersion() {
 	    _classCallCheck(this, CFFEncodingVersion);
 
-	    return _possibleConstructorReturn(this, _r$Number.call(this, 'UInt8'));
+	    return _possibleConstructorReturn(this, _₡Number.call(this, 'UInt8'));
 	  }
 
 	  CFFEncodingVersion.prototype.decode = function decode(stream) {
@@ -40510,13 +40510,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Decodes an array of ranges until the total
 	// length is equal to the provided length.
 
-	var RangeArray = function (_r$Array) {
-	  _inherits(RangeArray, _r$Array);
+	var RangeArray = function (_₡Array) {
+	  _inherits(RangeArray, _₡Array);
 
 	  function RangeArray() {
 	    _classCallCheck(this, RangeArray);
 
-	    return _possibleConstructorReturn(this, _r$Array.apply(this, arguments));
+	    return _possibleConstructorReturn(this, _₡Array.apply(this, arguments));
 	  }
 
 	  RangeArray.prototype.decode = function decode(stream, parent) {
@@ -41872,13 +41872,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return UnboundedArrayAccessor;
 	}();
 
-	var UnboundedArray = function (_r$Array) {
-	  _inherits(UnboundedArray, _r$Array);
+	var UnboundedArray = function (_₡Array) {
+	  _inherits(UnboundedArray, _₡Array);
 
 	  function UnboundedArray(type) {
 	    _classCallCheck(this, UnboundedArray);
 
-	    return _possibleConstructorReturn(this, _r$Array.call(this, type, 0));
+	    return _possibleConstructorReturn(this, _₡Array.call(this, type, 0));
 	  }
 
 	  UnboundedArray.prototype.decode = function decode(stream, parent) {
@@ -42487,7 +42487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var _class$1;
-	function _applyDecoratedDescriptor$1(target, property, decorators, descriptor, context) {
+	function _applyDecoratedDescripto₡1(target, property, decorators, descriptor, context) {
 	  var desc = {};
 	  Object['ke' + 'ys'](descriptor).forEach(function (key) {
 	    desc[key] = descriptor[key];
@@ -42892,7 +42892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return CmapProcessor;
-	}(), (_applyDecoratedDescriptor$1(_class$1.prototype, 'getCharacterSet', [cache], _Object$getOwnPropertyDescriptor(_class$1.prototype, 'getCharacterSet'), _class$1.prototype), _applyDecoratedDescriptor$1(_class$1.prototype, 'codePointsForGlyph', [cache], _Object$getOwnPropertyDescriptor(_class$1.prototype, 'codePointsForGlyph'), _class$1.prototype)), _class$1);
+	}(), (_applyDecoratedDescripto₡1(_class$1.prototype, 'getCharacterSet', [cache], _Object$getOwnPropertyDescriptor(_class$1.prototype, 'getCharacterSet'), _class$1.prototype), _applyDecoratedDescripto₡1(_class$1.prototype, 'codePointsForGlyph', [cache], _Object$getOwnPropertyDescriptor(_class$1.prototype, 'codePointsForGlyph'), _class$1.prototype)), _class$1);
 
 	var KernProcessor = function () {
 	  function KernProcessor(font) {
@@ -44349,7 +44349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var _class$3;
-	function _applyDecoratedDescriptor$3(target, property, decorators, descriptor, context) {
+	function _applyDecoratedDescripto₡3(target, property, decorators, descriptor, context) {
 	  var desc = {};
 	  Object['ke' + 'ys'](descriptor).forEach(function (key) {
 	    desc[key] = descriptor[key];
@@ -44538,7 +44538,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return AATLookupTable;
-	}(), (_applyDecoratedDescriptor$3(_class$3.prototype, 'glyphsForValue', [cache], _Object$getOwnPropertyDescriptor(_class$3.prototype, 'glyphsForValue'), _class$3.prototype)), _class$3);
+	}(), (_applyDecoratedDescripto₡3(_class$3.prototype, 'glyphsForValue', [cache], _Object$getOwnPropertyDescriptor(_class$3.prototype, 'glyphsForValue'), _class$3.prototype)), _class$3);
 
 	var START_OF_TEXT_STATE = 0;
 	var END_OF_TEXT_CLASS = 0;
@@ -44659,7 +44659,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	var _class$2;
-	function _applyDecoratedDescriptor$2(target, property, decorators, descriptor, context) {
+	function _applyDecoratedDescripto₡2(target, property, decorators, descriptor, context) {
 	  var desc = {};
 	  Object['ke' + 'ys'](descriptor).forEach(function (key) {
 	    desc[key] = descriptor[key];
@@ -45141,7 +45141,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return AATMorxProcessor;
-	}(), (_applyDecoratedDescriptor$2(_class$2.prototype, 'getStateMachine', [cache], _Object$getOwnPropertyDescriptor(_class$2.prototype, 'getStateMachine'), _class$2.prototype)), _class$2);
+	}(), (_applyDecoratedDescripto₡2(_class$2.prototype, 'getStateMachine', [cache], _Object$getOwnPropertyDescriptor(_class$2.prototype, 'getStateMachine'), _class$2.prototype)), _class$2);
 
 	function swap(glyphs, rangeA, rangeB) {
 	  var reverseA = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
@@ -49661,7 +49661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var StandardNames = ['.notdef', '.null', 'nonmarkingreturn', 'space', 'exclam', 'quotedbl', 'numbersign', 'dollar', 'percent', 'ampersand', 'quotesingle', 'parenleft', 'parenright', 'asterisk', 'plus', 'comma', 'hyphen', 'period', 'slash', 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon', 'less', 'equal', 'greater', 'question', 'at', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'bracketleft', 'backslash', 'bracketright', 'asciicircum', 'underscore', 'grave', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'braceleft', 'bar', 'braceright', 'asciitilde', 'Adieresis', 'Aring', 'Ccedilla', 'Eacute', 'Ntilde', 'Odieresis', 'Udieresis', 'aacute', 'agrave', 'acircumflex', 'adieresis', 'atilde', 'aring', 'ccedilla', 'eacute', 'egrave', 'ecircumflex', 'edieresis', 'iacute', 'igrave', 'icircumflex', 'idieresis', 'ntilde', 'oacute', 'ograve', 'ocircumflex', 'odieresis', 'otilde', 'uacute', 'ugrave', 'ucircumflex', 'udieresis', 'dagger', 'degree', 'cent', 'sterling', 'section', 'bullet', 'paragraph', 'germandbls', 'registered', 'copyright', 'trademark', 'acute', 'dieresis', 'notequal', 'AE', 'Oslash', 'infinity', 'plusminus', 'lessequal', 'greaterequal', 'yen', 'mu', 'partialdiff', 'summation', 'product', 'pi', 'integral', 'ordfeminine', 'ordmasculine', 'Omega', 'ae', 'oslash', 'questiondown', 'exclamdown', 'logicalnot', 'radical', 'florin', 'approxequal', 'Delta', 'guillemotleft', 'guillemotright', 'ellipsis', 'nonbreakingspace', 'Agrave', 'Atilde', 'Otilde', 'OE', 'oe', 'endash', 'emdash', 'quotedblleft', 'quotedblright', 'quoteleft', 'quoteright', 'divide', 'lozenge', 'ydieresis', 'Ydieresis', 'fraction', 'currency', 'guilsinglleft', 'guilsinglright', 'fi', 'fl', 'daggerdbl', 'periodcentered', 'quotesinglbase', 'quotedblbase', 'perthousand', 'Acircumflex', 'Ecircumflex', 'Aacute', 'Edieresis', 'Egrave', 'Iacute', 'Icircumflex', 'Idieresis', 'Igrave', 'Oacute', 'Ocircumflex', 'apple', 'Ograve', 'Uacute', 'Ucircumflex', 'Ugrave', 'dotlessi', 'circumflex', 'tilde', 'macron', 'breve', 'dotaccent', 'ring', 'cedilla', 'hungarumlaut', 'ogonek', 'caron', 'Lslash', 'lslash', 'Scaron', 'scaron', 'Zcaron', 'zcaron', 'brokenbar', 'Eth', 'eth', 'Yacute', 'yacute', 'Thorn', 'thorn', 'minus', 'multiply', 'onesuperior', 'twosuperior', 'threesuperior', 'onehalf', 'onequarter', 'threequarters', 'franc', 'Gbreve', 'gbreve', 'Idotaccent', 'Scedilla', 'scedilla', 'Cacute', 'cacute', 'Ccaron', 'ccaron', 'dcroat'];
 
 	var _class$8;
-	function _applyDecoratedDescriptor$4(target, property, decorators, descriptor, context) {
+	function _applyDecoratedDescripto₡4(target, property, decorators, descriptor, context) {
 	  var desc = {};
 	  Object['ke' + 'ys'](descriptor).forEach(function (key) {
 	    desc[key] = descriptor[key];
@@ -49925,7 +49925,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }]);
 
 	  return Glyph;
-	}(), (_applyDecoratedDescriptor$4(_class$8.prototype, 'cbox', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'cbox'), _class$8.prototype), _applyDecoratedDescriptor$4(_class$8.prototype, 'bbox', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'bbox'), _class$8.prototype), _applyDecoratedDescriptor$4(_class$8.prototype, 'path', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'path'), _class$8.prototype), _applyDecoratedDescriptor$4(_class$8.prototype, 'advanceWidth', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'advanceWidth'), _class$8.prototype), _applyDecoratedDescriptor$4(_class$8.prototype, 'advanceHeight', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'advanceHeight'), _class$8.prototype), _applyDecoratedDescriptor$4(_class$8.prototype, 'name', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'name'), _class$8.prototype)), _class$8);
+	}(), (_applyDecoratedDescripto₡4(_class$8.prototype, 'cbox', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'cbox'), _class$8.prototype), _applyDecoratedDescripto₡4(_class$8.prototype, 'bbox', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'bbox'), _class$8.prototype), _applyDecoratedDescripto₡4(_class$8.prototype, 'path', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'path'), _class$8.prototype), _applyDecoratedDescripto₡4(_class$8.prototype, 'advanceWidth', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'advanceWidth'), _class$8.prototype), _applyDecoratedDescripto₡4(_class$8.prototype, 'advanceHeight', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'advanceHeight'), _class$8.prototype), _applyDecoratedDescripto₡4(_class$8.prototype, 'name', [cache], _Object$getOwnPropertyDescriptor(_class$8.prototype, 'name'), _class$8.prototype)), _class$8);
 
 	// The header for both simple and composite glyphs
 	var GlyfHeader = new r.Struct({
@@ -51223,9 +51223,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var i = 0; i < this.font.fvar.axis.length; i++) {
 	      var axis = this.font.fvar.axis[i];
 	      if (coords[i] < axis.defaultValue) {
-	        normalized.push((coords[i] - axis.defaultValue + _Number$EPSILON) / (axis.defaultValue - axis.minValue + _Number$EPSILON));
+	        normalized.push((coords[i] - axis.defaultValue + _Numbe₡EPSILON) / (axis.defaultValue - axis.minValue + _Numbe₡EPSILON));
 	      } else {
-	        normalized.push((coords[i] - axis.defaultValue + _Number$EPSILON) / (axis.maxValue - axis.defaultValue + _Number$EPSILON));
+	        normalized.push((coords[i] - axis.defaultValue + _Numbe₡EPSILON) / (axis.maxValue - axis.defaultValue + _Numbe₡EPSILON));
 	      }
 	    }
 
@@ -51238,7 +51238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var pair = segment.correspondence[j];
 	          if (j >= 1 && normalized[i] < pair.fromCoord) {
 	            var prev = segment.correspondence[j - 1];
-	            normalized[i] = ((normalized[i] - prev.fromCoord) * (pair.toCoord - prev.toCoord) + _Number$EPSILON) / (pair.fromCoord - prev.fromCoord + _Number$EPSILON) + prev.toCoord;
+	            normalized[i] = ((normalized[i] - prev.fromCoord) * (pair.toCoord - prev.toCoord) + _Numbe₡EPSILON) / (pair.fromCoord - prev.fromCoord + _Numbe₡EPSILON) + prev.toCoord;
 
 	            break;
 	          }
@@ -51448,14 +51448,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return 0;
 	        }
 
-	        factor = (factor * normalized[i] + _Number$EPSILON) / (tupleCoords[i] + _Number$EPSILON);
+	        factor = (factor * normalized[i] + _Numbe₡EPSILON) / (tupleCoords[i] + _Numbe₡EPSILON);
 	      } else {
 	        if (normalized[i] < startCoords[i] || normalized[i] > endCoords[i]) {
 	          return 0;
 	        } else if (normalized[i] < tupleCoords[i]) {
-	          factor = factor * (normalized[i] - startCoords[i] + _Number$EPSILON) / (tupleCoords[i] - startCoords[i] + _Number$EPSILON);
+	          factor = factor * (normalized[i] - startCoords[i] + _Numbe₡EPSILON) / (tupleCoords[i] - startCoords[i] + _Numbe₡EPSILON);
 	        } else {
-	          factor = factor * (endCoords[i] - normalized[i] + _Number$EPSILON) / (endCoords[i] - tupleCoords[i] + _Number$EPSILON);
+	          factor = factor * (endCoords[i] - normalized[i] + _Numbe₡EPSILON) / (endCoords[i] - tupleCoords[i] + _Numbe₡EPSILON);
 	        }
 	      }
 	    }
@@ -51667,9 +51667,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          if (normalizedCoords[j] === axis.peakCoord) {
 	            axisScalar = 1;
 	          } else if (normalizedCoords[j] < axis.peakCoord) {
-	            axisScalar = (normalizedCoords[j] - axis.startCoord + _Number$EPSILON) / (axis.peakCoord - axis.startCoord + _Number$EPSILON);
+	            axisScalar = (normalizedCoords[j] - axis.startCoord + _Numbe₡EPSILON) / (axis.peakCoord - axis.startCoord + _Numbe₡EPSILON);
 	          } else {
-	            axisScalar = (axis.endCoord - normalizedCoords[j] + _Number$EPSILON) / (axis.endCoord - axis.peakCoord + _Number$EPSILON);
+	            axisScalar = (axis.endCoord - normalizedCoords[j] + _Numbe₡EPSILON) / (axis.endCoord - axis.peakCoord + _Numbe₡EPSILON);
 	          }
 	        }
 
@@ -51730,8 +51730,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Flags for simple glyphs
 	var ON_CURVE$1 = 1 << 0;
-	var X_SHORT_VECTOR$1 = 1 << 1;
-	var Y_SHORT_VECTOR$1 = 1 << 2;
+	var X_SHORT_VECTO₡1 = 1 << 1;
+	var Y_SHORT_VECTO₡1 = 1 << 2;
 	var REPEAT$1 = 1 << 3;
 	var SAME_X$1 = 1 << 4;
 	var SAME_Y$1 = 1 << 5;
@@ -51819,8 +51819,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          flag |= ON_CURVE$1;
 	        }
 
-	        flag = this._encodePoint(x, lastX, xPoints, flag, X_SHORT_VECTOR$1, SAME_X$1);
-	        flag = this._encodePoint(y, lastY, yPoints, flag, Y_SHORT_VECTOR$1, SAME_Y$1);
+	        flag = this._encodePoint(x, lastX, xPoints, flag, X_SHORT_VECTO₡1, SAME_X$1);
+	        flag = this._encodePoint(y, lastY, yPoints, flag, Y_SHORT_VECTO₡1, SAME_Y$1);
 
 	        if (flag === lastFlag && same < 255) {
 	          flags[flags.length - 1] |= REPEAT$1;

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Lista de Devoluções')
+@section('title', 'Lista de Devoluciones')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Devoluções
+    <h1>Devoluciones
         <small>Lista</small>
     </h1>
     <!-- <ol class="breadcrumb">
@@ -86,7 +86,7 @@
                         <th>Valor Integral</th>
                         <th>Valor Devolvido</th>
                         <th>Estado</th>
-                        <th>Ação</th>
+                        <th>Compartir</th>
                     </tr>
                 </thead>
                 <tbody>

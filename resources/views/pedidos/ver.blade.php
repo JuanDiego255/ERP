@@ -26,7 +26,7 @@
         <h4>Valor Frete: <strong>{{ number_format($pedido->valor_frete, 2, ',', '.')}}</strong></h4> 
         <h4>Token: <strong>{{$pedido->token}}</strong></h4>
         <h4>NFe: <strong>{{$pedido->numero_nfe == "" ? '--' : $pedido->numero_nfe}}</strong></h4>
-        <h4>Forma de pagamento: <strong>{{$pedido->forma_pagamento}}</strong></h4>
+        <h4>Forma de pago: <strong>{{$pedido->forma_pagamento}}</strong></h4>
         <h4>Data: <strong>{{\Carbon\Carbon::parse($pedido->created_at)->format('d/m/y H:i:s')}}</strong></h4>
 
       </div>
@@ -40,8 +40,8 @@
         </h4>
 
         @if($pedido->cupom_desconto != "")
-        <h4>Cupom de desconto: <strong>{{$pedido->cupom_desconto}} - {{$pedido->cupom->tipo == 'valor' ? 'R$' : ''}} {{number_format($pedido->cupom->valor, 2, ',', '.')}}{{$pedido->cupom->tipo == 'valor' ? '' : '%'}}</strong></h4>
-        <h4>Valor do desconto: <strong>R$ {{number_format($pedido->valor_desconto, 2, ',', '.')}}</strong></h4>
+        <h4>Cupom de desconto: <strong>{{$pedido->cupom_desconto}} - {{$pedido->cupom->tipo == 'valor' ? '₡' : ''}} {{number_format($pedido->cupom->valor, 2, ',', '.')}}{{$pedido->cupom->tipo == 'valor' ? '' : '%'}}</strong></h4>
+        <h4>Valor do desconto: <strong>₡ {{number_format($pedido->valor_desconto, 2, ',', '.')}}</strong></h4>
 
         @endif
       </div>
@@ -68,7 +68,7 @@
         <h4>Cliente: <strong>{{$pedido->cliente->nome}} {{$pedido->cliente->sobre_nome}}</strong></h4>
         <h4>CPF: <strong>{{$pedido->cliente->cpf}}</strong></h4>
         <h4>Email: <strong>{{$pedido->cliente->email}}</strong></h4>
-        <h4>Telefone: <strong>{{$pedido->cliente->telefone}}</strong></h4>
+        <h4>Teléfono: <strong>{{$pedido->cliente->telefone}}</strong></h4>
       </div>
       @endcomponent
     </div>
@@ -76,12 +76,12 @@
     <div class="col-sm-6">
       @component('components.widget')
 
-      <h3>Endereço de entrega</h3>
+      <h3>Dirección de envío</h3>
       <div class="col-md-12">
-        <h4>Rua: <strong>{{$pedido->endereco->rua}}, {{$pedido->endereco->numero}}</strong></h4>
-        <h4>Bairro: <strong>{{$pedido->endereco->bairro}} - {{$pedido->endereco->complemento}}</strong></h4>
+        <h4>Calle: <strong>{{$pedido->endereco->rua}}, {{$pedido->endereco->numero}}</strong></h4>
+        <h4>Barrio: <strong>{{$pedido->endereco->bairro}} - {{$pedido->endereco->complemento}}</strong></h4>
         <h4>Cep: <strong>{{$pedido->endereco->cep}}</strong></h4>
-        <h4>Cidade: <strong>{{$pedido->endereco->cidade}} ({{$pedido->endereco->uf}})</strong></h4>
+        <h4>Ciudad: <strong>{{$pedido->endereco->cidade}} ({{$pedido->endereco->uf}})</strong></h4>
       </div>
       @endcomponent
 

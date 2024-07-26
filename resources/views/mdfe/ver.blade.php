@@ -23,7 +23,7 @@
         <h4>Inicio da viagem: <strong>{{ \Carbon\Carbon::parse($mdfe->data_inicio_viagem)->format('d/m/Y')}}</strong></h4>
 
         <h4>Estado: <strong>{{$mdfe->estado}}</strong></h4>
-        <h4>Valor da carga: <strong>R$ {{number_format($mdfe->valor_carga, 2, ',', '.')}}</strong></h4>
+        <h4>Valor da carga: <strong>₡ {{number_format($mdfe->valor_carga, 2, ',', '.')}}</strong></h4>
 
         <h4>Condutor: <strong>{{$mdfe->condutor_nome}} - {{$mdfe->condutor_cpf}}</strong></h4>
       </div>

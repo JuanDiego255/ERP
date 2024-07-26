@@ -1,7 +1,7 @@
 <?php
  return [
 "sale" => "vender",
-"sells" => "Vendas",
+"sells" => "Ventas",
 "list_sale" => "lista de vendas",
 "add_sale" => "Adicionar venda",
 "pos_sale" => "POS",

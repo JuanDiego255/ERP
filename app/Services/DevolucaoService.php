@@ -576,7 +576,7 @@ class DevolucaoService{
 		$std->CNPJ = getenv('RESP_CNPJ'); //CNPJ da pessoa jurídica responsável pelo sistema utilizado na emissão do documento fiscal eletrônico
 		$std->xContato= getenv('RESP_NOME'); //Nome da pessoa a ser contatada
 		$std->email = getenv('RESP_EMAIL'); //E-mail da pessoa jurídica a ser contatada
-		$std->fone = getenv('RESP_FONE'); //Telefone da pessoa jurídica/física a ser contatada
+		$std->fone = getenv('RESP_FONE'); //Teléfono da pessoa jurídica/física a ser contatada
 		
 		
 		$nfe->taginfRespTec($std);

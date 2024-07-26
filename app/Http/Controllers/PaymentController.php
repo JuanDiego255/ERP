@@ -13,12 +13,12 @@ class PaymentController extends Controller
     public function index(){
 
         // $this->validaBusiness();
-        $planos = Package::orderby('name', 'desc')
+        $Planess = Package::orderby('name', 'desc')
         ->where('is_active', true)
         ->where('is_visible', true)
         ->get();
 
-        return view('payment.index', compact('planos'));
+        return view('payment.index', compact('Planess'));
     }
 
     private function validaBusiness(){
@@ -38,9 +38,9 @@ class PaymentController extends Controller
         \MercadoPago\SDK::setAccessToken(getenv("MERCADOPAGO_ACCESS_TOKEN"));
         $payment = new \MercadoPago\Payment();
 
-        $plano = Package::findOrFail($request->plano_id);
+        $Planes = Package::findOrFail($request->Planes_id);
 
-        $payment->transaction_amount = (float)$plano->price;
+        $payment->transaction_amount = (float)$Planes->price;
         $payment->description = '';
         $payment->payment_method_id = "pix";
 
@@ -76,7 +76,7 @@ class PaymentController extends Controller
                 'payerLastName' => $request->payerLastName,
                 'payerEmail' => $request->payerEmail,
                 'docNumber' => $doc,
-                'valor' => (float)$plano->price,
+                'valor' => (float)$Planes->price,
                 'transacao_id' => (string)$payment->id,
                 'status' => $payment->status,
                 'forma_pagamento' => 'pix',
@@ -84,7 +84,7 @@ class PaymentController extends Controller
                 'qr_code' => $payment->point_of_interaction->transaction_data->qr_code,
                 'link_boleto' => '',
                 'numero_cartao' => '',
-                'package_id' => $plano->id,
+                'package_id' => $Planes->id,
                 'business_id' => $business_id
             ];
             PaymentPlan::create($data);
@@ -104,7 +104,7 @@ class PaymentController extends Controller
 
     }
 
-    protected function setaPlano($paymentPlan){
+    protected function setaPlanes($paymentPlan){
         $package = Package::findOrFail($paymentPlan->package_id);
 
         $business = Business::findorfail($paymentPlan->business_id);
@@ -170,7 +170,7 @@ class PaymentController extends Controller
             // $payStatus->status = "approved";
 
             if($payStatus->status == "approved" && $paymentPlan->status != $payStatus->status){
-                $this->setaPlano($paymentPlan);
+                $this->setaPlanes($paymentPlan);
             }
             // $paymentPlan->status = $payStatus->status;
 
@@ -188,9 +188,9 @@ class PaymentController extends Controller
         \MercadoPago\SDK::setAccessToken(getenv("MERCADOPAGO_ACCESS_TOKEN"));
         $payment = new \MercadoPago\Payment();
 
-        $plano = Package::findOrFail($request->plano_id);
+        $Planes = Package::findOrFail($request->Planes_id);
 
-        $payment->transaction_amount = number_format($plano->price, 2);
+        $payment->transaction_amount = number_format($Planes->price, 2);
         $payment->description = '';
         $payment->payment_method_id = "bolbradesco";
 
@@ -229,7 +229,7 @@ class PaymentController extends Controller
                 'payerLastName' => $request->payerLastName,
                 'payerEmail' => $request->payerEmail,
                 'docNumber' => $doc,
-                'valor' => (float)$plano->price,
+                'valor' => (float)$Planes->price,
                 'transacao_id' => (string)$payment->id,
                 'status' => $payment->status,
                 'forma_pagamento' => 'boleto',
@@ -237,12 +237,12 @@ class PaymentController extends Controller
                 'qr_code' => '',
                 'link_boleto' => $payment->transaction_details->external_resource_url,
                 'numero_cartao' => '',
-                'package_id' => $plano->id,
+                'package_id' => $Planes->id,
                 'business_id' => $business_id
             ];
             $paymentPlan = PaymentPlan::create($data);
 
-            $this->setaPlano($paymentPlan);
+            $this->setaPlanes($paymentPlan);
             $output = [
                 'success' => 1,
                 'msg' => "Boleto gerado com sucesso."
@@ -259,10 +259,10 @@ class PaymentController extends Controller
 
     }
 
-    public function consultaValorPlano($id){
-        $plano = Package::findOrFail($id);
-        if($plano){
-            return response()->json(number_format($plano->price,2));
+    public function consultaValorPlanes($id){
+        $Planes = Package::findOrFail($id);
+        if($Planes){
+            return response()->json(number_format($Planes->price,2));
         }
     }
 
@@ -273,11 +273,11 @@ class PaymentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $business = Business::findorfail($business_id);
 
-        $plano = Package::findOrFail($request->plano_id);
+        $Planes = Package::findOrFail($request->Planes_id);
 
-        $payment->transaction_amount = number_format($plano->price, 2);
+        $payment->transaction_amount = number_format($Planes->price, 2);
         $payment->token = $request->token;
-        $payment->description = 'Pagamento de plano';
+        $payment->description = 'Pagamento de Planes';
         $payment->payment_method_id = $request->paymentMethodId;
         $payment->installments = (int)$request->installments;
         $payment->token = $request->token;
@@ -307,7 +307,7 @@ class PaymentController extends Controller
                 'payerLastName' => '',
                 'payerEmail' => $request->payerEmail,
                 'docNumber' => $doc,
-                'valor' => (float)$plano->price,
+                'valor' => (float)$Planes->price,
                 'transacao_id' => (string)$payment->id,
                 'status' => $payment->status,
                 'forma_pagamento' => 'cartao',
@@ -315,7 +315,7 @@ class PaymentController extends Controller
                 'qr_code' => '',
                 'link_boleto' => '',
                 'numero_cartao' => $request->cardNumber,
-                'package_id' => $plano->id,
+                'package_id' => $Planes->id,
                 'business_id' => $business_id
             ];
             PaymentPlan::create($data);

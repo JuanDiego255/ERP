@@ -5,7 +5,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Manifesto
+    <h1>Manifiesto
         <small>Gerencia documentos</small>
     </h1>
     <!-- <ol class="breadcrumb">
@@ -27,13 +27,13 @@
     </div>
     @endcomponent
     @endif
-    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todas os documentos'])
+    @component('components.widget', ['class' => 'box-primary', 'title' => 'Todos los documentos'])
     @can('user.create')
     @slot('tool')
     <div class="box-tools">
         <a class="btn btn-block btn-success" 
         href="/manifesto/buscarNovosDocumentos" >
-        <i class="fa fa-retweet"></i> Novos documentos</a>
+        <i class="fa fa-retweet"></i> Nuevos documentos</a>
     </div>
     @endslot
     @endcan
@@ -42,15 +42,15 @@
         <table class="table table-bordered table-striped" id="users_table">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>Localização</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
                     <th>Documento</th>
                     <th>Valor</th>
-                    <th>Data emissão</th>
+                    <th>Fecha de emisión</th>
                     <th>Num. Protocolo</th>
-                    <th>Chave</th>
+                    <th>Llave</th>
                     <th>Estado</th>
-                    <th>Ação</th>
+                    <th>Compartir</th>
                 </tr>
             </thead>
         </table>

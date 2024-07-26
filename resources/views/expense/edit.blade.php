@@ -74,7 +74,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-group">
-            {!! Form::label('additional_notes', 'Observação:') !!}
+            {!! Form::label('additional_notes', 'Observación:') !!}
             {!! Form::textarea('additional_notes', $expense->additional_notes, ['class' => 'form-control', 'rows' => 3]); !!}
           </div>
         </div>

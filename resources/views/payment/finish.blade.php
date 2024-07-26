@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Pagamento de Plano')
+@section('title', 'Pagamento de Planes')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>Pagamento
-        <small>Plano</small>
+        <small>Planes</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -20,11 +20,11 @@
     <input type="hidden" value="{{$paymentPlan->transacao_id}}" id="transacao_id" name="">
     <input type="hidden" value="{{$paymentPlan->forma_pagamento}}" id="forma_pagamento" name="">
 
-    @component('components.widget', ['class' => 'box-success', 'title' => 'Pagamento de plano'])
+    @component('components.widget', ['class' => 'box-success', 'title' => 'Pagamento de Planes'])
     
     <div class="row">
         <div class="col-lg-12">
-            <h4>Valor: <strong class="">R$ {{ number_format($paymentPlan->valor, 2, ',', '.') }}</strong></h4>
+            <h4>Valor: <strong class="">₡ {{ number_format($paymentPlan->valor, 2, ',', '.') }}</strong></h4>
 
             @if($paymentPlan->forma_pagamento == 'pix')
             <h3 style="display: none" class="text-success status">Pagamento aprovado <i class="fa fa-check"></i></h3>
@@ -55,14 +55,14 @@
             <h3 class="text-success">Boleto gerado <i class="fa fa-check"></i></h3>
             <a target="_blank" class="btn btn-success" href="{{$paymentPlan->link_boleto}}"><i class="fa fa-print"></i> Imprimir</a>
 
-            <h4>Forma de pagamento escolhida: <strong>Boleto bancário</strong></h4>
+            <h4>Forma de pago escolhida: <strong>Boleto bancário</strong></h4>
 
             @endif
 
             @if($paymentPlan->forma_pagamento == 'cartao')
             <h3 class="text-success">Pagamento concluído, obrigado por escolher nossa plataforma. <i class="fa fa-check"></i></h3>
 
-            <h4>Forma de pagamento escolhida: <strong>Cartão de crédito</strong></h4>
+            <h4>Forma de pago escolhida: <strong>Cartão de crédito</strong></h4>
             @endif
         </div>
 

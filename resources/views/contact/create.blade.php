@@ -22,7 +22,7 @@
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">Novo {{$tipo == 'customer' ? 'Cliente' : 'Contato'}}</h4>
+      <h4 class="modal-title">Nuevo {{$tipo == 'customer' ? 'Cliente' : 'Contacto'}}</h4>
     </div>
 
     <div class="modal-body">
@@ -72,12 +72,12 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            {!! Form::label('name', 'Razão social/Nome' . ':*') !!}
+            {!! Form::label('name', 'Razón Social/Nombre' . ':*') !!}
             <div class="input-group">
               <span class="input-group-addon">
                 <i class="fa fa-user"></i>
               </span>
-              {!! Form::text('name', null, ['id' => 'name', 'class' => 'form-control featured-field','placeholder' => 'Razão social', 'required']); !!}
+              {!! Form::text('name', null, ['id' => 'name', 'class' => 'form-control featured-field','placeholder' => 'Razón Social', 'required']); !!}
             </div>
           </div>
         </div>
@@ -137,8 +137,8 @@
 
         <div class="col-md-5">
           <div class="form-group">
-            <label for="product_custom_field2">Rua*:</label>
-            <input class="form-control featured-field" required placeholder="Rua" name="rua" type="text" id="rua">
+            <label for="product_custom_field2">Calle*:</label>
+            <input class="form-control featured-field" required placeholder="Calle" name="rua" type="text" id="rua">
           </div>
         </div>
         <div class="col-md-2 ">
@@ -163,14 +163,14 @@
 
         <div class="col-md-5">
           <div class="form-group">
-            <label for="product_custom_field2">Bairro*:</label>
-            <input class="form-control featured-field" required placeholder="Bairro" name="bairro" type="text" id="bairro">
+            <label for="product_custom_field2">Barrio*:</label>
+            <input class="form-control featured-field" required placeholder="Barrio" name="bairro" type="text" id="bairro">
           </div>
         </div>
 
         <div class="col-md-5">
           <div class="form-group">
-            {!! Form::label('city_id', 'Cidade:*') !!}
+            {!! Form::label('city_id', 'Ciudades:*') !!}
             {!! Form::select('city_id', $cities, '', ['id' => 'cidade', 'class' => 'form-control select2 featured-field', 'required']); !!}
           </div>
         </div>
@@ -204,12 +204,12 @@
 
         <div class="col-md-3">
           <div class="form-group">
-            {!! Form::label('landline','Fixo:') !!}
+            {!! Form::label('landline','Teléfono Fijo:') !!}
             <div class="input-group">
               <span class="input-group-addon">
                 <i class="fa fa-phone"></i>
               </span>
-              {!! Form::text('landline', null, ['class' => 'form-control', 'placeholder' => 'Fixo']); !!}
+              {!! Form::text('landline', null, ['class' => 'form-control', 'placeholder' => 'Teléfono Fijo']); !!}
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@
 
         <div class="col-md-3">
           <div class="form-group">
-            {!! Form::label('alternate_number', 'Telefone alternativo' . ':') !!}
+            {!! Form::label('alternate_number', 'Teléfono alternativo' . ':') !!}
             <div class="input-group">
               <span class="input-group-addon">
                 <i class="fa fa-phone"></i>
@@ -251,7 +251,7 @@
           <div id="map"></div>
         </div> -->
         <div class="col-md-12">
-          <h5>Endereço de entrega</h5>
+          <h5>Dirección de envío</h5>
         </div>
 
         <div class="col-md-2">
@@ -263,8 +263,8 @@
 
         <div class="col-md-4">
           <div class="form-group">
-            <label for="product_custom_field2">Rua:</label>
-            <input class="form-control featured-field" placeholder="Rua" name="rua_entrega" type="text" id="rua_entrega">
+            <label for="product_custom_field2">Calle:</label>
+            <input class="form-control featured-field" placeholder="Calle" name="rua_entrega" type="text" id="rua_entrega">
           </div>
         </div>
 
@@ -277,14 +277,14 @@
 
         <div class="col-md-3">
           <div class="form-group">
-            <label for="product_custom_field2">Bairro:</label>
-            <input class="form-control featured-field" placeholder="Bairro" name="bairro_entrega" type="text" id="bairro_entrega">
+            <label for="product_custom_field2">Barrio:</label>
+            <input class="form-control featured-field" placeholder="Barrio" name="bairro_entrega" type="text" id="bairro_entrega">
           </div>
         </div>
 
         <div class="col-md-4">
           <div class="form-group">
-            {!! Form::label('city_id_entrega', 'Cidade:') !!}
+            {!! Form::label('city_id_entrega', 'Ciudad:') !!}
             {!! Form::select('city_id_entrega', $cities, '', ['id' => 'cidade_entrega', 'class' => 'form-control select2 featured-field']); !!}
           </div>
         </div>

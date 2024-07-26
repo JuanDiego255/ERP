@@ -24,7 +24,7 @@
 
 							<div class="box-tools pull-right">
 								<span class="badge bg-green">
-									Ativo
+									Activo
 								</span>
               				</div>
 
