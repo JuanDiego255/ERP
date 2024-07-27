@@ -21,12 +21,12 @@
                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
                     <div class="list-group">
                         <a href="#" class="list-group-item text-center active">@lang('business.business')</a>
-                        <a href="#" class="list-group-item text-center">Taxas @show_tooltip(__('tooltip.business_tax'))</a>
+                        <a href="#" class="list-group-item text-center">Tarifas @show_tooltip(__('tooltip.business_tax'))</a>
                         <a href="#" class="list-group-item text-center">@lang('business.product')</a>
                         <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
                         <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
                         <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a>
-                        <a href="#" class="list-group-item text-center">Outros</a>
+                        <a href="#" class="list-group-item text-center">Otros</a>
                         <a href="#" class="list-group-item text-center">Sistema</a>
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.prefixes')</a>
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.email_settings')</a>

@@ -113,7 +113,7 @@
 
                                 <?php if($business->is_active == 1): ?>
                                     <a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\BusinessController@toggleActive', [$business->id, 0]), false); ?>"
-                                        class="btn btn-danger btn-xs link_confirmation">Desativar
+                                        class="btn btn-danger btn-xs link_confirmation">Desactivar
                                     </a>
                                 <?php else: ?>
                                     <a href="<?php echo e(action('\Modules\Superadmin\Http\Controllers\BusinessController@toggleActive', [$business->id, 1]), false); ?>"

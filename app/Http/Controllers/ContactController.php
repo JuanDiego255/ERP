@@ -315,7 +315,7 @@ class ContactController extends Controller
                     $html .= '<li><a href="' . action('ContactController@updateStatus', [$row->id]) . '"class="update_contact_status"><i class="fas fa-power-off"></i>';
 
                     if ($row->contact_status == "active") {
-                        $html .= 'Desativar';
+                        $html .= 'Desactivar';
                     } else {
                         $html .= 'Ativar';
                     }

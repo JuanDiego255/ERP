@@ -107,7 +107,7 @@
 			@endif
 
 			<div class="clearfix"></div>
-			<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+			{{-- <div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 				<div class="form-group">
 					{!! Form::label('contact_id', __('contact.customer') . ':*') !!}
 					<div class="input-group">
@@ -137,9 +137,9 @@
 					$commission_agent, null, ['class' => 'form-control select2']); !!}
 				</div>
 			</div>
-			@endif
+			@endif --}}
 
-			<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+			{{-- <div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 				<div class="form-group">
 					{!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
 					<div class="input-group">
@@ -156,7 +156,7 @@
 					{!! Form::label('status', __('sale.status') . ':*') !!}
 					{!! Form::select('status', ['final' => 'Final', 'draft' => __('sale.draft'), 'quotation' => __('lang_v1.quotation')], null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
 				</div>
-			</div>
+			</div> --}}
 
 			<div class="col-sm-3">
 				<div class="form-group">
@@ -165,23 +165,16 @@
 				</div>
 			</div>
 
-			<div class="col-sm-4">
-				<div class="form-group">
-					{!! Form::label('natureza_id', 'Natureza de Operação'. ':*') !!}
-					{!! Form::select('natureza_id', $naturezas, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
-				</div>
-			</div>
-
 			<div class="clearfix"></div>
 			<!-- Call restaurant module if defined -->
-			@if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
+		{{-- 	@if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
 			<span id="restaurant_module_span">
 				<div class="col-md-3"></div>
 			</span>
-			@endif
+			@endif --}}
 
 
-			<div class="col-sm-3" style="visibility: hidden">
+			{{-- <div class="col-sm-3" style="visibility: hidden">
 				<div class="form-group">
 					<div class="multi-input">
 						{!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!} @show_tooltip(__('tooltip.pay_term'))
@@ -195,12 +188,12 @@
 						['class' => 'form-control width-60 pull-left','placeholder' => __('messages.please_select')]); !!}
 					</div>
 				</div>
-			</div>
+			</div> --}}
 
 			
 			@endcomponent
 
-			@component('components.widget', ['class' => 'box-primary', 'title' => 'Produtos da Venda'])
+			@component('components.widget', ['class' => 'box-primary', 'title' => 'Productos'])
 			<div class="col-sm-10 col-sm-offset-1">
 				<div class="form-group">
 					<div class="input-group">
@@ -283,7 +276,7 @@
 				<div class="box-header with-border" style="cursor: pointer;">
 					<h3 class="box-title">
 						<a data-toggle="collapse" data-parent="#accordion" href="#collapseDesconto">
-							Desconto
+							Descuento
 						</a>
 					</h3>
 				</div>
@@ -292,7 +285,7 @@
 
 						<div class="col-md-4">
 							<div class="form-group">
-								{!! Form::label('discount_type', 'Tipo do desconto*' ) !!}
+								{!! Form::label('discount_type', 'Tipo de descuento*' ) !!}
 								<div class="input-group">
 									<span class="input-group-addon">
 										<i class="fa fa-info"></i>
@@ -369,7 +362,7 @@
 						<div class="clearfix"></div>
 						<div class="col-md-4">
 							<div class="form-group">
-								{!! Form::label('shipping_details', 'Detalhes de envio') !!}
+								{!! Form::label('shipping_details', 'Detalles del envío') !!}
 								<div class="input-group">
 									<span class="input-group-addon">
 										<i class="fa fa-info"></i>

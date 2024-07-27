@@ -82,7 +82,7 @@ $custom_labels = json_decode(session('business.custom_labels'), true);
 
                 <?php echo Form::hidden('selected_products', null, ['id' => 'selected_products']); ?>
 
-                <?php echo Form::submit('Desativar selecionado', array('class' => 'btn btn-xs btn-warning', 'id' => 'deactivate-selected')); ?>
+                <?php echo Form::submit('Desactivar selecionado', array('class' => 'btn btn-xs btn-warning', 'id' => 'deactivate-selected')); ?>
 
                 <?php echo Form::close(); ?> <?php
                 if(session('business.enable_tooltip')){

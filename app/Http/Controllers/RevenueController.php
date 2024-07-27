@@ -335,7 +335,7 @@ class RevenueController extends Controller
 
             $output = [
                 'success' => 1,
-                'msg' => 'Conta a receber salva'
+                'msg' => 'cuenta por cobrar salva'
             ];
 
         } catch (\Exception $e) {
@@ -372,7 +372,7 @@ class RevenueController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => 'Conta a receber removida.'
+                    'msg' => 'cuenta por cobrar removida.'
                 ];
             } catch (\Exception $e) {
                 \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
@@ -477,7 +477,7 @@ class RevenueController extends Controller
 
             $output = [
                 'success' => 1,
-                'msg' => 'Conta a receber atualizada'
+                'msg' => 'cuenta por cobrar atualizada'
             ];
 
         } catch (\Exception $e) {

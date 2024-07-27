@@ -21,7 +21,7 @@
                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
                     <div class="list-group">
                         <a href="#" class="list-group-item text-center active"><?php echo app('translator')->get('business.business'); ?></a>
-                        <a href="#" class="list-group-item text-center">Taxas <?php
+                        <a href="#" class="list-group-item text-center">Tarifas <?php
                 if(session('business.enable_tooltip')){
                     echo '<i class="fa fa-info-circle text-info hover-q no-print " aria-hidden="true" 
                     data-container="body" data-toggle="popover" data-placement="auto bottom" 
@@ -32,7 +32,7 @@
                         <a href="#" class="list-group-item text-center"><?php echo app('translator')->get('business.sale'); ?></a>
                         <a href="#" class="list-group-item text-center"><?php echo app('translator')->get('sale.pos_sale'); ?></a>
                         <a href="#" class="list-group-item text-center"><?php echo app('translator')->get('purchase.purchases'); ?></a>
-                        <a href="#" class="list-group-item text-center">Outros</a>
+                        <a href="#" class="list-group-item text-center">Otros</a>
                         <a href="#" class="list-group-item text-center">Sistema</a>
                         <a href="#" class="list-group-item text-center"><?php echo app('translator')->get('lang_v1.prefixes'); ?></a>
                         <a href="#" class="list-group-item text-center"><?php echo app('translator')->get('lang_v1.email_settings'); ?></a>

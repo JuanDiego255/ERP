@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', 'Adicionar conta a receber'); ?>
+<?php $__env->startSection('title', 'Adicionar cuenta por cobrar'); ?>
 
 <?php $__env->startSection('content'); ?>
 
@@ -69,10 +69,7 @@
 							<span class="input-group-addon">
 								<i class="fa fa-user"></i>
 							</span>
-							<!-- <input type="hidden" id="default_customer_id" 
-							value="<?php echo e($walk_in_customer['id'], false); ?>" >
-							<input type="hidden" id="default_customer_name" 
-							value="<?php echo e($walk_in_customer['name'], false); ?>" > -->
+							
 							<?php echo Form::select('contact_id', 
 							[], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => 'Entre com nome do cliente', 'required']); ?>
 

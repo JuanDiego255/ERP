@@ -6,7 +6,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>Gerar boleto | Conta a receber <strong>{{$revenue->id}}</strong></h1>
+  <h1>Gerar boleto | cuenta por cobrar <strong>{{$revenue->id}}</strong></h1>
 </section>
 
 <!-- Main content -->
@@ -30,7 +30,7 @@
       <div class="clearfix"></div>
       <hr>
 
-      <p style="margin-left: 10px;" class="text-danger col-12"><i class="glyphicon glyphicon-info-sign text-danger"></i> Após gerar o boleto não será possível editar os dados da conta a receber.</p>
+      <p style="margin-left: 10px;" class="text-danger col-12"><i class="glyphicon glyphicon-info-sign text-danger"></i> Após gerar o boleto não será possível editar os dados da cuenta por cobrar.</p>
 
       <input type="hidden" value="{{$revenue->id}}" name="revenue_id">
       <div class="col-md-2">

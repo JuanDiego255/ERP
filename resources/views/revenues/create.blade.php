@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Adicionar conta a receber')
+@section('title', 'Adicionar cuenta por cobrar')
 
 @section('content')
 
@@ -60,10 +60,7 @@
 							<span class="input-group-addon">
 								<i class="fa fa-user"></i>
 							</span>
-							<!-- <input type="hidden" id="default_customer_id" 
-							value="{{ $walk_in_customer['id']}}" >
-							<input type="hidden" id="default_customer_name" 
-							value="{{ $walk_in_customer['name']}}" > -->
+							
 							{!! Form::select('contact_id', 
 							[], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => 'Entre com nome do cliente', 'required']); !!}
 							<span class="input-group-btn">

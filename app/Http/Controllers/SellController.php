@@ -522,14 +522,14 @@ return view('sell.index')
         }
 
         $naturezas = $this->prepareNaturezas();
-        if(sizeof($naturezas) == 0){
+       /*  if(sizeof($naturezas) == 0){
             $output = [
                 'success' => 0,
                 'msg' => 'Cadastre uma natureza de operação para continuar!!'
             ];
             return redirect('/naturezas')
             ->with('status', $output);
-        }
+        } */
 
         $business_id = request()->session()->get('user.business_id');
 

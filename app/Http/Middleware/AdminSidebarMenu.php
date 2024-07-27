@@ -432,7 +432,7 @@ if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.acc
             );
             $sub->url(
                 action('RevenueController@create'),
-                'Adicionar conta a receber',
+                'Agregar cuenta por cobrar',
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == 'create']
             );
             $sub->url(

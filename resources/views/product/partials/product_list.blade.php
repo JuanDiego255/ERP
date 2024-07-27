@@ -67,7 +67,7 @@ $custom_labels = json_decode(session('business.custom_labels'), true);
                 &nbsp;
                 {!! Form::open(['url' => action('ProductController@massDeactivate'), 'method' => 'post', 'id' => 'mass_deactivate_form' ]) !!}
                 {!! Form::hidden('selected_products', null, ['id' => 'selected_products']); !!}
-                {!! Form::submit('Desativar selecionado', array('class' => 'btn btn-xs btn-warning', 'id' => 'deactivate-selected')) !!}
+                {!! Form::submit('Desactivar selecionado', array('class' => 'btn btn-xs btn-warning', 'id' => 'deactivate-selected')) !!}
                 {!! Form::close() !!} @show_tooltip('Destivar os produtos selecionados')
             </div>
         </td>

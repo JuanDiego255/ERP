@@ -19,7 +19,7 @@
       <div class="clearfix"></div>
       <hr>
 
-      <p style="margin-left: 10px;" class="text-danger col-12"><i class="glyphicon glyphicon-info-sign text-danger"></i> Após gerar o boleto não será possível editar os dados da conta a receber.</p>
+      <p style="margin-left: 10px;" class="text-danger col-12"><i class="glyphicon glyphicon-info-sign text-danger"></i> Após gerar o boleto não será possível editar os dados da cuenta por cobrar.</p>
 
       <div class="col-md-4">
         <div class="form-group">

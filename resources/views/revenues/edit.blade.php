@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Editar conta a receber')
+@section('title', 'Editar cuenta por cobrar')
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-	<h1>Editar conta a receber</h1>
+	<h1>Editar cuenta por cobrar</h1>
 </section>
 
 <!-- Main content -->
