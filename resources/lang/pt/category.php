@@ -6,7 +6,7 @@
 "category" => "Categoría",
 "category_name" => "Nome da categoria",
 "code" => "Código de categoria",
-"add_as_sub_category" => "Adicionar como subcategoria",
+"add_as_sub_category" => "Seleccionar como subcategoria",
 "select_parent_category" => "Selecionar categoria principal",
 "added_success" => "Categoria adicionada com sucesso",
 "updated_success" => "Categoria atualizada com sucesso",

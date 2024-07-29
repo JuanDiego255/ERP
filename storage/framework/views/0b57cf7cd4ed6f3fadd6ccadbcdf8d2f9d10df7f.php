@@ -27,12 +27,7 @@
                     columns: [
                     { data: 'image', name: 'image' },
                     { data: 'name', name: 'name' },
-                    <?php if($cat_code_enabled): ?>
-                    { data: 'short_code', name: 'short_code' },
-                    <?php endif; ?>
                     { data: 'description', name: 'description' },
-                    { data: 'destaque', name: 'destaque' },
-                    { data: 'ecommerce', name: 'ecommerce' },
                     { data: 'action', name: 'action', orderable: false, searchable: false},
                     ],
                 });

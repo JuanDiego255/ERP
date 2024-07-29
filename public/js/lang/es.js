@@ -60,7 +60,7 @@ LANG = {
 "end_tour": "Fin de la gira", 
 "inc_tax": "Incluyendo impuesto", 
 "exc_tax": "Excluyendo impuestos", 
-"file_browse_label": "Vistazo..", 
+"file_browse_label": "Seleccionar..", 
 "remove": "Retirar", 
 "apply": "Aplicar", 
 "custom_range": "Rango personalizado", 

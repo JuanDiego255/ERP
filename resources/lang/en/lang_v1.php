@@ -783,7 +783,7 @@ return [
     'types_of_service_help_long' => 'Type of service means services like dine-in, parcel, home delivery, third party delivery etc. It can be enabled/disabled from <code>Settings > Modules</code> and can be created from <code>Settings > Types of service</code>. You can also define different price group & packing charge for service types.',
     'default_accounts' => 'Default Account',
     'product_location_help' => 'Locations where product will be available.',
-    'available_in_locations' => 'Available in locations',
+    'available_in_locations' => 'Disponible en las siguientes sucursales',
     'enable' => 'Enable',
     'payment_options' => 'Payment Options',
     'pay_reference_no' => 'Pay reference no.',

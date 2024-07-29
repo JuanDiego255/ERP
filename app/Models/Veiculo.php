@@ -185,7 +185,7 @@ class Veiculo extends Model
 			'08' => '08 - Gasolina/Gás Natural Combustível',
 			'09' => '09 - Álcool/Gás Natural Combustível',
 			'10' => '10 - Diesel/Gas Natural Combustível',
-			'11' => '11 - Vide/Campo/Observação',
+			'11' => '11 - Vide/Campo/Observación',
 			'12' => '12 - Álcool/Gás Natural Veicular',
 			'13' => '13 - Gasolina/Gás Natural Veicular',
 			'14' => '14 - Diesel/Gás Natural Veicular',

@@ -43,7 +43,7 @@
       </div>
 
       <div class="form-group img">
-        <?php echo Form::label('image', 'Imagem' . ':'); ?>
+        <?php echo Form::label('image', 'Imagen' . ':'); ?>
 
         <?php echo Form::file('image', ['id' => 'upload_image', 'accept' => 'image/*']); ?>
 
@@ -67,13 +67,7 @@
       <?php endif; ?>
 
       <?php if(!empty($parent_categories) && $enable_sub_category): ?>
-          <div class="form-group">
-            <div class="checkbox">
-              <label>
-                 <?php echo Form::checkbox('add_as_sub_cat', 1, !$is_parent,[ 'class' => 'toggler', 'data-toggle_id' => 'parent_cat_div' ]); ?> <?php echo app('translator')->get( 'lang_v1.add_as_sub_txonomy' ); ?>
-              </label>
-            </div>
-          </div>
+          
           <div class="form-group <?php if($is_parent): ?> <?php echo e('hide', false); ?> <?php endif; ?>" id="parent_cat_div">
             <?php echo Form::label('parent_id', 'Categoria:'); ?>
 

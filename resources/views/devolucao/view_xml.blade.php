@@ -216,9 +216,9 @@
 
 					<div class="col-sm-3">
 						<div class="form-group">
-							{!! Form::label('observacao', 'Observação'. ':') !!}
+							{!! Form::label('observacao', 'Observación'. ':') !!}
 							{!! Form::text('observacao', null, ['class' => 'form-control',
-							'placeholder' => 'Observação']); !!}
+							'placeholder' => 'Observación']); !!}
 						</div>
 					</div>
 				</div>

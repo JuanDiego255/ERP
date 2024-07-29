@@ -1,11 +1,11 @@
-<?php $__env->startSection('title', __('sale.products')); ?>
+<?php $__env->startSection('title', __('vehiculos.vehiculos')); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1><?php echo app('translator')->get('sale.products'); ?>
-        <small><?php echo app('translator')->get('lang_v1.manage_products'); ?></small>
+    <h1><?php echo app('translator')->get('vehiculos.vehiculos'); ?>
+        <small><?php echo app('translator')->get('vehiculos.manage_vehiculos'); ?></small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -17,16 +17,9 @@
 <section class="content">
 <div class="row">
     <div class="col-md-12">
-    <?php $__env->startComponent('components.filters', ['title' => __('report.filters'), 'closed' => true]); ?>
-        <div class="col-md-3">
-            <div class="form-group">
-                <?php echo Form::label('type', 'Tipo de produto' . ':'); ?>
-
-                <?php echo Form::select('type', ['single' => __('lang_v1.single'), 'variable' => __('lang_v1.variable')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_type', 'placeholder' => __('lang_v1.all')]); ?>
-
-            </div>
-        </div>
-        <div class="col-md-3">
+    <?php $__env->startComponent('components.filters', ['title' => __('report.filters'), 'closed' => false]); ?>
+        
+        <div class="col-md-4">
             <div class="form-group">
                 <?php echo Form::label('category_id', __('product.category') . ':'); ?>
 
@@ -35,23 +28,8 @@
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="form-group">
-                <?php echo Form::label('unit_id', __('product.unit') . ':'); ?>
-
-                <?php echo Form::select('unit_id', $units, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_unit_id', 'placeholder' => __('lang_v1.all')]); ?>
-
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <?php echo Form::label('tax_id', __('product.tax') . ':'); ?>
-
-                <?php echo Form::select('tax_id', $taxes, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_tax_id', 'placeholder' => __('lang_v1.all')]); ?>
-
-            </div>
-        </div>
-        <div class="col-md-3">
+        
+        <div class="col-md-4">
             <div class="form-group">
                 <?php echo Form::label('brand_id', __('product.brand') . ':'); ?>
 
@@ -59,7 +37,7 @@
 
             </div>
         </div>
-        <div class="col-md-3" id="location_filter">
+        <div class="col-md-4" id="location_filter">
             <div class="form-group">
                 <?php echo Form::label('location_id',  __('purchase.business_location') . ':'); ?>
 
@@ -67,15 +45,7 @@
 
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <?php echo Form::label('active_state', 'Status' . ':'); ?>
-
-
-                <?php echo Form::select('active_state', ['active' => 'Ativo', 'inactive' => 'Inativo'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'active_state', 'placeholder' => __('lang_v1.all')]); ?>
-
-            </div>
-        </div>
+        
 
         <!-- include module filter -->
         <?php if(!empty($pos_module_data)): ?>
@@ -86,23 +56,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <?php endif; ?>
 
-        <div class="col-md-2">
-          <div class="form-group">
-            <br>
-            <label>
-              <?php echo Form::checkbox('not_for_selling', 1, false, ['class' => 'input-icheck', 'id' => 'not_for_selling']); ?> <strong><?php echo app('translator')->get('lang_v1.not_for_selling'); ?></strong>
-            </label>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="form-group">
-            <br>
-            <label>
-              <?php echo Form::checkbox('ecommerce', 1, false, ['class' => 'input-icheck', 'id' => 'ecommerce']); ?> <strong>Ecommerce</strong>
-            </label>
-          </div>
-        </div>
+        
     <?php echo $__env->renderComponent(); ?>
     </div>
 </div>
@@ -116,9 +70,7 @@
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.all_products'); ?></a>
                     </li>
 
-                    <li>
-                        <a href="#product_stock_report" data-toggle="tab" aria-expanded="true"><i class="fa fa-hourglass-half" aria-hidden="true"></i> Relatório de estoque</a>
-                    </li>
+                    
                 </ul>
 
                 <div class="tab-content">
@@ -131,9 +83,7 @@
                         <?php echo $__env->make('product.partials.product_list', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     </div>
 
-                    <div class="tab-pane" id="product_stock_report">
-                        <?php echo $__env->make('report.partials.stock_report_table', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -172,18 +122,10 @@
                 "ajax": {
                     "url": "/products",
                     "data": function ( d ) {
-                        d.type = $('#product_list_filter_type').val();
+                       
                         d.category_id = $('#product_list_filter_category_id').val();
-                        d.brand_id = $('#product_list_filter_brand_id').val();
-                        d.unit_id = $('#product_list_filter_unit_id').val();
-                        d.tax_id = $('#product_list_filter_tax_id').val();
-                        d.active_state = $('#active_state').val();
-                        d.not_for_selling = $('#not_for_selling').is(':checked');
-                        d.ecommerce = $('#ecommerce').is(':checked');
+                        d.brand_id = $('#product_list_filter_brand_id').val();                       
                         d.location_id = $('#location_id').val();
-                        if ($('#repair_model_id').length == 1) {
-                            d.repair_model_id = $('#repair_model_id').val();
-                        }
                         d = __datatable_ajax_callback(d);
                     }
                 },
@@ -195,25 +137,17 @@
                 columns: [
                         { data: 'mass_delete'  },
                         { data: 'image', name: 'products.image'  },
-                        { data: 'product', name: 'products.name'  },
-                        { data: 'product_locations', name: 'product_locations'  },
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_purchase_price')): ?>
-                            { data: 'purchase_price', name: 'max_purchase_price', searchable: false},
-                        <?php endif; ?>
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('access_default_selling_price')): ?>
-                            { data: 'selling_price', name: 'max_price', searchable: false},
-                        <?php endif; ?>
-                        { data: 'current_stock', searchable: false},
-                        { data: 'type', name: 'products.type'},
+                        { data: 'product', name: 'products.name'  }, 
                         { data: 'category', name: 'c1.name'},
                         { data: 'brand', name: 'brands.name'},
-                        { data: 'tax', name: 'tax_rates.name', searchable: false},
+                        { data: 'model', name: 'products.model'},
+                        { data: 'color', name: 'products.color'},
+                        { data: 'bin', name: 'products.bin'},
+                        { data: 'placa', name: 'products.placa'},
+                        { data: 'dua', name: 'products.dua'},
+                        { data: 'comprado_a', name: 'products.comprado_a'},
+                        { data: 'created_at', name: 'products.created_at'},
                         { data: 'sku', name: 'products.sku'},
-
-                        { data: 'ncm', name: 'products.ncm'  },
-                        { data: 'cfop' },
-                        { data: 'cest', name: 'products.cest'},
-
                         { data: 'action', name: 'action'},
 
                         // { data: 'product_custom_field4', name: 'products.product_custom_field4'  },

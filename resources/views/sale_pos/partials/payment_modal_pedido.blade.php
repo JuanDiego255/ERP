@@ -34,15 +34,15 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									{!! Form::label('sale_note', 'Observação da venda:') !!}
-									{!! Form::textarea('sale_note', !empty($transaction)? $transaction->additional_notes:null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Observação da venda']); !!}
+									{!! Form::label('sale_note', 'Observación da venda:') !!}
+									{!! Form::textarea('sale_note', !empty($transaction)? $transaction->additional_notes:null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Observación da venda']); !!}
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
-									{!! Form::label('staff_note', 'Observação geral:') !!}
+									{!! Form::label('staff_note', 'Observación geral:') !!}
 									{!! Form::textarea('staff_note', 
-									!empty($transaction)? $transaction->staff_note:null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Observação geral']); !!}
+									!empty($transaction)? $transaction->staff_note:null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Observación geral']); !!}
 								</div>
 							</div>
 						</div>

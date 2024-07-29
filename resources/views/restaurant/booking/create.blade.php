@@ -81,8 +81,8 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="form-group">
-						{!! Form::label('booking_note', 'Observação' . ':') !!}
-						{!! Form::textarea('booking_note', null, ['class' => 'form-control','placeholder' => 'Observação', 'rows' => 3 ]); !!}
+						{!! Form::label('booking_note', 'Observación' . ':') !!}
+						{!! Form::textarea('booking_note', null, ['class' => 'form-control','placeholder' => 'Observación', 'rows' => 3 ]); !!}
 						</div>
 					</div>
 					<div class="col-sm-12" style="visibility: hidden;">

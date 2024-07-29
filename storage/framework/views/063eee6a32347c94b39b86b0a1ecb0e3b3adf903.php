@@ -101,7 +101,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="form-group">
-						<?php echo Form::label('additional_notes', 'Observação' . ':'); ?>
+						<?php echo Form::label('additional_notes', 'Observación' . ':'); ?>
 
 						<?php echo Form::textarea('additional_notes', null, ['class' => 'form-control', 'rows' => 3]); ?>
 

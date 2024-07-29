@@ -36,7 +36,7 @@
       </div>
 
       <div class="form-group img">
-        {!! Form::label('image', 'Imagem' . ':') !!}
+        {!! Form::label('image', 'Imagen' . ':') !!}
         {!! Form::file('image', ['id' => 'upload_image', 'accept' => 'image/*']); !!}
         <small><p class="help-block">@lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)]) <br> @lang('lang_v1.aspect_ratio_should_be_1_1')</p></small>
       </div>
@@ -54,13 +54,13 @@
       @endif
 
       @if(!empty($parent_categories) && $enable_sub_category)
-          <div class="form-group">
+          {{-- <div class="form-group">
             <div class="checkbox">
               <label>
                  {!! Form::checkbox('add_as_sub_cat', 1, !$is_parent,[ 'class' => 'toggler', 'data-toggle_id' => 'parent_cat_div' ]); !!} @lang( 'lang_v1.add_as_sub_txonomy' )
               </label>
             </div>
-          </div>
+          </div> --}}
           <div class="form-group @if($is_parent) {{'hide' }} @endif" id="parent_cat_div">
             {!! Form::label('parent_id', 'Categoria:') !!}
             {!! Form::select('parent_id', $parent_categories, $selected_parent, ['class' => 'form-control']); !!}

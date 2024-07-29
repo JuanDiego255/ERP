@@ -84,7 +84,7 @@
 				
 				<div class="col-sm-12">
 					<div class="form-group">
-						{!! Form::label('additional_notes', 'Observação' . ':') !!}
+						{!! Form::label('additional_notes', 'Observación' . ':') !!}
 						{!! Form::textarea('additional_notes', $item->observacao, ['class' => 'form-control', 'rows' => 3]); !!}
 					</div>
 				</div>

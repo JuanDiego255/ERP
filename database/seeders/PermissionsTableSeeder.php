@@ -29,6 +29,11 @@ class PermissionsTableSeeder extends Seeder
             ['name' => 'customer.update'],
             ['name' => 'customer.delete'],
 
+            ['name' => 'guarantor.view'],
+            ['name' => 'guarantor.create'],
+            ['name' => 'guarantor.update'],
+            ['name' => 'guarantor.delete'],
+
             ['name' => 'product.view'],
             ['name' => 'product.create'],
             ['name' => 'product.update'],

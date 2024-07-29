@@ -76,7 +76,7 @@
                                 <th>Status</th>
                                 <th>Valor total</th>
                                 <th>Valor recebido</th>
-                                <th>Observação</th>
+                                <th>Observación</th>
                                 <th><?php echo app('translator')->get('lang_v1.added_by'); ?></th>
                             </tr>
                         </thead>

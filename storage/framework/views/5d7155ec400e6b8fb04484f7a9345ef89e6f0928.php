@@ -53,12 +53,7 @@
                         <tr>
                             <th></th>
                             <th><?php if(!empty($module_category_data['taxonomy_label'])): ?> <?php echo e($module_category_data['taxonomy_label'], false); ?> <?php else: ?> Categoria <?php endif; ?></th>
-                            <?php if($cat_code_enabled): ?>
-                                <th><?php echo e($module_category_data['taxonomy_code_label'] ?? __( 'category.code' ), false); ?></th>
-                            <?php endif; ?>
                             <th><?php echo app('translator')->get( 'lang_v1.description' ); ?></th>
-                            <th>Destaque</th>
-                            <th>Ecommerce</th>
                             <th><?php echo app('translator')->get( 'messages.action' ); ?></th>
                         </tr>
                     </thead>

@@ -82,7 +82,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="form-group">
-						{!! Form::label('additional_notes', 'Observação' . ':') !!}
+						{!! Form::label('additional_notes', 'Observación' . ':') !!}
 						{!! Form::textarea('additional_notes', null, ['class' => 'form-control', 'rows' => 3]); !!}
 					</div>
 				</div>

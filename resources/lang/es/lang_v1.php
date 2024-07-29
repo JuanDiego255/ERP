@@ -105,6 +105,7 @@ return [
 "months" => "Meses",
 "days" => "Dias",
 "suppliers" => "Proveedores",
+"guarantors" => "Fiadores",
 "customers" => "Clientes",
 "enter_product_name_to_print_labels" => "Introduzca el nombre de los productos para imprimir las etiquetas",
 "manage_product_variations" => "Gestionar variaciones de producto",

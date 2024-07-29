@@ -258,6 +258,9 @@ class ExpenseController extends Controller
         if (auth()->user()->can('customer.create')) {
             $types['customer'] = __('report.customer');
         }
+        if (auth()->user()->can('guarantor.create')) {
+            $types['guarantor'] = __('report.guarantor');
+        }
         if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
             $types['both'] = __('lang_v1.both_supplier_customer');
         }
@@ -466,6 +469,9 @@ class ExpenseController extends Controller
         }
         if (auth()->user()->can('customer.create')) {
             $types['customer'] = __('report.customer');
+        }
+        if (auth()->user()->can('guarantor.create')) {
+            $types['guarantor'] = __('report.guarantor');
         }
         if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
             $types['both'] = __('lang_v1.both_supplier_customer');

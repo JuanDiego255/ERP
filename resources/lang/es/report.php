@@ -15,6 +15,7 @@
 "difference_due" => "Cantidad debida",
 "customer" => "Clientes",
 "supplier" => "Proveedores",
+"guarantor" => "Fiadores",
 "total_due" => "Debido",
 "contacts" => "Informe de proveedor y cliente",
 "contact" => "Contacto",

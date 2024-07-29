@@ -52,7 +52,6 @@ class ReportController extends Controller
         $this->productUtil = $productUtil;
         $this->moduleUtil = $moduleUtil;
     }
-
     /**
      * Shows profit\loss of a business
      *
@@ -258,7 +257,6 @@ class ReportController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, true);
         return view('report.profit_loss', compact('business_locations'));
     }
-
     /**
      * Shows product report of a business
      *
@@ -322,7 +320,6 @@ class ReportController extends Controller
         return view('report.purchase_sell')
         ->with(compact('business_locations'));
     }
-
     /**
      * Shows report for Supplier
      *
@@ -427,7 +424,6 @@ class ReportController extends Controller
         return view('report.contact')
         ->with(compact('customer_group', 'types'));
     }
-
     /**
      * Shows product stock report
      *
@@ -704,7 +700,6 @@ class ReportController extends Controller
         return view('report.stock_report')
         ->with(compact('categories', 'brands', 'units', 'business_locations', 'show_manufacturing_data'));
     }
-
     /**
      * Shows product stock details
      *
@@ -773,7 +768,6 @@ class ReportController extends Controller
             ->with(compact('product_details'));
         }
     }
-
     /**
      * Shows tax report of a business
      *
@@ -810,13 +804,12 @@ class ReportController extends Controller
             'expense_tax' => $expense_tax,
             'tax_diff' => $output_tax_details['total_tax'] - $input_tax_details['total_tax'] - $expense_tax_details['total_tax']
         ];
+        }
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+
+        return view('report.tax_report')
+        ->with(compact('business_locations'));
     }
-
-    $business_locations = BusinessLocation::forDropdown($business_id, true);
-
-    return view('report.tax_report')
-    ->with(compact('business_locations'));
-}
 
     /**
      * Shows trending products

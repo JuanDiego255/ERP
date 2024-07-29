@@ -25,6 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Utils\Util;
 
 class ProductController extends Controller
 {
@@ -43,10 +44,11 @@ class ProductController extends Controller
      * @param ProductUtils $product
      * @return void
      */
-    public function __construct(ProductUtil $productUtil, ModuleUtil $moduleUtil)
+    public function __construct(ProductUtil $productUtil, ModuleUtil $moduleUtil, Util $commonUtil)
     {
         $this->productUtil = $productUtil;
         $this->moduleUtil = $moduleUtil;
+        $this->commonUtil = $commonUtil;
 
         //barcode types
         $this->barcode_types = $this->productUtil->barcode_types();
@@ -68,14 +70,9 @@ class ProductController extends Controller
 
         if (request()->ajax()) {
             $query = Product::leftJoin('brands', 'products.brand_id', '=', 'brands.id')
-            ->join('units', 'products.unit_id', '=', 'units.id')
             ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
             ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
-            ->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
-            ->join('variations as v', 'v.product_id', '=', 'products.id')
-            ->leftJoin('variation_location_details as vld', 'vld.variation_id', '=', 'v.id')
-            ->where('products.business_id', $business_id)
-            ->where('products.type', '!=', 'modifier');
+            ->where('products.business_id', $business_id);
 
             //Filter by location
             $location_id = request()->get('location_id', null);
@@ -105,26 +102,17 @@ class ProductController extends Controller
                 'products.type',
                 'c1.name as category',
                 'c2.name as sub_category',
-                'units.actual_name as unit',
                 'brands.name as brand',
-                'tax_rates.name as tax',
                 'products.sku',
-                'products.ncm',
-                'products.cfop_interno',
-                'products.cfop_externo',
-                'products.cest',
-                'products.image',
-                'products.ecommerce',
-                'products.enable_stock',
-                'products.is_inactive',
-                'products.not_for_selling',
-                'products.product_custom_field3',
-                'products.product_custom_field4',
-                DB::raw('SUM(vld.qty_available) as current_stock'),
-                DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
-                DB::raw('MIN(v.sell_price_inc_tax) as min_price'),
-                DB::raw('MAX(v.dpp_inc_tax) as max_purchase_price'),
-                DB::raw('MIN(v.dpp_inc_tax) as min_purchase_price')
+                'products.model',      
+                'products.color',      
+                'products.dua',      
+                'products.comprado_a',      
+                'products.placa',      
+                'products.bin', 
+                'products.created_at',                     
+                'products.image',             
+                'products.is_inactive'
 
             )->groupBy('products.id');
 
@@ -175,18 +163,12 @@ class ProductController extends Controller
             }
 
             return Datatables::of($products)
-            ->addColumn(
-                'product_locations',
-                function ($row) {
-                    return $row->product_locations->implode('name', ', ');
-                }
-            )
             ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
             ->addColumn(
                 'action',
                 function ($row) use ($selling_price_group_count) {
                     $html =
-                    '<div class="btn-group"><button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">'. __("messages.actions") . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button><ul class="dropdown-menu dropdown-menu-left" role="menu"><li><a href="' . action('LabelsController@show') . '?product_id=' . $row->id . '" data-toggle="tooltip" title="Print Barcode/Label"><i class="fa fa-barcode"></i> ' . __('barcode.labels') . '</a></li>';
+                    '<div class="btn-group"><button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">'. __("messages.actions") . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button><ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
                     if ($row->ecommerce == 1) {
                         $html .=
@@ -228,7 +210,7 @@ class ProductController extends Controller
                         }
 
                         $html .=
-                        '<li><a href="' . action('ProductController@create', ["d" => $row->id]) . '"><i class="fa fa-copy"></i> ' . 'Duplicar produto' . '</a></li>';
+                        '<li><a href="' . action('ProductController@create', ["d" => $row->id]) . '"><i class="fa fa-copy"></i> ' . 'Duplicar vehículo' . '</a></li>';
                     }
 
                     $html .= '</ul></div>';
@@ -239,37 +221,19 @@ class ProductController extends Controller
             ->editColumn('product', function ($row) {
                 $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("lang_v1.inactive") .'</span>' : $row->product;
 
-                $product = $row->not_for_selling == 1 ? $product . ' <span class="label bg-gray">' . __("lang_v1.not_for_selling") .
-                '</span>' : $product;
-
+               
                 return $product;
-            })
-            ->editColumn('image', function ($row) {
-                return '<div style="display: flex;"><img src="' . $row->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
-            })
-            ->editColumn('type', '@lang("lang_v1." . $type)')
+            })            
             ->addColumn('mass_delete', function ($row) {
                 return  '<input type="checkbox" class="row-select" value="' . $row->id .'">' ;
-            })
-            ->editColumn('current_stock', '
-                @if($enable_stock == 1) 
-                @if($unit == "Unidade" || $unit == "Unid" || $unit == "UN")
-                {{@number_format($current_stock)}} 
-                @else
-                {{@number_format($current_stock, 3)}} 
-                @endif
-                @else -- @endif {{$unit}}')
-            ->addColumn(
-                'purchase_price',
-                '<div style="white-space: nowrap;"><span class="display_currency" data-currency_symbol="true">{{$min_purchase_price}}</span> @if($max_purchase_price != $min_purchase_price && $type == "variable") -  <span class="display_currency" data-currency_symbol="true">{{$max_purchase_price}}</span>@endif </div>'
-            )
-            ->addColumn(
-                'selling_price',
-                '<div style="white-space: nowrap;"><span class="display_currency" data-currency_symbol="true">{{$min_price}}</span> @if($max_price != $min_price && $type == "variable") -  <span class="display_currency" data-currency_symbol="true">{{$max_price}}</span>@endif </div>'
-            )
-            ->addColumn('cfop', function ($row) {
-                return $row->cfop_interno. '/' .$row->cfop_externo;
-            })
+            }) 
+            ->editColumn('image', function ($row) {
+                return '<div style="display: flex;"><img src="' . $row->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
+            })     
+            ->editColumn('created_at', function ($row) {
+                return $this->commonUtil->format_date($row->created_at, true);
+            })     
+           
             ->setRowAttr([
                 'data-href' => function ($row) {
                     if (auth()->user()->can("product.view")) {
@@ -278,7 +242,7 @@ class ProductController extends Controller
                         return '';
                     }
                 }])
-            ->rawColumns(['action', 'image', 'mass_delete', 'product', 'selling_price', 'purchase_price', 'category'])
+            ->rawColumns(['action','image', 'mass_delete', 'product', 'category'])
             ->make(true);
         }
 
@@ -456,18 +420,18 @@ class ProductController extends Controller
             $request->merge([ 'anoFab' => $request->anoFab ?? '']);
             $request->merge([ 'tpPint' => $request->tpPint ?? '']);
             $request->merge([ 'tpVeic' => $request->tpVeic ?? '']);
-            $request->merge([ 'espVeic' => $request->espVeic ?? '']);
+            $request->merge([ 'comprado_a' => $request->comprado_a ?? '']);
             $request->merge([ 'VIN' => $request->VIN ?? '']);
-            $request->merge([ 'condVeic' => $request->condVeic ?? '']);
-            $request->merge([ 'cMod' => $request->cMod ?? '']);
-            $request->merge([ 'cCorDENATRAN' => $request->cCorDENATRAN ?? '']);
-            $request->merge([ 'lota' => $request->lota ?? '']);
-            $request->merge([ 'tpRest' => $request->tpRest ?? '']);
+            $request->merge([ 'model' => $request->model ?? '']);
+            $request->merge([ 'dua' => $request->dua ?? '']);
+            $request->merge([ 'color' => $request->color ?? '']);
+            $request->merge([ 'bin' => $request->bin ?? '']);
+            $request->merge([ 'placa' => $request->placa ?? '']);
             
             $business_id = $request->session()->get('user.business_id');
             $request->merge([ 'sell_price_inc_tax' => $request->single_dsp]);
 
-            $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'ecommerce', 'destaque', 'novo', 'altura', 'largura', 'comprimento', 'valor_ecommerce', 'origem'];
+            $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {

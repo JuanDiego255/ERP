@@ -69,7 +69,7 @@
                                 <th>Status</th>
                                 <th>Valor total</th>
                                 <th>Valor recebido</th>
-                                <th>Observação</th>
+                                <th>Observación</th>
                                 <th>@lang('lang_v1.added_by')</th>
                             </tr>
                         </thead>

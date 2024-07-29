@@ -30,7 +30,7 @@
         <div class="modal-body">
             <div class="row">
 
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <?php echo Form::label('tipo', 'Tipo Identificación' . ':'); ?>
 
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <?php echo Form::label('name', 'Razón Social/Nombre' . ':*'); ?>
 
@@ -72,27 +72,6 @@
                 </div>
 
                 <div class="clearfix"></div>
-
-
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <?php echo Form::label('supplier_business_name', __('business.business_name') . ':'); ?>
-
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-briefcase"></i>
-                            </span>
-                            <?php echo Form::text('supplier_business_name', null, [
-                                'id' => 'nome_fantasia',
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('business.business_name'),
-                            ]); ?>
-
-                        </div>
-                    </div>
-                </div>
 
                 <div class="col-md-3 contact_type_div">
                     <div class="form-group">
@@ -114,20 +93,6 @@
                     </div>
                 </div>
 
-                <div class="col-md-2 customer_fields">
-                    <div class="form-group">
-
-                        <?php echo Form::label('contribuinte', 'Contribuyente' . ':'); ?>
-
-                        <?php echo Form::select('contribuinte', ['1' => 'Si', '0' => 'No'], '', [
-                            'id' => 'contribuinte',
-                            'class' => 'form-control select2 featured-field',
-                            'required',
-                        ]); ?>
-
-                    </div>
-                </div>
-
                 <div class="clearfix"></div>
                 <div class="col-md-12">
                     <hr />
@@ -135,19 +100,15 @@
 
 
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <?php echo Form::label('city_id', 'Cantón:'); ?>
+                        <?php echo Form::label('city', 'Cantón:'); ?>
 
-                        <?php echo Form::select('city_id', $cities, '', [
-                            'id' => 'cidade',
-                            'class' => 'form-control select2 featured-field',
-                            'required',
-                        ]); ?>
-
+                        <input class="form-control featured-field" placeholder="Cantón" name="city" type="text"
+                            id="city">
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="product_custom_field2">Distrito:</label>
                         <input class="form-control featured-field" placeholder="Barrio" name="Distrito" type="text"
@@ -155,7 +116,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="product_custom_field2">Barrio:</label>
                         <input class="form-control featured-field" placeholder="Barrio" name="rua" type="text"
@@ -163,21 +124,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <?php echo Form::label('email', __('business.email') . ':'); ?>
-
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-envelope"></i>
-                            </span>
-                            <?php echo Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]); ?>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         <?php echo Form::label('landmark', __('business.landmark') . ':'); ?>
 
@@ -190,37 +137,50 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                      <?php echo Form::label('landline', 'Teléfono Fijo:'); ?>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <?php echo Form::label('email', __('business.email') . ':'); ?>
 
-                      <div class="input-group">
-                          <span class="input-group-addon">
-                              <i class="fa fa-phone"></i>
-                          </span>
-                          <?php echo Form::text('landline', null, ['class' => 'form-control', 'placeholder' => 'Teléfono Fijo']); ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope"></i>
+                            </span>
+                            <?php echo Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]); ?>
 
-                      </div>
-                  </div>
-              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <?php echo Form::label('landline', 'Teléfono Fijo:'); ?>
 
-              <div class="col-md-3">
-                  <div class="form-group">
-                      <?php echo Form::label('mobile', 'Celular' . ':'); ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </span>
+                            <?php echo Form::text('landline', null, ['class' => 'form-control', 'placeholder' => 'Teléfono Fijo']); ?>
 
-                      <div class="input-group">
-                          <span class="input-group-addon">
-                              <i class="fa fa-mobile"></i>
-                          </span>
-                          <?php echo Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => 'Celular']); ?>
+                        </div>
+                    </div>
+                </div>
 
-                      </div>
-                  </div>
-              </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <?php echo Form::label('mobile', 'Celular' . ':'); ?>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-mobile"></i>
+                            </span>
+                            <?php echo Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => 'Celular']); ?>
+
+                        </div>
+                    </div>
+                </div>
 
                 <div class="clearfix"></div>
 
-               
+
 
                 <div class="clearfix"></div>
                 <div class="col-md-12">
@@ -237,43 +197,31 @@
 
           <div id="map"></div>
         </div> -->
-                <div class="col-md-12">
-                    <h5>Dirección de envío</h5>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <?php echo Form::label('state', __('Estado Civil') . ':'); ?>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fas fa fa-heart"></i>
+                            </span>
+                            <?php echo Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('Estado Civil')]); ?>
+
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <?php echo Form::label('city_id_entrega', 'Ciudad:'); ?>
+                        <?php echo Form::label('position', __('Puesto') . ':'); ?>
 
-                        <?php echo Form::select('city_id_entrega', $cities, '', [
-                            'id' => 'cidade_entrega',
-                            'class' => 'form-control select2 featured-field',
-                        ]); ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fas fa fa-life-ring"></i>
+                            </span>
+                            <?php echo Form::text('position', null, ['class' => 'form-control', 'placeholder' => __('Puesto')]); ?>
 
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="product_custom_field2">Cantón:</label>
-                        <input class="form-control featured-field" placeholder="Cantón" name="bairro_entrega"
-                            type="text" id="bairro_entrega">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="product_custom_field2">Distrito:</label>
-                        <input class="form-control featured-field" placeholder="Distrito" name="rua_entrega"
-                            type="text" id="rua_entrega">
-                    </div>
-                </div>
-
-
-
-
-
-                <div class="clearfix"></div>
-                <div class="col-md-12">
-                    <hr />
                 </div>
 
                 <div class="col-md-4 customer_fields">
@@ -291,117 +239,15 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 opening_balance">
-                    <div class="form-group">
-                        <?php echo Form::label('opening_balance', __('lang_v1.opening_balance') . ':'); ?>
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fas fa-money-bill-alt"></i>
-                            </span>
-                            <?php echo Form::text('opening_balance', 0, ['class' => 'form-control input_number']); ?>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 pay_term">
-                    <div class="form-group">
-                        <div class="multi-input">
-                            <?php echo Form::label('pay_term_number', __('contact.pay_term') . ':'); ?> <?php
-                if(session('business.enable_tooltip')){
-                    echo '<i class="fa fa-info-circle text-info hover-q no-print " aria-hidden="true" 
-                    data-container="body" data-toggle="popover" data-placement="auto bottom" 
-                    data-content="' . __('tooltip.pay_term') . '" data-html="true" data-trigger="hover"></i>';
-                }
-                ?>
-                            <br />
-                            <?php echo Form::number('pay_term_number', null, [
-                                'class' => 'form-control width-40 pull-left',
-                                'placeholder' => __('contact.pay_term'),
-                            ]); ?>
-
-
-                            <?php echo Form::select('pay_term_type', ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')], '', [
-                                'class' => 'form-control width-60 pull-left',
-                                'placeholder' => __('messages.please_select'),
-                            ]); ?>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 lead_additional_div">
-                    <div class="form-group">
-                        <?php echo Form::label('crm_life_stage', __('lang_v1.life_stage') . ':'); ?>
-
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fas fa fa-life-ring"></i>
-                            </span>
-                            <?php echo Form::select('crm_life_stage', $life_stages, null, [
-                                'class' => 'form-control',
-                                'id' => 'crm_life_stage',
-                                'placeholder' => __('messages.please_select'),
-                            ]); ?>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="clearfix"></div>              
+                <div class="clearfix"></div>
 
                 <div class="clearfix">
                 </div>
 
 
                 
-                <?php echo Form::hidden('position', null, ['id' => 'position']); ?>
 
-
-            </div>
-        </div>
-
-
-
-        <div class="col-md-3" style="display: none">
-            <div class="form-group">
-                <?php echo Form::label('city', __('business.city') . ':'); ?>
-
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-map-marker"></i>
-                    </span>
-                    <?php echo Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('business.city')]); ?>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3" style="display: none">
-            <div class="form-group">
-                <?php echo Form::label('state', __('business.state') . ':'); ?>
-
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-map-marker"></i>
-                    </span>
-                    <?php echo Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('business.state')]); ?>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3" style="display: none">
-            <div class="form-group">
-                <?php echo Form::label('country', __('business.country') . ':'); ?>
-
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-globe"></i>
-                    </span>
-                    <?php echo Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('business.country')]); ?>
-
-                </div>
             </div>
         </div>
 
