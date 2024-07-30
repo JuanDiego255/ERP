@@ -1,0 +1,147 @@
+@extends('layouts.app')
+
+@section('title', 'Detalles del empleado')
+
+@section('content')
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Detalles del empleado</h3>
+            </div>
+            <div class="col-md-4 col-xs-12 mt-15 pull-right">
+                {!! Form::select('employee_id', $employees, $employee->id, [
+                    'class' => 'form-control select2',
+                    'id' => 'employee_id',
+                ]) !!}
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-3">
+                <!-- Profile Image -->
+                <div class="box box-primary">
+                    <div class="box-body box-profile">
+
+                        <h3 class="profile-username text-center">
+                            {{ $employee->name }}
+                        </h3>
+
+                        <p class="text-muted text-center" title="@lang('user.role')">
+
+                        </p>
+
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b>@lang('Teléfono')</b>
+                                <a class="pull-right">{{ $employee->telephone }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>@lang('Celular')</b>
+                                <a class="pull-right">{{ $employee->celular }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>@lang('Correo')</b>
+                                <a class="pull-right">{{ $employee->email }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>@lang('Puesto')</b>
+                                <a class="pull-right">{{ $employee->puesto }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>{{ __('Estado') }}</b>
+                                @if ($employee->status == '1')
+                                    <span class="label label-success pull-right">
+                                        Activo
+                                    </span>
+                                @else
+                                    <span class="label label-danger pull-right">
+                                        Inactivo
+                                    </span>
+                                @endif
+                            </li>
+                        </ul>
+                        @can('user.update')
+                            <a href="{{ action('EmployeeController@edit', [$employee->id]) }}"
+                                class="btn btn-primary btn-block">
+                                <i class="glyphicon glyphicon-edit"></i>
+                                @lang('messages.edit')
+                            </a>
+                        @endcan
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-md-9">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active">
+                            <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user"
+                                    aria-hidden="true"></i> @lang('Información del empleado')</a>
+                        </li>
+
+                        <li>
+                            <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i
+                                    class="fas fa-briefcase" aria-hidden="true"></i> Rubros</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="user_info_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Moneda de pago'): {{ $employee->moneda_pago }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Tipo pago'): {{ $employee->tipo_pago == 'quincenal' ? 'Quincenal' : 'Mensual' }}</strong></p>
+                                    </div>                                    
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Salario por hora'): ₡{{ number_format($employee->salario_hora) }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Salario base'): ₡{{ number_format($employee->salario_base) }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Comision ventas'): {{ !empty($employee->comision_ventas) ? $employee->comision_ventas : '--' }}</strong></p>
+                                    </div>
+                                    @php
+                                        $ccss = $employee->ccss;
+                                        $salario_base = $employee->salario_base;
+                                        $resultado = ($salario_base * $ccss) / 100;
+                                    @endphp
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Deduccion C.C.S.S'): ₡{{ number_format($resultado) }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="documents_and_notes_tab">
+                            <!-- model id like project_id, user_id -->
+                            <input type="hidden" name="notable_id" id="notable_id" value="{{ $employee->id }}">
+                            <!-- model name like App\User -->
+                            <input type="hidden" name="notable_type" id="notable_type" value="App\Models\User">
+                            <div class="document_note_body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+@section('javascript')
+    <!-- document & note.js -->
+    @include('documents_and_notes.document_and_note_js')
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#employee_id').change(function() {
+                if ($(this).val()) {
+                    window.location = "{{ url('/employees') }}/" + $(this).val();
+                }
+            });
+        });
+    </script>
+@endsection

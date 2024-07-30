@@ -454,6 +454,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::resource('roles', 'RoleController');
 
     Route::resource('users', 'ManageUserController');
+    Route::resource('employees', 'EmployeeController');
 
     Route::resource('group-taxes', 'GroupTaxController');
 
