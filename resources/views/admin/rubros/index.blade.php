@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __( 'Empleados' ))
+@section('title', __( 'Rubros' ))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang( 'Empleados' )
-        <small>@lang( 'Administrar empleados' )</small>
+    <h1>@lang( 'Rubros' )
+        <small>@lang( 'Administrar los rubros para las planillas' )</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -16,26 +16,27 @@
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => __( 'Todos los empleados' )])
+    @component('components.widget', ['class' => 'box-primary', 'title' => __( 'Todos los rubros' )])
         @can('user.create')
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" 
-                    href="{{action('EmployeeController@create')}}" >
+                    href="{{action('RubrosController@create')}}" >
                     <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
                  </div>
             @endslot
         @endcan
         @can('user.view')
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="employees_table">
+                <table class="table table-bordered table-striped" id="rubros_table">
                     <thead>
                         <tr>
-                            <th>@lang( 'Empleado' )</th>
-                            <th>@lang( 'Telefono' )</th>
-                            <th>E-mail</th>
-                            <th>@lang( 'Celular' )</th>
-                            <th>@lang( 'Fecha ingreso' )</th>
+                            <th>@lang( 'Rubro' )</th>
+                            <th>@lang( 'Alias' )</th>
+                            <th>@lang( 'Categoría' )</th>
+                            <th>@lang( 'Tipo' )</th>
+                            <th>@lang( 'Tipo calculo' )</th>
+                            <th>@lang( 'Estado' )</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
                     </thead>
@@ -55,10 +56,10 @@
 <script type="text/javascript">
     //Roles table
     $(document).ready( function(){
-        var users_table = $('#employees_table').DataTable({
+        var users_table = $('#rubros_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/employees',
+                    ajax: '/rubros',
                     columnDefs: [ {
                         "targets": [4],
                         "orderable": false,
@@ -66,17 +67,18 @@
                     } ],
                     "columns":[
                         {"data":"name"},
-                        {"data":"telephone"},
-                        {"data":"email"},
-                        {"data":"celular"},
-                        {"data":"created_at"},
+                        {"data":"alias"},
+                        {"data":"category"},
+                        {"data":"tipo"},
+                        {"data":"tipo_calculo"},
+                        {"data":"status"},
                         {"data":"action"}
                     ]
                 });
         $(document).on('click', 'button.delete_user_button', function(){
             swal({
               title: LANG.sure,
-              text: 'Este empleado será eliminado, desea continuar?',
+              text: 'Este rubro será eliminado, desea continuar?',
               icon: "warning",
               buttons: true,
               dangerMode: true,

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentAndNote;
+use App\Models\EmployeeRubros;
 use App\Models\Media;
+use App\Models\RubrosPlanilla;
 use App\Models\User;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
@@ -38,114 +40,64 @@ class DocumentAndNoteController extends Controller
         if (request()->ajax()) {
 
             $business_id = request()->session()->get('user.business_id');
-            $user_id = request()->session()->get('user.id');
-            //model id like project_id, user_id
-            $notable_id = request()->get('notable_id');
-            //model name like App\User
-            $notable_type = request()->get('notable_type');
+            $employee_id = request()->get('employee_id');
 
-            $document_note = DocumentAndNote::where('business_id', $business_id)
-            ->where('notable_id', $notable_id)
-            ->where(function ($query) use ($user_id) {
-                $query->where('is_private', 0)
-                ->orWhere(function ($q) use ($user_id) {
-                    $q->where('is_private', 1)
-                    ->where('created_by', $user_id);
-                });
-            })
-            ->where('notable_type', $notable_type)
-            ->with('createdBy', 'media')
-            ->select('*');
+            $rubros_employees = EmployeeRubros::where('employee_rubros.business_id', $business_id)
+                ->where('employee_rubros.employee_id', $employee_id)
+                ->join('rubros_planillas', 'employee_rubros.rubro_id', 'rubros_planillas.id')
+                ->select(
+                    'employee_rubros.id',
+                    'employee_rubros.status',
+                    'employee_rubros.tipo',
+                    'employee_rubros.valor',
+                    'rubros_planillas.name'
+                );
 
-            $permissions = $this->__getPermission($business_id, $notable_id, $notable_type);
-
-            if (!empty($permissions) && in_array('view', $permissions)) {
-                return Datatables::of($document_note)
-                ->addColumn('action', function ($row) use ($notable_type, $permissions) {
+            return Datatables::of($rubros_employees)
+                ->addColumn('action', function ($row) {
                     // return '';
                     $html = '<div class="btn-group">
                     <button class="btn btn-info dropdown-toggle btn-xs" type="button"  data-toggle="dropdown" aria-expanded="false">
-                    '.__("messages.action").'
+                    ' . __("messages.action") . '
                     <span class="caret"></span>
                     <span class="sr-only">
-                    '.__("messages.action").'
+                    ' . __("messages.action") . '
                     </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-left" role="menu">
                     ';
 
-                    if (in_array('view', $permissions)) {
-                        $html .='<li>
-                        <a data-href="' . action('DocumentAndNoteController@show', [$row->id, 'id' => $row->id, 'notable_id' => $row->notable_id, 'notable_type' => $notable_type]) . '" class="cursor-pointer view_a_docs_note">
-                        <i class="fa fa-eye"></i>
-                        '.__("messages.view").'
-                        </a>
-                        </li>';
-                    }
-                    if (in_array('create', $permissions)) {
-                        $html .= '<li>
-                        <a data-href="' . action('DocumentAndNoteController@edit', [$row->id, 'id' => $row->id, 'notable_id' => $row->notable_id, 'notable_type' => $notable_type]) . '"  class="cursor-pointer docs_and_notes_btn">
+
+                    $html .= '<li>
+                        <a data-href="' . action('DocumentAndNoteController@edit', [$row->id, 'id' => $row->id, 'employee_id' => $row->employee_id]) . '"  class="cursor-pointer docs_and_notes_btn">
                         <i class="fa fa-edit"></i>
-                        '.__("messages.edit").'
+                        ' . __("messages.edit") . '
                         </a>
                         </li>';
-                    }
-                    if (in_array('delete', $permissions)) {
-                        $html .= '<li>
-                        <a data-href="' . action('DocumentAndNoteController@destroy', [$row->id, 'id' => $row->id, 'notable_id' => $row->notable_id, 'notable_type' => $notable_type]) . '"  id="delete_docus_note" class="cursor-pointer">
+
+
+                    $html .= '<li>
+                        <a data-href="' . action('EmployeeController@destroyRubro', [$row->id]) . '"  id="delete_docus_note" class="cursor-pointer">
                         <i class="fas fa-trash"></i>
-                        '.__("messages.delete").'
+                        ' . __("messages.delete") . '
                         </a>
                         </li>';
-                    }
+
 
                     $html .= '</ul>
                     </div>';
 
                     return $html;
                 })
-                ->editColumn('created_at', '
-                    {{ \Carbon\Carbon::parse($created_at)->format("d/m/Y H:i")}}
-                    ')
-                ->editColumn('updated_at', '
-                    {{ \Carbon\Carbon::parse($updated_at)->format("d/m/Y H:i")}}
-                    ')
-                ->editColumn('createdBy', function ($row) {
-                    return optional($row->createdBy)->user_full_name;
+                ->editColumn('tipo', function ($data) {
+                    return $data->tipo == 'quincenal' ? 'Quincenal' : 'Mensual';
                 })
-                ->editColumn(
-                    'heading',
-                    function ($row) use ($notable_type) {
-                        $is_private = '';
-                        if ($row->is_private) {
-                            $private_tooltip = __("lang_v1.private_note");
-                            $is_private = '<i class="fas fa-lock text-danger"
-                            data-toggle="tooltip" title="'.$private_tooltip.'"></i>';
-                        }
-
-                        $icon = '';
-                        if ($row->media->count() > 0) {
-                            $media_tooltip = __("lang_v1.contains_media");
-                            $icon = '<i class="fas fa-file-image text-primary" data-toggle="tooltip" title="'.$media_tooltip.'"></i>';
-                        }
-
-                        $html = '<a data-href="' . action('DocumentAndNoteController@show', [$row->id, 'id' => $row->id, 'notable_id' => $row->notable_id, 'notable_type' => $notable_type]) . '" class="cursor-pointer view_a_docs_note text-black">
-                        '.
-                        $row->heading .
-                        '&nbsp;'.
-                        $is_private.
-                        '&nbsp;'.
-                        $icon
-                        .'
-                        </a>';
-
-                        return $html;
-                    }
-                )
+                ->editColumn('status', function ($data) {
+                    return $data->status == '1' ? 'Activo' : 'Inactivo';
+                })
                 ->removeColumn('id')
-                ->rawColumns(['action', 'heading', 'createdBy', 'created_at', 'updated_at'])
+                ->rawColumns(['action', 'tipo', 'rubro'])
                 ->make(true);
-            }
         }
     }
 
@@ -195,11 +147,10 @@ class DocumentAndNoteController extends Controller
     public function create()
     {
         //model id like project_id, user_id
-        $notable_id = request()->get('notable_id');
-        //model name like App\User
-        $notable_type = request()->get('notable_type');
-        return view('documents_and_notes.create')
-        ->with(compact('notable_id', 'notable_type'));
+        $employee_id = request()->get('employee_id');
+        $rubros = RubrosPlanilla::where('status', 1)->get()->pluck('name', 'id');
+        return view('admin.rubros.tab_rubros.create')
+            ->with(compact('employee_id', 'rubros'));
     }
 
     /**
@@ -229,10 +180,10 @@ class DocumentAndNoteController extends Controller
 
             //find model to which document is to be added
             $model = $notable_type::where('business_id', $input['business_id'])
-            ->findOrFail($notable_id);
+                ->findOrFail($notable_id);
 
             $model_note = $model->documentsAndnote()->create($input);
-            
+
             if (!empty($request->get('file_name')[0])) {
                 $file_names = explode(',', $request->get('file_name')[0]);
                 $business_id = request()->session()->get('user.business_id');
@@ -248,7 +199,7 @@ class DocumentAndNoteController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -274,13 +225,13 @@ class DocumentAndNoteController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $document_note = DocumentAndNote::where('business_id', $business_id)
-        ->where('notable_id', $notable_id)
-        ->where('notable_type', $notable_type)
-        ->with('media', 'createdBy')
-        ->findOrFail($id);
+            ->where('notable_id', $notable_id)
+            ->where('notable_type', $notable_type)
+            ->with('media', 'createdBy')
+            ->findOrFail($id);
 
         return view('documents_and_notes.show')
-        ->with(compact('document_note'));
+            ->with(compact('document_note'));
     }
 
     /**
@@ -291,19 +242,13 @@ class DocumentAndNoteController extends Controller
      */
     public function edit($id)
     {
-        //model id like project_id, user_id
-        $notable_id = request()->get('notable_id');
-        //model name like App\User
-        $notable_type = request()->get('notable_type');
-
         $business_id = request()->session()->get('user.business_id');
-        $document_note = DocumentAndNote::where('business_id', $business_id)
-        ->where('notable_id', $notable_id)
-        ->where('notable_type', $notable_type)
-        ->findOrFail($id);
+        $rubros = RubrosPlanilla::where('status', 1)->get()->pluck('name', 'id');
+        $employee_rubros = EmployeeRubros::where('business_id', $business_id)
+            ->findOrFail($id);
 
-        return view('documents_and_notes.edit')
-        ->with(compact('notable_id', 'document_note', 'notable_type'));
+        return view('admin.rubros.tab_rubros.edit')
+            ->with(compact('employee_rubros','rubros'));
     }
 
     /**
@@ -326,11 +271,11 @@ class DocumentAndNoteController extends Controller
 
             $input = $request->only('heading', 'description');
             $input['is_private'] = !empty($request->get('is_private')) ? 1 : 0;
-            
+
             $document_note = DocumentAndNote::where('business_id', $business_id)
-            ->where('notable_id', $notable_id)
-            ->where('notable_type', $notable_type)
-            ->findOrFail($id);
+                ->where('notable_id', $notable_id)
+                ->where('notable_type', $notable_type)
+                ->findOrFail($id);
 
             DB::beginTransaction();
 
@@ -358,7 +303,7 @@ class DocumentAndNoteController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -385,9 +330,9 @@ class DocumentAndNoteController extends Controller
             $notable_type = request()->get('notable_type');
 
             $document_note = DocumentAndNote::where('business_id', $business_id)
-            ->where('notable_id', $notable_id)
-            ->where('notable_type', $notable_type)
-            ->findOrFail($id);
+                ->where('notable_id', $notable_id)
+                ->where('notable_type', $notable_type)
+                ->findOrFail($id);
 
             DB::beginTransaction();
 
@@ -395,7 +340,7 @@ class DocumentAndNoteController extends Controller
             $document_note->media()->delete();
 
             DB::commit();
-            
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.success')
@@ -403,7 +348,7 @@ class DocumentAndNoteController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -432,7 +377,7 @@ class DocumentAndNoteController extends Controller
                 'msg' => __('lang_v1.success')
             ];
         } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -448,16 +393,14 @@ class DocumentAndNoteController extends Controller
      * through ajax
      * @return \Illuminate\Http\Response
      */
-    public function getDocAndNoteIndexPage(Request $request)
+    public function getRubrosEmployeePage(Request $request)
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $notable_type = $request->get('notable_type');
-            $notable_id = $request->get('notable_id');
-            $permissions = $this->__getPermission($business_id, $notable_id, $notable_type);
+            $employee_id = $request->get('employee_id');
 
-            return view('documents_and_notes.index')
-            ->with(compact('permissions', 'notable_type', 'notable_id'));
+            return view('admin.rubros.tab_rubros.index')
+                ->with(compact('employee_id'));
         }
     }
 }

@@ -78,7 +78,7 @@ LANG = {
 "table_info": "Mostrando _START_ a _END_ de _TOTAL_ entradas", 
 "table_infoEmpty": "Mostrando 0 a 0 de 0 entradas", 
 "table_loadingRecords": "Cargando...", 
-"table_processing": "Tratamiento...", 
+"table_processing": "Procesando...", 
 "table_zeroRecords": "No se encontraron registros coincidentes", 
 "first": "Primero", 
 "last": "Último", 

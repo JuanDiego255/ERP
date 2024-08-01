@@ -49,6 +49,10 @@
                                 <a class="pull-right">{{ $employee->puesto }}</a>
                             </li>
                             <li class="list-group-item">
+                                <b>@lang('Fecha de ingreso')</b>
+                                <a class="pull-right">{{ @format_date($employee->created_at) }}</a>
+                            </li>
+                            <li class="list-group-item">
                                 <b>{{ __('Estado') }}</b>
                                 @if ($employee->status == '1')
                                     <span class="label label-success pull-right">
@@ -83,7 +87,7 @@
 
                         <li>
                             <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i
-                                    class="fas fa-briefcase" aria-hidden="true"></i> Rubros</a>
+                                    class="fas fa-briefcase" aria-hidden="true"></i> Rubros fijos</a>
                         </li>
                     </ul>
 
@@ -118,10 +122,7 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="documents_and_notes_tab">
-                            <!-- model id like project_id, user_id -->
-                            <input type="hidden" name="notable_id" id="notable_id" value="{{ $employee->id }}">
-                            <!-- model name like App\User -->
-                            <input type="hidden" name="notable_type" id="notable_type" value="App\Models\User">
+                            <input type="hidden" name="employee_id" id="employee_id" value="{{ $employee->id }}">
                             <div class="document_note_body">
                             </div>
                         </div>
@@ -133,7 +134,7 @@
 @endsection
 @section('javascript')
     <!-- document & note.js -->
-    @include('documents_and_notes.document_and_note_js')
+    @include('admin.rubros.tab_rubros.document_and_note_js')
 
     <script type="text/javascript">
         $(document).ready(function() {

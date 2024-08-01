@@ -35,6 +35,7 @@
                             <th><?php echo app('translator')->get( 'Telefono' ); ?></th>
                             <th>E-mail</th>
                             <th><?php echo app('translator')->get( 'Celular' ); ?></th>
+                            <th><?php echo app('translator')->get( 'Fecha ingreso' ); ?></th>
                             <th><?php echo app('translator')->get( 'messages.action' ); ?></th>
                         </tr>
                     </thead>
@@ -68,6 +69,7 @@
                         {"data":"telephone"},
                         {"data":"email"},
                         {"data":"celular"},
+                        {"data":"created_at"},
                         {"data":"action"}
                     ]
                 });

@@ -1,13 +1,12 @@
 //This file contains all code related to document & note
-function getDocAndNoteIndexPage() {
-    var notable_type = $('#notable_type').val();
-    var notable_id = $('#notable_id').val();
+function getRubros() {
+    var employee_id = $('#employee_id').val();
     $.ajax({
         method: "GET",
         dataType: "html",
-        url: '/get-document-note-page',
+        url: '/get-rubros-employee-page',
         async: false,
-        data: {'notable_type' : notable_type, 'notable_id' : notable_id},
+        data: {'employee_id' : employee_id},
         success: function(result){
             $('.document_note_body').html(result);
         }
@@ -65,11 +64,12 @@ function initialize_dropzone_for_docus_n_notes() {
 }
 
 //form submittion of docs & notes form
-$(document).on('submit', 'form#docus_notes_form', function(e){
+$(document).on('submit', 'form#rubros_employee_form', function(e){
     e.preventDefault();
-    var url = $('form#docus_notes_form').attr('action');
-    var method = $('form#docus_notes_form').attr('method');
-    var data = $('form#docus_notes_form').serialize();
+    var url = $('form#rubros_employee_form').attr('action');
+    var method = $('form#rubros_employee_form').attr('method');
+    var data = $('form#rubros_employee_form').serialize();
+   
     $.ajax({
         method: method,
         dataType: "json",
@@ -101,14 +101,14 @@ $(document).on('click', '#delete_docus_note', function(e) {
     e.preventDefault();
     var url = $(this).data('href');
     swal({
-        title: LANG.sure,
+        title: "Deseas eliminar este rubro?",
         icon: "warning",
         buttons: true,
         dangerMode: true,
     }).then((confirmed) => {
         if (confirmed) {
             $.ajax({
-                method:'DELETE',
+                method:'post',
                 dataType: 'json',
                 url: url,
                 success: function(result){
@@ -143,15 +143,14 @@ function initializeDocumentAndNoteDataTable() {
             processing: true,
             serverSide: true,
             ajax:{
-                url: '/note-documents',
+                url: '/rubros-employee',
                 data: function(d) {
-                    d.notable_id = $('#notable_id').val();
-                    d.notable_type = $('#notable_type').val();
+                    d.employee_id = $('#employee_id').val();
                 }
             },
             columnDefs: [
                 {
-                    targets: [0, 2, 4],
+                    targets: [0, 2, 3],
                     orderable: false,
                     searchable: false,
                 },
@@ -159,10 +158,10 @@ function initializeDocumentAndNoteDataTable() {
             aaSorting: [[3, 'asc']],
             columns: [
                 { data: 'action', name: 'action' },
-                { data: 'heading', name: 'heading' },
-                { data: 'createdBy'},
-                { data: 'created_at', name: 'created_at' },
-                { data: 'updated_at', name: 'updated_at' },
+                { data: 'tipo', name: 'tipo' },
+                { data: 'name', name: 'name' },
+                { data: 'valor', name: 'valor' },
+                { data: 'status', name: 'status' }
             ]
         });
 }

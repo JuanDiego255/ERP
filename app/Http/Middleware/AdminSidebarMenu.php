@@ -96,6 +96,9 @@ class AdminSidebarMenu
                             if (auth()->user()->can('employee.view')) {
                                 $sub->url(action('EmployeeController@index'), __('Empleados'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'employees']);
                             }
+                            if (auth()->user()->can('rubros.view')) {
+                                $sub->url(action('RubrosController@index'), __('Rubros planilla'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'rubros']);
+                            }
                         },
                         ['icon' => 'fa fas fa-address-book', 'id' => 'tour_step4'],
                     )

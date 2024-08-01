@@ -51,6 +51,10 @@
                                 <a class="pull-right"><?php echo e($employee->puesto, false); ?></a>
                             </li>
                             <li class="list-group-item">
+                                <b><?php echo app('translator')->get('Fecha de ingreso'); ?></b>
+                                <a class="pull-right"><?php echo e(\Carbon::createFromTimestamp(strtotime($employee->created_at))->format(session('business.date_format')), false); ?></a>
+                            </li>
+                            <li class="list-group-item">
                                 <b><?php echo e(__('Estado'), false); ?></b>
                                 <?php if($employee->status == '1'): ?>
                                     <span class="label label-success pull-right">
@@ -85,7 +89,7 @@
 
                         <li>
                             <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i
-                                    class="fas fa-briefcase" aria-hidden="true"></i> Rubros</a>
+                                    class="fas fa-briefcase" aria-hidden="true"></i> Rubros fijos</a>
                         </li>
                     </ul>
 
@@ -120,10 +124,7 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="documents_and_notes_tab">
-                            <!-- model id like project_id, user_id -->
-                            <input type="hidden" name="notable_id" id="notable_id" value="<?php echo e($employee->id, false); ?>">
-                            <!-- model name like App\User -->
-                            <input type="hidden" name="notable_type" id="notable_type" value="App\Models\User">
+                            <input type="hidden" name="employee_id" id="employee_id" value="<?php echo e($employee->id, false); ?>">
                             <div class="document_note_body">
                             </div>
                         </div>
@@ -135,7 +136,7 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('javascript'); ?>
     <!-- document & note.js -->
-    <?php echo $__env->make('documents_and_notes.document_and_note_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('admin.rubros.tab_rubros.document_and_note_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <script type="text/javascript">
         $(document).ready(function() {

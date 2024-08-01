@@ -12,9 +12,12 @@
 */
 
 include_once('install_r.php');
+
+use App\Http\Controllers\EmployeeController;
 use App\Models\Transaction;
 use App\Models\Test;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['authh','language'])->group(function () {
     Route::get('/', function () {
@@ -455,6 +458,11 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
 
     Route::resource('users', 'ManageUserController');
     Route::resource('employees', 'EmployeeController');
+    Route::post('/rubros/store-employee-rubro', [EmployeeController::class, 'storeRubro'])->name('rubros.store');
+    Route::put('/rubros/edit-employee-rubro', [EmployeeController::class, 'updateRubro'])->name('rubros.update');
+    Route::post('/rubros/delete-employee-rubro/{id}', [EmployeeController::class, 'destroyRubro'])->name('rubros.delete');
+
+    Route::resource('rubros', 'RubrosController');
 
     Route::resource('group-taxes', 'GroupTaxController');
 
@@ -675,9 +683,9 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     ->only(['edit', 'update']);
 
     //common controller for document & note
-    Route::get('get-document-note-page', 'DocumentAndNoteController@getDocAndNoteIndexPage');
+    Route::get('get-rubros-employee-page', 'DocumentAndNoteController@getRubrosEmployeePage');
     Route::post('post-document-upload', 'DocumentAndNoteController@postMedia');
-    Route::resource('note-documents', 'DocumentAndNoteController');
+    Route::resource('rubros-employee', 'DocumentAndNoteController');
 
 });
 
