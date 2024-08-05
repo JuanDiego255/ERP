@@ -39,17 +39,17 @@
                             <li class="list-group-item">
                                 <b>@lang('Celular')</b>
                                 <a class="pull-right">{{ $employee->celular }}</a>
-                            </li>
+                            </li>{{-- 
                             <li class="list-group-item">
                                 <b>@lang('Correo')</b>
                                 <a class="pull-right">{{ $employee->email }}</a>
-                            </li>
+                            </li> --}}
                             <li class="list-group-item">
                                 <b>@lang('Puesto')</b>
                                 <a class="pull-right">{{ $employee->puesto }}</a>
                             </li>
                             <li class="list-group-item">
-                                <b>@lang('Fecha de ingreso')</b>
+                                <b>@lang('Ingreso')</b>
                                 <a class="pull-right">{{ @format_date($employee->created_at) }}</a>
                             </li>
                             <li class="list-group-item">
@@ -96,19 +96,28 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-4">
+                                        <p><strong>@lang('Vacaciones'): {{ $employee->vacaciones }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
                                         <p><strong>@lang('Moneda de pago'): {{ $employee->moneda_pago }}</strong></p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>@lang('Tipo pago'): {{ $employee->tipo_pago == 'quincenal' ? 'Quincenal' : 'Mensual' }}</strong></p>
-                                    </div>                                    
-                                    <div class="col-md-4">
-                                        <p><strong>@lang('Salario por hora'): ₡{{ number_format($employee->salario_hora) }}</strong></p>
+                                        <p><strong>@lang('Tipo pago'):
+                                                {{ $employee->tipo_pago == 'quincenal' ? 'Quincenal' : 'Mensual' }}</strong>
+                                        </p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>@lang('Salario base'): ₡{{ number_format($employee->salario_base) }}</strong></p>
+                                        <p><strong>@lang('Salario por hora'):
+                                                ₡{{ number_format($employee->salario_hora) }}</strong></p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>@lang('Comision ventas'): {{ !empty($employee->comision_ventas) ? $employee->comision_ventas : '--' }}</strong></p>
+                                        <p><strong>@lang('Salario base'):
+                                                ₡{{ number_format($employee->salario_base) }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Comision ventas'):
+                                                {{ !empty($employee->comision_ventas) ? $employee->comision_ventas : '--' }}</strong>
+                                        </p>
                                     </div>
                                     @php
                                         $ccss = $employee->ccss;
@@ -119,6 +128,54 @@
                                         <p><strong>@lang('Deduccion C.C.S.S'): ₡{{ number_format($resultado) }}</strong></p>
                                     </div>
                                 </div>
+                                <div class="clearfix"></div>
+                                <div class="col-md-12">
+                                    <hr />
+                                </div>
+                                {!! Form::open(['url' => action('EmployeeController@storeAction'), 'method' => 'post', 'id' => 'user_add_form']) !!}
+
+                                <div class="col-md-12">
+                                    @component('components.widget')
+                                        <h3 class="box-title">
+                                            <strong>Acciones de personal</strong>
+                                        </h3>
+                                        {!! Form::hidden('employee_id', $employee->id, ['class' => 'form-control']) !!}
+                                        <div class="form-group col-md-12">
+                                            {!! Form::label('action', 'Tipo' . ':*') !!}
+                                            {!! Form::select('action', ['1' => 'Vacaciones'], !empty($employee->accion) ? $employee->accion : null, [
+                                                'class' => 'form-control',
+                                                'id' => 'gender',
+                                                'required',
+                                                'placeholder' => __('messages.please_select'),
+                                            ]) !!}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {!! Form::label('fecha_desde', __('Fecha desde') . ':') !!}
+                                                {!! Form::date('fecha_desde', null, ['class' => 'form-control', 'required']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {!! Form::label('fecha_hasta', __('Fecha hasta') . ':') !!}
+                                                {!! Form::date('fecha_hasta', null, ['class' => 'form-control', 'required']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                {!! Form::label('observation', __('Observación') . ':') !!}
+                                                {!! Form::textarea('observation', null, ['class' => 'form-control']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary pull-right"
+                                                    id="submit_user_button">@lang('messages.save')</button>
+                                            </div>
+                                        </div>
+                                    @endcomponent
+                                </div>
+                                {!! Form::close() !!}
                             </div>
                         </div>
                         <div class="tab-pane" id="documents_and_notes_tab">

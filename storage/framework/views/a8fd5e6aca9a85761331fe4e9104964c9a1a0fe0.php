@@ -115,7 +115,6 @@
                 <?php echo $__env->renderComponent(); ?>
             </div>
         </div>
-        <?php echo $__env->make('admin.employees.rubros', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <div class="row">
             <div class="col-md-12">
                 <button type="submit" class="btn btn-primary pull-right" id="submit_user_button"><?php echo app('translator')->get('messages.save'); ?></button>

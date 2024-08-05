@@ -90,7 +90,6 @@
                 @endcomponent
             </div>
         </div>
-        @include('admin.employees.rubros')
         <div class="row">
             <div class="col-md-12">
                 <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">@lang('messages.save')</button>

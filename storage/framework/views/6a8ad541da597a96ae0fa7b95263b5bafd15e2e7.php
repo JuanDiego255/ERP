@@ -43,15 +43,11 @@
                                 <a class="pull-right"><?php echo e($employee->celular, false); ?></a>
                             </li>
                             <li class="list-group-item">
-                                <b><?php echo app('translator')->get('Correo'); ?></b>
-                                <a class="pull-right"><?php echo e($employee->email, false); ?></a>
-                            </li>
-                            <li class="list-group-item">
                                 <b><?php echo app('translator')->get('Puesto'); ?></b>
                                 <a class="pull-right"><?php echo e($employee->puesto, false); ?></a>
                             </li>
                             <li class="list-group-item">
-                                <b><?php echo app('translator')->get('Fecha de ingreso'); ?></b>
+                                <b><?php echo app('translator')->get('Ingreso'); ?></b>
                                 <a class="pull-right"><?php echo e(\Carbon::createFromTimestamp(strtotime($employee->created_at))->format(session('business.date_format')), false); ?></a>
                             </li>
                             <li class="list-group-item">
@@ -98,19 +94,28 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-4">
+                                        <p><strong><?php echo app('translator')->get('Vacaciones'); ?>: <?php echo e($employee->vacaciones, false); ?></strong></p>
+                                    </div>
+                                    <div class="col-md-4">
                                         <p><strong><?php echo app('translator')->get('Moneda de pago'); ?>: <?php echo e($employee->moneda_pago, false); ?></strong></p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong><?php echo app('translator')->get('Tipo pago'); ?>: <?php echo e($employee->tipo_pago == 'quincenal' ? 'Quincenal' : 'Mensual', false); ?></strong></p>
-                                    </div>                                    
-                                    <div class="col-md-4">
-                                        <p><strong><?php echo app('translator')->get('Salario por hora'); ?>: ₡<?php echo e(number_format($employee->salario_hora), false); ?></strong></p>
+                                        <p><strong><?php echo app('translator')->get('Tipo pago'); ?>:
+                                                <?php echo e($employee->tipo_pago == 'quincenal' ? 'Quincenal' : 'Mensual', false); ?></strong>
+                                        </p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong><?php echo app('translator')->get('Salario base'); ?>: ₡<?php echo e(number_format($employee->salario_base), false); ?></strong></p>
+                                        <p><strong><?php echo app('translator')->get('Salario por hora'); ?>:
+                                                ₡<?php echo e(number_format($employee->salario_hora), false); ?></strong></p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong><?php echo app('translator')->get('Comision ventas'); ?>: <?php echo e(!empty($employee->comision_ventas) ? $employee->comision_ventas : '--', false); ?></strong></p>
+                                        <p><strong><?php echo app('translator')->get('Salario base'); ?>:
+                                                ₡<?php echo e(number_format($employee->salario_base), false); ?></strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong><?php echo app('translator')->get('Comision ventas'); ?>:
+                                                <?php echo e(!empty($employee->comision_ventas) ? $employee->comision_ventas : '--', false); ?></strong>
+                                        </p>
                                     </div>
                                     <?php
                                         $ccss = $employee->ccss;
@@ -121,6 +126,65 @@
                                         <p><strong><?php echo app('translator')->get('Deduccion C.C.S.S'); ?>: ₡<?php echo e(number_format($resultado), false); ?></strong></p>
                                     </div>
                                 </div>
+                                <div class="clearfix"></div>
+                                <div class="col-md-12">
+                                    <hr />
+                                </div>
+                                <?php echo Form::open(['url' => action('EmployeeController@storeAction'), 'method' => 'post', 'id' => 'user_add_form']); ?>
+
+
+                                <div class="col-md-12">
+                                    <?php $__env->startComponent('components.widget'); ?>
+                                        <h3 class="box-title">
+                                            <strong>Acciones de personal</strong>
+                                        </h3>
+                                        <?php echo Form::hidden('employee_id', $employee->id, ['class' => 'form-control']); ?>
+
+                                        <div class="form-group col-md-12">
+                                            <?php echo Form::label('action', 'Tipo' . ':*'); ?>
+
+                                            <?php echo Form::select('action', ['1' => 'Vacaciones'], !empty($employee->accion) ? $employee->accion : null, [
+                                                'class' => 'form-control',
+                                                'id' => 'gender',
+                                                'required',
+                                                'placeholder' => __('messages.please_select'),
+                                            ]); ?>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <?php echo Form::label('fecha_desde', __('Fecha desde') . ':'); ?>
+
+                                                <?php echo Form::date('fecha_desde', null, ['class' => 'form-control', 'required']); ?>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <?php echo Form::label('fecha_hasta', __('Fecha hasta') . ':'); ?>
+
+                                                <?php echo Form::date('fecha_hasta', null, ['class' => 'form-control', 'required']); ?>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <?php echo Form::label('observation', __('Observación') . ':'); ?>
+
+                                                <?php echo Form::textarea('observation', null, ['class' => 'form-control']); ?>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary pull-right"
+                                                    id="submit_user_button"><?php echo app('translator')->get('messages.save'); ?></button>
+                                            </div>
+                                        </div>
+                                    <?php echo $__env->renderComponent(); ?>
+                                </div>
+                                <?php echo Form::close(); ?>
+
                             </div>
                         </div>
                         <div class="tab-pane" id="documents_and_notes_tab">
