@@ -9,7 +9,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="<?php echo e(csrf_token(), false); ?>">
-
+    <link rel="shortcut icon" href="<?php echo e(public_path('uploads/logo.ICO'), false); ?>"
+    type="image/x-icon">
     <title><?php echo $__env->yieldContent('title'); ?> - <?php echo e(config('app.name', 'POS'), false); ?></title> 
 
     <?php echo $__env->make('layouts.partials.css', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

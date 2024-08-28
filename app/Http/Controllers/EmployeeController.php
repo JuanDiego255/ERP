@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmployeeHolidays;
 use App\Models\EmployeeRubros;
 use App\Models\Employees;
 use App\Models\RubrosPlanilla;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -260,14 +262,14 @@ class EmployeeController extends Controller
 
 
      */
-     public function updateRubro(Request $request)
+    public function updateRubro(Request $request)
     {
         if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
         try {
             $employee_rubro = $request->only([
-                'tipo', 'rubro_id', 'valor', 'status', 'employee_id','id'
+                'tipo', 'rubro_id', 'valor', 'status', 'employee_id', 'id'
             ]);
             $id = $employee_rubro['id'];
 
@@ -376,7 +378,7 @@ class EmployeeController extends Controller
 
 
      */
-     public function destroyRubro($id)
+    public function destroyRubro($id)
     {
         if (!auth()->user()->can('employee.delete')) {
             abort(403, 'Unauthorized action.');
@@ -403,5 +405,59 @@ class EmployeeController extends Controller
 
             return $output;
         }
+    }
+    /**
+
+     *Insert the form data into the respective table
+
+     *
+
+     * @param Request $request
+
+
+     */
+    public function storeAction(Request $request)
+    {
+        if (!auth()->user()->can('employee.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            $employee_action = $request->only([
+                'fecha_desde', 'fecha_hasta', 'estado', 'employee_id', 'observacion'
+            ]);
+            $fecha_desde = $request->input('fecha_desde');
+            $fecha_hasta = $request->input('fecha_hasta');
+            $employee_id = $request->input('employee_id');
+
+            $date1 = new DateTime($fecha_desde);
+            $date2 = new DateTime($fecha_hasta);
+
+            $interval = $date1->diff($date2);
+            $days = $interval->days;
+            $employee_action['cantidad'] = $days;
+            $employee_action['estado'] = 1;
+
+            $business_id = $request->session()->get('user.business_id');
+            $employee_action['business_id'] = $business_id;
+
+            EmployeeHolidays::create($employee_action);
+            $employee = Employees::where('business_id', $business_id)
+                ->findOrFail($employee_id);
+            $employee_vacaciones['vacaciones'] = $employee->vacaciones - $days;
+            $employee->update($employee_vacaciones);
+            $output = [
+                'success' => 1,
+                'msg' => __("Se agregó la acción con éxito")
+            ];
+        } catch (\Exception $e) {
+            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+            dd($e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong")
+            ];
+        }
+
+        return redirect()->back()->with('status', $output);
     }
 }

@@ -161,7 +161,7 @@
         e.preventDefault();
         swal({
             title: LANG.sure,
-            text: "Depois de excluído, você não poderá recuperar esta empresa!",
+            text: "Al eliminar esta empresa, no podrá recuperarla",
             icon: "warning",
             buttons: true,
             dangerMode: true,

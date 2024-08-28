@@ -30,7 +30,7 @@
             <table class="table table-bordered table-striped" id="roles_table">
                 <thead>
                     <tr>
-                        <th>Nome</th>
+                        <th>Nombre</th>
                         <th>Compartir</th>
                     </tr>
                 </thead>

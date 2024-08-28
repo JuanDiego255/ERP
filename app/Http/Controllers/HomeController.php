@@ -54,7 +54,6 @@ class HomeController extends Controller
             return view('home.index');
         }
 
-
         $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
         $date_filters['this_fy'] = $fy;
         $date_filters['this_month']['start'] = date('Y-m-01');
@@ -283,9 +282,7 @@ class HomeController extends Controller
                     )
                     ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
                     ->where('p.business_id', $business_id)
-                    ->where('p.enable_stock', 1)
-                    ->where('p.is_inactive', 0)
-                    ->whereRaw('variation_location_details.qty_available <= p.alert_quantity');
+                    ->where('p.is_inactive', 0);
 
             //Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
@@ -351,8 +348,7 @@ class HomeController extends Controller
                     )
                     ->where('transactions.business_id', $business_id)
                     ->where('transactions.type', 'purchase')
-                    ->where('transactions.payment_status', '!=', 'paid')
-                    ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(c.pay_term_type = 'days', c.pay_term_number, 30 * c.pay_term_number) DAY), '$today') <= 7");
+                    ->where('transactions.payment_status', '!=', 'paid');
 
             //Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();

@@ -169,9 +169,9 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <?php echo Form::label('observation', __('Observación') . ':'); ?>
+                                                <?php echo Form::label('observacion', __('Observación') . ':'); ?>
 
-                                                <?php echo Form::textarea('observation', null, ['class' => 'form-control']); ?>
+                                                <?php echo Form::textarea('observacion', null, ['class' => 'form-control']); ?>
 
                                             </div>
                                         </div>
@@ -195,7 +195,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>       
+
     </section>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('javascript'); ?>
@@ -208,7 +209,7 @@
                 if ($(this).val()) {
                     window.location = "<?php echo e(url('/employees'), false); ?>/" + $(this).val();
                 }
-            });
+            });            
         });
     </script>
 <?php $__env->stopSection(); ?>

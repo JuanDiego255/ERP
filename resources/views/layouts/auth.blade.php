@@ -10,7 +10,9 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') - {{ config('app.name', 'POS') }}</title> 
+    <title>@yield('title') - {{ config('app.name', 'POS') }}</title>
+    <link rel="shortcut icon" href="{{ public_path('uploads/logo.ico') }}"
+        type="image/x-icon">
 
     @include('layouts.partials.css')
 

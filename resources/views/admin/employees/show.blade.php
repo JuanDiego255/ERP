@@ -163,8 +163,8 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                {!! Form::label('observation', __('Observación') . ':') !!}
-                                                {!! Form::textarea('observation', null, ['class' => 'form-control']) !!}
+                                                {!! Form::label('observacion', __('Observación') . ':') !!}
+                                                {!! Form::textarea('observacion', null, ['class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="row">
@@ -186,7 +186,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>       
+
     </section>
 @endsection
 @section('javascript')
@@ -199,7 +200,7 @@
                 if ($(this).val()) {
                     window.location = "{{ url('/employees') }}/" + $(this).val();
                 }
-            });
+            });            
         });
     </script>
 @endsection

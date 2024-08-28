@@ -462,6 +462,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::put('/rubros/edit-employee-rubro', [EmployeeController::class, 'updateRubro'])->name('rubros.update');
     Route::post('/rubros/delete-employee-rubro/{id}', [EmployeeController::class, 'destroyRubro'])->name('rubros.delete');
     Route::post('/employee/store-action', [EmployeeController::class, 'storeAction'])->name('rubros.store');
+    
 
 
     Route::resource('rubros', 'RubrosController');
