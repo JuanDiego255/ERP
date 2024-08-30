@@ -13,6 +13,7 @@
 
 include_once('install_r.php');
 
+use App\Http\Controllers\Admin\BillVehicleController;
 use App\Http\Controllers\EmployeeController;
 use App\Models\Transaction;
 use App\Models\Test;
@@ -413,6 +414,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     
     Route::post('/products/get_sub_categories', 'ProductController@getSubCategories');
     Route::get('/products/get_sub_units', 'ProductController@getSubUnits');
+    
     Route::post('/products/product_form_part', 'ProductController@getProductVariationFormPart');
     Route::post('/products/get_product_variation_row', 'ProductController@getProductVariationRow');
     Route::post('/products/get_variation_template', 'ProductController@getVariationTemplate');
@@ -423,6 +425,15 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/products/get-combo-product-entry-row', 'ProductController@getComboProductEntryRow');
     
     Route::resource('products', 'ProductController');
+
+    //Rutas para gastos de vehiculos
+    Route::get('/products/bills/{id}', 'Admin\BillVehicleController@indexBill');
+    Route::get('/bill/create/{id}', 'Admin\BillVehicleController@create');
+    Route::get('/bill/edit/{id}', 'Admin\BillVehicleController@edit');
+    Route::post('/bill/store', 'Admin\BillVehicleController@store');
+    Route::put('/bill/update/{id}', 'Admin\BillVehicleController@update');
+    Route::delete('/bill/delete/{id}', [BillVehicleController::class, 'destroy'])->name('bill.delete');
+    //Rutas para gastos de vehiculos
 
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
     Route::get('/purchases/get_products', 'PurchaseController@getProducts');

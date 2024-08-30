@@ -743,7 +743,7 @@ class ContactController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => 'Ocorreu um erro tente novamente mais tarde!'
+                'msg' => $e->getMessage()
             ];
         }
 

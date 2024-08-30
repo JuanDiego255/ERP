@@ -886,7 +886,7 @@ return $output;
                 ->orWhere('supplier_business_name', 'like', '%' . $term .'%')
                 ->orWhere('contacts.contact_id', 'like', '%' . $term .'%');
             })
-            ->select('contacts.id', 'name as text', 'supplier_business_name as business_name', 'contact_id', 'contacts.pay_term_type', 'contacts.pay_term_number')
+            ->select('contacts.id', 'name as text', 'supplier_business_name as business_name', 'contact_id')
             ->onlySuppliers()
             ->get();
             return json_encode($suppliers);

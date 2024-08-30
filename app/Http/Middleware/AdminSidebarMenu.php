@@ -123,7 +123,7 @@ class AdminSidebarMenu
                                 __('barcode.print_labels'),
                                 ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'labels' && request()->segment(2) == 'show']
                             );
-                        } */
+                        } */                            
                             if (auth()->user()->can('product.create')) {
                                 /*  $sub->url(
                                 action('VariationTemplateController@index'),
@@ -153,6 +153,8 @@ class AdminSidebarMenu
                                 ['icon' => 'fa fas fa-balance-scale', 'active' => request()->segment(1) == 'units']
                             );
                         } */
+
+
                             if (auth()->user()->can('category.view') || auth()->user()->can('category.create')) {
                                 $sub->url(action('TaxonomyController@index') . '?type=product', __('category.categories'), ['icon' => 'fa fas fa-tags', 'active' => request()->segment(1) == 'taxonomies' && request()->get('type') == 'product']);
                             }
@@ -198,7 +200,7 @@ class AdminSidebarMenu
                     ->order(25);
             } */
             //Sell dropdown
-           /*  if (auth()->user()->can('sell.view') || auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access') || auth()->user()->can('view_own_sell_only')) {
+            /*  if (auth()->user()->can('sell.view') || auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access') || auth()->user()->can('view_own_sell_only')) {
                 $menu
                     ->dropdown(
                         'Ventas',
