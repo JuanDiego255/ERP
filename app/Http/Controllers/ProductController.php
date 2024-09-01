@@ -162,6 +162,7 @@ class ProductController extends Controller
             if (!empty(request()->get('repair_model_id'))) {
                 $products->where('products.repair_model_id', request()->get('repair_model_id'));
             }
+            $products->orderBy('created_at','desc');
 
             return Datatables::of($products)
                 ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
@@ -223,7 +224,7 @@ class ProductController extends Controller
                     }
                 )
                 ->editColumn('product', function ($row) {
-                    $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("lang_v1.inactive") . '</span>' : $row->product;
+                    $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->product;
 
 
                     return $product;

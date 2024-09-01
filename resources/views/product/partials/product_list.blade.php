@@ -6,6 +6,7 @@
     <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
         <thead>
             <tr>
+                <th>@lang('messages.action')</th>
                 <th><input type="checkbox" id="select-all-row"></th>
                 <th>&nbsp;</th>
                 <th>@lang('sale.product')</th>
@@ -20,7 +21,7 @@
                 <th>@lang('vehiculos.created_at')</th>
                 <th>@lang('product.sku')</th>
                 <th style="display: none;"></th>
-                <th>@lang('messages.action')</th>
+                
 
 
             </tr>

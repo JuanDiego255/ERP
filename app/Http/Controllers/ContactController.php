@@ -110,7 +110,8 @@ class ContactController extends Controller
                 'email', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4',
                 'contacts.contact_status'
             ])
-            ->groupBy('contacts.id');
+            ->groupBy('contacts.id')
+            ->orderBy('created_at','desc');;
 
         return Datatables::of($contact)
             ->addColumn('address', '{{ implode(", ", array_filter([$landmark, $city, $state, $country])) }}')
@@ -257,7 +258,8 @@ class ContactController extends Controller
                 'email', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4',
                 'contacts.contact_status'
             ])
-            ->groupBy('contacts.id');
+            ->groupBy('contacts.id')
+            ->orderBy('created_at','desc');;
 
         return Datatables::of($contact)
             ->addColumn(
@@ -415,7 +417,8 @@ class ContactController extends Controller
                 'email', 'contacts.credit_limit', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4', 'contacts.type',
                 'contacts.contact_status'
             ])
-            ->groupBy('contacts.id');
+            ->groupBy('contacts.id')
+            ->orderBy('created_at','desc');;
 
             
 
