@@ -1324,7 +1324,6 @@ $(document).on('click', '.delete_contact_button', function(e) {
         { data: 'contact', name: 'contact' },
         { data: 'transaction_date', name: 'transaction_date' },
         { data: 'ref_no', name: 'ref_no' },
-        { data: 'category', name: 'ec.name' },
         { data: 'location_name', name: 'bl.name' },
         { data: 'payment_status', name: 'payment_status', orderable: false },
         { data: 'tax', name: 'tr.name' },

@@ -6,7 +6,7 @@
 			$col_class = 'col-md-4';
 		}
 	@endphp
-	<div class="{{$col_class}}">
+	{{-- <div class="{{$col_class}}">
 		<div class="form-group">
 			{!! Form::label("amount_$row_index" , 'Valor' . ':*') !!}
 			<div class="input-group">
@@ -16,10 +16,10 @@
 				{!! Form::text("payment[$row_index][amount]", @num_format($payment_line['amount']), ['class' => 'form-control payment-amount input_number', 'required', 'id' => "amount_$row_index", 'placeholder' => __('sale.amount')]); !!}
 			</div>
 		</div>
-	</div>
+	</div> --}}
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("method_$row_index" , 'Forma de pago' . ':*') !!}
+			{!! Form::label("method_$row_index" , 'Tipo factura' . ':*') !!}
 			<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fas fa-list"></i>
@@ -56,10 +56,10 @@
 	@endif
 	<div class="clearfix"></div>
 		@include('sale_pos.partials.payment_type_details')
-	<div class="col-md-12">
+	{{-- <div class="col-md-12">
 		<div class="form-group">
 			{!! Form::label("note_$row_index", 'Observaciones de pago') !!}
 			{!! Form::textarea("payment[$row_index][note]", $payment_line['note'], ['class' => 'form-control', 'rows' => 3, 'id' => "note_$row_index"]); !!}
 		</div>
-	</div>
+	</div> --}}
 </div>

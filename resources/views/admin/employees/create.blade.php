@@ -23,8 +23,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('telephone', __('Teléfono') . ':*') !!}
-                            {!! Form::text('telephone', null, ['class' => 'form-control','required', 'placeholder' => __('Teléfono')]) !!}
+                            {!! Form::label('telephone', __('Teléfono') . ':') !!}
+                            {!! Form::text('telephone', null, ['class' => 'form-control', 'placeholder' => __('Teléfono')]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">

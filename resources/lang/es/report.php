@@ -16,7 +16,7 @@
 "customer" => "Clientes",
 "supplier" => "Proveedores",
 "guarantor" => "Fiadores",
-"total_due" => "Debido",
+"total_due" => "Pendiente",
 "contacts" => "Informe de proveedor y cliente",
 "contact" => "Contacto",
 "stock_report" => "Informe de stock",

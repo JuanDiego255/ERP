@@ -119,13 +119,8 @@
                                                 {{ !empty($employee->comision_ventas) ? $employee->comision_ventas : '--' }}</strong>
                                         </p>
                                     </div>
-                                    @php
-                                        $ccss = $employee->ccss;
-                                        $salario_base = $employee->salario_base;
-                                        $resultado = ($salario_base * $ccss) / 100;
-                                    @endphp
                                     <div class="col-md-4">
-                                        <p><strong>@lang('Deduccion C.C.S.S'): ₡{{ number_format($resultado) }}</strong></p>
+                                        <p><strong>@lang('Deduccion C.C.S.S'): ₡{{ number_format($employee->ccss) }}</strong></p>
                                     </div>
                                 </div>
                                 <div class="clearfix"></div>

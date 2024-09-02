@@ -166,14 +166,14 @@ class Util
     public function payment_types($location = null)
     {
       $payment_types = [
-        'cash' => __('lang_v1.cash'), 
-        'card' => 'Cartão de Crédito', 
-        'debit' => 'Cartão de Débito', 
+        'cash' => __('Contado'), 
+        'card' => 'Credito', 
+        /* 'debit' => 'Cartão de Débito', 
         'cheque' => __('lang_v1.cheque'), 
         'bank_transfer' => __('lang_v1.bank_transfer'), 
         'boleto' => 'Boleto',
         'pix' => 'Pix',
-        'other' => __('lang_v1.other')
+        'other' => __('lang_v1.other') */
       ];
 
       $custom_labels = !empty(session('business.custom_labels')) ? json_decode(session('business.custom_labels'), true) : [];

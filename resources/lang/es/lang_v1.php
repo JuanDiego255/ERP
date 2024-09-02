@@ -143,7 +143,7 @@ return [
 "cheque_no" => "Número de cheque",
 "bank_account_number" => "Número de Cuenta Bancaria",
 "paid" => "Pagado",
-"due" => "Debido",
+"due" => "Pendiente",
 "partial" => "Parcial",
 "no_of_products" => "Número de productos",
 "select_a_date_range" => "Seleccione un rango de fechas",

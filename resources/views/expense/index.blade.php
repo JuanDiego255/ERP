@@ -25,13 +25,13 @@
                         {!! Form::select('expense_for', $users, null, ['class' => 'form-control select2']); !!}
                     </div>
                 </div>
-                <div class="col-md-3">
+               {{--  <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('expense_category_id',__('expense.expense_category').':') !!}
                         {!! Form::select('expense_category_id', $categories, null, ['placeholder' =>
                         __('report.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'expense_category_id']); !!}
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
@@ -63,10 +63,9 @@
                         <thead>
                             <tr>
                                 <th>@lang('messages.action')</th>
-                                <th>Fornecedor</th>
+                                <th>Proveedor</th>
                                 <th>@lang('messages.date')</th>
-                                <th>@lang('purchase.ref_no')</th>
-                                <th>@lang('expense.expense_category')</th>
+                                <th>@lang('Factura')</th>
                                 <th>@lang('business.location')</th>
                                 <th>@lang('sale.payment_status')</th>
                                 <th>@lang('product.tax')</th>

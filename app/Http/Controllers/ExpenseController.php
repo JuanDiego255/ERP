@@ -9,29 +9,48 @@ use App\Models\ExpenseCategory;
 use App\Models\TaxRate;
 use App\Models\Transaction;
 use App\Models\City;
+use App\Models\DetailTransaction;
 use App\Models\Pais;
 use App\Models\User;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use DB;
 use Illuminate\Http\Request;
+use Mpdf\Tag\Details;
 use Yajra\DataTables\Facades\DataTables;
 
 class ExpenseController extends Controller
 {
     /**
-    * Constructor
-    *
-    * @param TransactionUtil $transactionUtil
-    * @return void
-    */
+     * Constructor
+     *
+     * @param TransactionUtil $transactionUtil
+     * @return void
+     */
     public function __construct(TransactionUtil $transactionUtil, ModuleUtil $moduleUtil)
     {
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
-        $this->dummyPaymentLine = ['method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-        'is_return' => 0, 'transaction_no' => '', 'data_base' => date('d/m/Y'), 'intervalo' => '', 
-        'vencimento' => date('d/m/Y'), 'qtd_parcelas' => 1];
+        $this->dummyPaymentLine = [
+            'method' => 'cash',
+            'amount' => 0,
+            'note' => '',
+            'card_transaction_number' => '',
+            'card_number' => '',
+            'card_type' => '',
+            'card_holder_name' => '',
+            'card_month' => '',
+            'card_year' => '',
+            'card_security' => '',
+            'cheque_number' => '',
+            'bank_account_number' => '',
+            'is_return' => 0,
+            'transaction_no' => '',
+            'data_base' => date('d/m/Y'),
+            'intervalo' => '',
+            'vencimento' => date('d/m/Y'),
+            'qtd_parcelas' => 1
+        ];
     }
 
     /**
@@ -49,40 +68,40 @@ class ExpenseController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $expenses = Transaction::leftJoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
-            ->join(
-                'business_locations AS bl',
-                'transactions.location_id',
-                '=',
-                'bl.id'
-            )
-            ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
-            ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
-            ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
-            ->leftJoin(
-                'transaction_payments AS TP',
-                'transactions.id',
-                '=',
-                'TP.transaction_id'
-            )
-            ->where('transactions.business_id', $business_id)
-            ->where('transactions.type', 'expense')
-            ->select(
-                'transactions.id',
-                'transactions.contact_id',
-                'transactions.document',
-                'transaction_date',
-                'ref_no',
-                'ec.name as category',
-                'payment_status',
-                'additional_notes',
-                'final_total',
-                'bl.name as location_name',
-                DB::raw("CONCAT(COALESCE(U.surname, ''),' ',COALESCE(U.first_name, ''),' ',COALESCE(U.last_name,'')) as expense_for"),
-                DB::raw("CONCAT(tr.name ,' (', tr.amount ,' )') as tax"),
-                DB::raw('SUM(TP.amount) as amount_paid'),
-                DB::raw("CONCAT(COALESCE(usr.surname, ''),' ',COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
-            )
-            ->groupBy('transactions.id');
+                ->join(
+                    'business_locations AS bl',
+                    'transactions.location_id',
+                    '=',
+                    'bl.id'
+                )
+                ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
+                ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
+                ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
+                ->leftJoin(
+                    'transaction_payments AS TP',
+                    'transactions.id',
+                    '=',
+                    'TP.transaction_id'
+                )
+                ->where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'expense')
+                ->select(
+                    'transactions.id',
+                    'transactions.contact_id',
+                    'transactions.document',
+                    'transaction_date',
+                    'ref_no',
+                    'ec.name as category',
+                    'payment_status',
+                    'additional_notes',
+                    'final_total',
+                    'bl.name as location_name',
+                    DB::raw("CONCAT(COALESCE(U.surname, ''),' ',COALESCE(U.first_name, ''),' ',COALESCE(U.last_name,'')) as expense_for"),
+                    DB::raw("CONCAT(tr.name ,' (', tr.amount ,' )') as tax"),
+                    DB::raw('SUM(TP.amount) as amount_paid'),
+                    DB::raw("CONCAT(COALESCE(usr.surname, ''),' ',COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
+                )
+                ->groupBy('transactions.id');
 
             //Add condition for expense for,used in sales representative expense report & list of expense
             if (request()->has('expense_for')) {
@@ -113,7 +132,7 @@ class ExpenseController extends Controller
                 $start = request()->start_date;
                 $end =  request()->end_date;
                 $expenses->whereDate('transaction_date', '>=', $start)
-                ->whereDate('transaction_date', '<=', $end);
+                    ->whereDate('transaction_date', '<=', $end);
             }
 
             //Add condition for expense category, used in list of expense,
@@ -141,11 +160,11 @@ class ExpenseController extends Controller
             if (!$is_admin && auth()->user()->can('view_own_expense')) {
                 $expenses->where('transactions.created_by', request()->session()->get('user.id'));
             }
-            
+
             return Datatables::of($expenses)
-            ->addColumn(
-                'action',
-                '<div class="btn-group">
+                ->addColumn(
+                    'action',
+                    '<div class="btn-group">
                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                 data-toggle="dropdown" aria-expanded="false"> @lang("messages.actions")<span class="caret"></span><span class="sr-only">Toggle Dropdown
                 </span>
@@ -167,52 +186,52 @@ class ExpenseController extends Controller
                 @endif
                 <li><a href="{{action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> @lang("purchase.view_payments")</a></li>
                 </ul></div>'
-            )
-            ->removeColumn('id')
-            ->editColumn(
-                'final_total',
-                '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$final_total}}">{{$final_total}}</span>'
-            )
-            ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
-            ->editColumn(
-                'payment_status',
-                '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">
+                )
+                ->removeColumn('id')
+                ->editColumn(
+                    'final_total',
+                    '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$final_total}}">{{$final_total}}</span>'
+                )
+                ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
+                ->editColumn(
+                    'payment_status',
+                    '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">
                 {{__(\'lang_v1.\' . $payment_status)}}
                 </span></a><span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>'
 
-            )
-            // ->editColumn('payment_status' , function ($row) {
-            //     $payment_status = $row->payment_status;
-            //     $id = $row->id;
-            //     $t = '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label due">
-            //     {{__(\'lang_v1.\' . $payment_status)}}
-            //     </span></a><span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>';
+                )
+                // ->editColumn('payment_status' , function ($row) {
+                //     $payment_status = $row->payment_status;
+                //     $id = $row->id;
+                //     $t = '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label due">
+                //     {{__(\'lang_v1.\' . $payment_status)}}
+                //     </span></a><span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>';
 
-            //     return $t;
-            // })
-            ->addColumn('contact', function ($row) {
-                if($row->contact) return $row->contact->name;
-                return "";
-            })
-            ->addColumn('payment_due', function ($row) {
-                $due = $row->final_total - $row->amount_paid;
-                return '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $due . '">' . $due . '</span>';
-            })
-            ->rawColumns(['final_total', 'action', 'payment_status', 'payment_due'])
-            ->make(true);
+                //     return $t;
+                // })
+                ->addColumn('contact', function ($row) {
+                    if ($row->contact) return $row->contact->name;
+                    return "";
+                })
+                ->addColumn('payment_due', function ($row) {
+                    $due = $row->final_total - $row->amount_paid;
+                    return '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $due . '">' . $due . '</span>';
+                })
+                ->rawColumns(['final_total', 'action', 'payment_status', 'payment_due'])
+                ->make(true);
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         $categories = ExpenseCategory::where('business_id', $business_id)
-        ->pluck('name', 'id');
+            ->pluck('name', 'id');
 
         $users = User::forDropdown($business_id, false, true, true);
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('expense.index')
-        ->with(compact('categories', 'business_locations', 'users'));
+            ->with(compact('categories', 'business_locations', 'users'));
     }
 
     /**
@@ -227,7 +246,7 @@ class ExpenseController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        
+
         //Check if subscribed or not
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse(action('ExpenseController@index'));
@@ -236,11 +255,11 @@ class ExpenseController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id);
 
         $expense_categories = ExpenseCategory::where('business_id', $business_id)
-        ->pluck('name', 'id');
+            ->pluck('name', 'id');
         $users = User::forDropdown($business_id, true, true);
 
         $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
-        
+
         $payment_line = $this->dummyPaymentLine;
 
         $payment_types = $this->transactionUtil->payment_types();
@@ -266,46 +285,49 @@ class ExpenseController extends Controller
         }
 
         return view('expense.create')
-        ->with('tipo', '')
-        ->with('cities', $this->prepareCities())
-        ->with('estados', $this->prepareUFs())
-        ->with('paises', $this->preparePaises())
-        ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'types'));
+            ->with('tipo', '')
+            ->with('cities', $this->prepareCities())
+            ->with('estados', $this->prepareUFs())
+            ->with('paises', $this->preparePaises())
+            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'types'));
     }
 
-    private function preparePaises(){
+    private function preparePaises()
+    {
         $paises = Pais::all();
         $temp = [];
-        foreach($paises as $p){
+        foreach ($paises as $p) {
             // array_push($temp, $c->id => $c->nome);
             $temp[$p->codigo] = "$p->codigo - $p->nome";
         }
         return $temp;
     }
 
-    private function prepareCities(){
+    private function prepareCities()
+    {
         $cities = City::all();
         $temp = [];
-        foreach($cities as $c){
+        foreach ($cities as $c) {
             // array_push($temp, $c->id => $c->nome);
             $temp[$c->id] = $c->nome . " ($c->uf)";
         }
         return $temp;
     }
 
-    private function prepareUFs(){
+    private function prepareUFs()
+    {
         return [
-            "AC"=> "AC",
-            "AL"=> "AL",
-            "AM"=> "AM",
-            "AP"=> "AP",
-            "BA"=> "BA",
-            "CE"=> "CE",
-            "DF"=> "DF",
-            "ES"=> "ES",
-            "GO"=> "GO",
-            "MA"=> "MA",
-            "MG"=> "MG",
+            "AC" => "AC",
+            "AL" => "AL",
+            "AM" => "AM",
+            "AP" => "AP",
+            "BA" => "BA",
+            "CE" => "CE",
+            "DF" => "DF",
+            "ES" => "ES",
+            "GO" => "GO",
+            "MA" => "MA",
+            "MG" => "MG",
             "MS" => "MS",
             "MT" => "MT",
             "PA" => "PA",
@@ -324,7 +346,6 @@ class ExpenseController extends Controller
             "TO" => "TO"
 
         ];
-
     }
 
     /**
@@ -349,10 +370,10 @@ class ExpenseController extends Controller
 
             //Validate document size
             $request->validate([
-                'document' => 'file|max:'. (config('constants.document_size_limit') / 1000)
+                'document' => 'file|max:' . (config('constants.document_size_limit') / 1000)
             ]);
 
-            $transaction_data = $request->only([ 'ref_no', 'transaction_date', 'location_id', 'final_total', 'expense_for', 'additional_notes', 'expense_category_id', 'tax_id']);
+            $transaction_data = $request->only(['ref_no', 'transaction_date', 'fecha_vence', 'plazo', 'location_id', 'final_total', 'expense_for', 'additional_notes', 'expense_category_id', 'tax_id']);
 
             $user_id = $request->session()->get('user.id');
             $transaction_data['business_id'] = $business_id;
@@ -376,7 +397,7 @@ class ExpenseController extends Controller
             }
 
             DB::beginTransaction();
-            
+
             //Update reference count
             $ref_count = $this->transactionUtil->setAndGetReferenceCount('expense');
             //Generate reference number
@@ -389,11 +410,26 @@ class ExpenseController extends Controller
             if (!empty($document_name)) {
                 $transaction_data['document'] = $document_name;
             }
-
             $transaction = Transaction::create($transaction_data);
-            
+            $descripciones = $request->input('descripcion');
+            $precios = $request->input('precio');
+            $cantidades = $request->input('cantidad');
+
+            // Iterar sobre los valores para procesarlos
+            foreach ($descripciones as $index => $descripcion) {
+                $precio = $precios[$index];
+                $cantidad = $cantidades[$index];
+
+                DetailTransaction::create([
+                    'transaction_id' => $transaction->id,
+                    'total' => $precio,
+                    'cantidad' => $cantidad,
+                    'descripcion' => $descripcion,
+                ]);
+            }
+
             //add expense payment
-            $this->transactionUtil->createOrUpdatePaymentLines($transaction, $request->input('payment'), $business_id);
+            //$this->transactionUtil->createOrUpdatePaymentLines($transaction, $request->input('payment'), $business_id);
 
             //update payment status
             $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
@@ -402,16 +438,16 @@ class ExpenseController extends Controller
 
             $output = [
                 'success' => 1,
-                'msg' => __('expense.expense_add_success')
+                'msg' => __('Se agregó la cuenta por pagar con éxito')
             ];
         } catch (\Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             echo $e->getMessage();
             die;
-            
+
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong')
@@ -454,10 +490,12 @@ class ExpenseController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id);
 
         $expense_categories = ExpenseCategory::where('business_id', $business_id)
-        ->pluck('name', 'id');
+            ->pluck('name', 'id');
         $expense = Transaction::where('business_id', $business_id)
-        ->where('id', $id)
-        ->first();
+            ->where('id', $id)
+            ->first();
+
+        $expense_details = DetailTransaction::where('transaction_id', $id)->get();
 
         $users = User::forDropdown($business_id, true, true);
 
@@ -478,11 +516,11 @@ class ExpenseController extends Controller
         }
 
         return view('expense.edit')
-        ->with('tipo', '')
-        ->with('cities', $this->prepareCities())
-        ->with('estados', $this->prepareUFs())
-        ->with('paises', $this->preparePaises())
-        ->with(compact('expense', 'expense_categories', 'business_locations', 'users', 'taxes', 'types'));
+            ->with('tipo', '')
+            ->with('cities', $this->prepareCities())
+            ->with('estados', $this->prepareUFs())
+            ->with('paises', $this->preparePaises())
+            ->with(compact('expense', 'expense_details', 'expense_categories', 'business_locations', 'users', 'taxes', 'types'));
     }
 
     /**
@@ -501,13 +539,13 @@ class ExpenseController extends Controller
         try {
             //Validate document size
             $request->validate([
-                'document' => 'file|max:'. (config('constants.document_size_limit') / 1000)
+                'document' => 'file|max:' . (config('constants.document_size_limit') / 1000)
             ]);
 
-            $transaction_data = $request->only([ 'ref_no', 'transaction_date', 'location_id', 'final_total', 'expense_for', 'additional_notes', 'expense_category_id', 'tax_id']);
+            $transaction_data = $request->only(['ref_no', 'fecha_vence', 'plazo', 'transaction_date', 'location_id', 'final_total', 'expense_for', 'additional_notes', 'expense_category_id', 'tax_id']);
 
             $business_id = $request->session()->get('user.business_id');
-            
+
             //Check if subscribed or not
             if (!$this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse(action('ExpenseController@index'));
@@ -519,7 +557,7 @@ class ExpenseController extends Controller
             );
 
             $transaction_data['contact_id'] = $request->contact_id;
-            
+
             //upload document
             $document_name = $this->transactionUtil->uploadFile($request, 'document', 'documents');
             if (!empty($document_name)) {
@@ -534,19 +572,58 @@ class ExpenseController extends Controller
             }
 
             $transaction = Transaction::where('business_id', $business_id)
-            ->where('id', $id)
-            ->update($transaction_data);
+                ->where('id', $id)
+                ->update($transaction_data);
+
+            $descripciones = $request->input('descripcion');
+            $precios = $request->input('precio');
+            $cantidades = $request->input('cantidad');
+            $detalles_ids = $request->input('detalle_id');
+
+            // Obtener los IDs de los detalles existentes para determinar cuáles eliminar
+            $existingDetailIds = DetailTransaction::where('transaction_id', $id)->pluck('id')->toArray();
+            // Arrays para manejar nuevos y actualizados            
+            $updatedDetails = [];
+            if ($descripciones != null) {
+                foreach ($descripciones as $index => $descripcion) {
+                    $precio = $precios[$index];
+                    $cantidad = $cantidades[$index];
+                    $detalleId = $detalles_ids[$index] ?? null; // Puede ser null si es nuevo
+
+                    if ($detalleId) {
+                        $detalle = DetailTransaction::find($detalleId);
+                        if ($detalle) {
+                            $detalle->update([
+                                'descripcion' => $descripcion,
+                                'total' => $precio,
+                                'cantidad' => $cantidad
+                            ]);
+                            $updatedDetails[] = $detalleId;
+                        }
+                    } else {
+                        DetailTransaction::create([
+                            'transaction_id' => $id,
+                            'descripcion' => $descripcion,
+                            'total' => $precio,
+                            'cantidad' => $cantidad
+                        ]);
+                    }
+                }
+            }
+
+            $detailsToDelete = array_diff($existingDetailIds, $updatedDetails);
+            DetailTransaction::destroy($detailsToDelete);
 
             $output = [
                 'success' => 1,
-                'msg' => __('expense.expense_update_success')
+                'msg' => __('Cuenta editada con éxito')
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong')
+                'msg' => __($e->getMessage())
             ];
         }
 
@@ -570,9 +647,9 @@ class ExpenseController extends Controller
                 $business_id = request()->session()->get('user.business_id');
 
                 $expense = Transaction::where('business_id', $business_id)
-                ->where('type', 'expense')
-                ->where('id', $id)
-                ->first();
+                    ->where('type', 'expense')
+                    ->where('id', $id)
+                    ->first();
                 $expense->delete();
 
                 //Delete account transactions
@@ -580,11 +657,11 @@ class ExpenseController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => __("expense.expense_delete_success")
+                    'msg' => __("Cuenta eliminada!")
                 ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-                
+                \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
                 $output = [
                     'success' => false,
                     'msg' => __("messages.something_went_wrong")

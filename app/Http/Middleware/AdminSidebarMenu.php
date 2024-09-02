@@ -310,7 +310,7 @@ class AdminSidebarMenu
                         function ($sub) {
                             $sub->url(action('ExpenseController@index'), 'Lista de cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
                             $sub->url(action('ExpenseController@create'), 'Agregar cuenta por pagar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']);
-                            $sub->url(action('ExpenseCategoryController@index'), 'Categorias', ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']);
+                            
                         },
                         ['icon' => 'fa fas fa-minus-circle'],
                     )

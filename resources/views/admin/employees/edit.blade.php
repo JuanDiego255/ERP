@@ -31,10 +31,9 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('telephone', __('Teléfono') . ':*') !!}
+                            {!! Form::label('telephone', __('Teléfono') . ':') !!}
                             {!! Form::text('telephone', $employee->telephone, [
-                                'class' => 'form-control',
-                                'required',
+                                'class' => 'form-control',                                
                                 'placeholder' => __('Teléfono'),
                             ]) !!}
                         </div>
