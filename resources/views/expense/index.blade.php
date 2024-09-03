@@ -19,12 +19,12 @@
                         {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
-                <div class="col-sm-3">
+            {{--     <div class="col-sm-3">
                     <div class="form-group">
                         {!! Form::label('expense_for', __('expense.expense_for').':') !!}
                         {!! Form::select('expense_for', $users, null, ['class' => 'form-control select2']); !!}
                     </div>
-                </div>
+                </div> --}}
                {{--  <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('expense_category_id',__('expense.expense_category').':') !!}
@@ -36,6 +36,12 @@
                     <div class="form-group">
                         {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
                         {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'expense_date_range', 'readonly']); !!}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('expense_date_vence', __('Rango de vencimiento') . ':') !!}
+                        {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'expense_date_vence', 'readonly']); !!}
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -63,26 +69,23 @@
                         <thead>
                             <tr>
                                 <th>@lang('messages.action')</th>
-                                <th>Proveedor</th>
-                                <th>@lang('messages.date')</th>
+                                <th>Proveedor</th>                                
                                 <th>@lang('Factura')</th>
-                                <th>@lang('business.location')</th>
+                                <th>@lang('messages.date')</th>
+                                <th>@lang('Vence')</th>
                                 <th>@lang('sale.payment_status')</th>
-                                <th>@lang('product.tax')</th>
                                 <th>@lang('sale.total_amount')</th>
                                 <th>Total a Pagar</th>
-                                <th>@lang('expense.expense_for')</th>
-                                <th>@lang('expense.expense_note')</th>
                                 <th>@lang('lang_v1.added_by')</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr class="bg-gray font-17 text-center footer-total">
-                                <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                <td colspan="5"><strong>@lang('sale.total'):</strong></td>
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="footer_expense_total" data-currency_symbol ="true"></span></td>
                                 <td><span class="display_currency" id="footer_total_due" data-currency_symbol ="true"></span></td>
-                                <td colspan="3"></td>
+                                <td colspan="1"></td>
                             </tr>
                         </tfoot>
                     </table>

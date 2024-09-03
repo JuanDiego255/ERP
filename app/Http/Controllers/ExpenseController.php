@@ -90,16 +90,17 @@ class ExpenseController extends Controller
                     'transactions.contact_id',
                     'transactions.document',
                     'transaction_date',
+                    'transactions.fecha_vence',
                     'ref_no',
                     'ec.name as category',
                     'payment_status',
-                    'additional_notes',
+                    'transactions.additional_notes',
                     'final_total',
                     'bl.name as location_name',
                     DB::raw("CONCAT(COALESCE(U.surname, ''),' ',COALESCE(U.first_name, ''),' ',COALESCE(U.last_name,'')) as expense_for"),
                     DB::raw("CONCAT(tr.name ,' (', tr.amount ,' )') as tax"),
                     DB::raw('SUM(TP.amount) as amount_paid'),
-                    DB::raw("CONCAT(COALESCE(usr.surname, ''),' ',COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
+                    DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
                 )
                 ->groupBy('transactions.id')
                 ->orderBy('transactions.transaction_date','desc');
@@ -134,6 +135,14 @@ class ExpenseController extends Controller
                 $end =  request()->end_date;
                 $expenses->whereDate('transaction_date', '>=', $start)
                     ->whereDate('transaction_date', '<=', $end);
+            }
+
+            //Add condition for start and end date filter vence, uses in sales representative expense report & list of expense
+            if (!empty(request()->start_vence_date) && !empty(request()->end_vence_date)) {
+                $start = request()->start_vence_date;
+                $end =  request()->end_vence_date;
+                $expenses->whereDate('fecha_vence', '>=', $start)
+                    ->whereDate('fecha_vence', '<=', $end);
             }
 
             //Add condition for expense category, used in list of expense,
@@ -194,6 +203,7 @@ class ExpenseController extends Controller
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$final_total}}">{{$final_total}}</span>'
                 )
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
+                ->editColumn('fecha_vence', '{{@format_datetime($fecha_vence)}}')
                 ->editColumn(
                     'payment_status',
                     '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">
