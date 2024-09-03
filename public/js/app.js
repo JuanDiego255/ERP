@@ -1495,9 +1495,10 @@ $(document).ready(function () {
                         var invoices = data.invoices.join(', ');
                         // Formato de monto
                         var totalAmount = data.totalAmount.toFixed(2);
+                        var formattedAmount = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalAmount);
 
                         // Agregar la fila a la tabla solo con proveedor, facturas y monto total
-                        body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>₡ ' + totalAmount + '</td><td> ' + '' + '</td></tr>');
+                        body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>₡ ' + formattedAmount + '</td><td> ' + '' + '</td></tr>');
                     });
 
                     // Ajustar encabezados de la tabla para mostrar solo las columnas necesarias
