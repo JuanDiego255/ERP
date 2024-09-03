@@ -264,6 +264,7 @@ return redirect()->back()->with(['status' => $output]);
 
             //update payment status
             $this->transactionUtil->updatePaymentStatus($payment->transaction_id);
+            DB::commit();
 
             //event
             //event(new TransactionPaymentUpdated($payment, $transaction->type));
