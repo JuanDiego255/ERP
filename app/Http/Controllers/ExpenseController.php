@@ -101,7 +101,8 @@ class ExpenseController extends Controller
                     DB::raw('SUM(TP.amount) as amount_paid'),
                     DB::raw("CONCAT(COALESCE(usr.surname, ''),' ',COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
                 )
-                ->groupBy('transactions.id');
+                ->groupBy('transactions.id')
+                ->orderBy('transactions.transaction_date','desc');
 
             //Add condition for expense for,used in sales representative expense report & list of expense
             if (request()->has('expense_for')) {
