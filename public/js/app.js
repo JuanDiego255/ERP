@@ -1432,6 +1432,94 @@ $(document).ready(function () {
                 .find('td:eq(5)')
                 .attr('class', 'clickable_td');
         },
+        dom: '<"text-center"B>frtip', // Esto habilita el contenedor para los botones
+        buttons: [{
+                extend: 'csv',
+                text: 'Exportar a CSV'
+            },
+            {
+                extend: 'excel',
+                text: 'Exportar a Excel'
+            },
+            {
+                extend: 'pdf',
+                text: 'Exportar a PDF'
+            },
+            {
+                extend: 'print',
+                text: 'Impresión'
+            },
+            {
+                extend: 'print',
+                text: 'Rep. CUEPAG',
+                customize: function (win) {
+                    // Obtener el cuerpo de la tabla
+                    $(win.document.body).find('h1').remove();
+                    $(win.document.body).find('div.printHeader').remove();
+                    var body = $(win.document.body).find('table tbody');
+
+                    // Crear un objeto para agrupar las facturas y los montos por proveedor
+                    var groupedData = {};
+
+                    // Iterar sobre cada fila de la tabla para agrupar datos por proveedor
+                    body.find('tr').each(function () {
+                        var provider = $(this).find('td:eq(1)').text(); // Proveedor
+                        var invoice = $(this).find('td:eq(2)').text(); // Factura
+                        var amount = parseFloat($(this).find('td:eq(7)').text().replace(/[^\d.-]/g, '')); // Monto (final_total)
+
+                        // Si el proveedor no está en el objeto, lo agregamos con un array vacío y monto 0
+                        if (!groupedData[provider]) {
+                            groupedData[provider] = {
+                                invoices: [],
+                                totalAmount: 0
+                            };
+                        }
+
+                        // Agregar la factura y sumar el monto total al proveedor correspondiente
+                        groupedData[provider].invoices.push(invoice);
+                        groupedData[provider].totalAmount += amount;
+                    });
+
+                    // Limpiar el contenido del cuerpo de la tabla
+                    body.empty();
+
+                    // Insertar las filas agrupadas en el reporte
+                    $.each(groupedData, function (provider, data) {
+                        // Unir facturas con comas
+                        var invoices = data.invoices.join(', ');
+                        // Formato de monto
+                        var totalAmount = data.totalAmount.toFixed(2);
+
+                        // Agregar la fila a la tabla solo con proveedor, facturas y monto total
+                        body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>₡ ' + totalAmount + '</td><td> ' + '' + '</td></tr>');
+                    });
+
+                    // Ajustar encabezados de la tabla para mostrar solo las columnas necesarias
+                    $(win.document.body).find('table thead tr').html('<th>Proveedor</th><th>Facturas</th><th>Total</th><th>Método de Pago</th>');
+                    var rangeDate;
+                    rangeDate = $('#expense_date_vence').val();
+                    // Personalizar el cuerpo del documento
+                    $(win.document.body)
+                        .css('font-size', '10pt')
+                        .prepend(
+                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                           '<div style="text-align: center; margin-bottom: 10px;">' +
+                            
+                            '<h3 style="margin: 0; ">Reporte de Cuentas por Pagar (CUEPAG)</h3>' +
+                            '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + rangeDate + '</p>' +
+                            '</div>'
+                        );
+
+                    $(win.document.body).find('table')
+                        .addClass('display')
+                        .css('font-size', 'inherit');
+                }
+            },
+            {
+                extend: 'colvis',
+                text: 'Visibilidad de columna'
+            }
+        ]
     });
 
     $('select#location_id, select#expense_for, select#expense_category_id, select#expense_payment_status').on(
