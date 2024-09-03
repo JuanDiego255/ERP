@@ -1433,7 +1433,13 @@ $(document).ready(function () {
                 .attr('class', 'clickable_td');
         },
         dom: '<"text-center"B>frtip', // Esto habilita el contenedor para los botones
-        buttons: [{
+        buttons: [
+            {
+                extend: 'pageLength',
+                text: 'Mostrando 25',
+                titleAttr: 'Mostrar registros'
+            },
+            {
                 extend: 'csv',
                 text: 'Exportar a CSV'
             },
@@ -1502,9 +1508,9 @@ $(document).ready(function () {
                     $(win.document.body)
                         .css('font-size', '10pt')
                         .prepend(
-                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                           '<div style="text-align: center; margin-bottom: 10px;">' +
-                            
+                            '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                            '<div style="text-align: center; margin-bottom: 10px;">' +
+
                             '<h3 style="margin: 0; ">Reporte de Cuentas por Pagar (CUEPAG)</h3>' +
                             '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + rangeDate + '</p>' +
                             '</div>'
