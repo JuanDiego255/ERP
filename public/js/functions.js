@@ -77,7 +77,7 @@ function __currency_trans_from_en(
 ) {
     __p_currency_symbol = "₡"
     __p_currency_decimal_separator = ","
-    __p_currency_thousand_separator = ""
+    __p_currency_thousand_separator = "."
     // if (use_page_currency && __p_currency_symbol) {
         var s = __p_currency_symbol;
         var thousand = __p_currency_thousand_separator;
@@ -89,7 +89,7 @@ function __currency_trans_from_en(
     // }
 
     decimal = ','
-    thousand = ''
+    thousand = '.'
     symbol = '';
     var format = '%s%v';
     if (show_symbol) {
