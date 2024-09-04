@@ -259,6 +259,7 @@
                             LANG.details + '"></i>&nbsp;&nbsp;');
                     }
                     $(row).find('td:eq(0)').attr('class', 'selectable_td');
+                    $(row).find('td:eq(1)').attr('class', 'selectable_td');
                 },
                 fnDrawCallback: function(oSettings) {
                     __currency_convert_recursively($('#product_table'));

@@ -197,6 +197,9 @@ class ExpenseController extends Controller
                 <li><a href="{{action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> @lang("purchase.view_payments")</a></li>
                 </ul></div>'
                 )
+                ->addColumn('mass_check', function ($row) {
+                    return  '<input type="checkbox" checked  class="row-select" value="' . $row->id . '">';
+                })
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',
@@ -228,7 +231,7 @@ class ExpenseController extends Controller
                     $due = $row->final_total - $row->amount_paid;
                     return '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $due . '">' . $due . '</span>';
                 })
-                ->rawColumns(['final_total', 'action', 'payment_status', 'payment_due'])
+                ->rawColumns(['final_total', 'action', 'mass_check', 'payment_status', 'payment_due'])
                 ->make(true);
         }
 

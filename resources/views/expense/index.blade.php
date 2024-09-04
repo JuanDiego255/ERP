@@ -69,6 +69,7 @@
                         <thead>
                             <tr>
                                 <th>@lang('messages.action')</th>
+                                <th>Incluir</th>
                                 <th>Proveedor</th>                                
                                 <th>@lang('Factura')</th>
                                 <th>@lang('messages.date')</th>
@@ -81,7 +82,7 @@
                         </thead>
                         <tfoot>
                             <tr class="bg-gray font-17 text-center footer-total">
-                                <td colspan="5"><strong>@lang('sale.total'):</strong></td>
+                                <td colspan="6"><strong>@lang('sale.total'):</strong></td>
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="footer_expense_total" data-currency_symbol ="true"></span></td>
                                 <td><span class="display_currency" id="footer_total_due" data-currency_symbol ="true"></span></td>
