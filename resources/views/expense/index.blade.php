@@ -77,6 +77,7 @@
                                 <th>@lang('sale.payment_status')</th>
                                 <th>@lang('sale.total_amount')</th>
                                 <th>Total a Pagar</th>
+                                <th>Detalle</th>
                                 <th>@lang('lang_v1.added_by')</th>
                             </tr>
                         </thead>
@@ -86,7 +87,7 @@
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="footer_expense_total" data-currency_symbol ="true"></span></td>
                                 <td><span class="display_currency" id="footer_total_due" data-currency_symbol ="true"></span></td>
-                                <td colspan="1"></td>
+                                <td colspan="2"></td>
                             </tr>
                         </tfoot>
                     </table>

@@ -1415,6 +1415,10 @@ $(document).ready(function () {
                 name: 'payment_due'
             },
             {
+                data: 'additional_notes',
+                name: 'additional_notes'
+            },
+            {
                 data: 'added_by',
                 name: 'usr.first_name'
             },
@@ -1443,16 +1447,8 @@ $(document).ready(function () {
                 titleAttr: 'Mostrar registros'
             },
             {
-                extend: 'csv',
-                text: 'Exportar a CSV'
-            },
-            {
                 extend: 'excel',
                 text: 'Exportar a Excel'
-            },
-            {
-                extend: 'pdf',
-                text: 'Exportar a PDF'
             },
             {
                 extend: 'print',
@@ -1467,7 +1463,7 @@ $(document).ready(function () {
                     $(win.document.body).find('div.printHeader').remove();
                     var body = $(win.document.body).find('table tbody');
 
-                    var selectedRows = getSelectedRows();
+                    var selectedRows = getSelectedRowsCuepag();
                     var groupedData = {};
                     var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
 
@@ -1538,7 +1534,123 @@ $(document).ready(function () {
                         .css('font-size', 'inherit');
                 }
             },
+            {
+                extend: 'print',
+                text: 'Cuentas por Pagar (AG)',
+                customize: function (win) {
+                    // Obtener el cuerpo de la tabla
+                    $(win.document.body).find('h1').remove();
+                    $(win.document.body).find('div.printHeader').remove();
+                    var body = $(win.document.body).find('table tbody');
 
+                    var selectedRows = getSelectedRows();
+                    var groupedData = {};
+                    var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
+
+                    // Recorrer los resultados y agrupar por proveedor
+                    selectedRows.forEach(function (row) {
+                        if (!groupedData[row.provider]) {
+                            groupedData[row.provider] = {
+                                rows: [],
+                                subtotal: 0
+                            };
+                        }
+
+                        // Agregar la fila al proveedor correspondiente
+                        groupedData[row.provider].rows.push(row);
+                        groupedData[row.provider].subtotal += row.saldo;
+                        grandTotal += row.saldo;
+                    });
+
+                    body.empty();
+
+                    // Insertar las filas agrupadas en el reporte
+                    $.each(groupedData, function (provider, data) {
+
+                        var acumulado = 0;
+                        // Agregar nombre del proveedor
+                        body.append('<tr><td colspan="7" style="font-weight: bold; text-align: left;">' + provider + '</td></tr>');
+
+                        // Agregar las facturas del proveedor
+                        data.rows.forEach(function (row) {
+                            acumulado += row.saldo;
+                            // Formatear los montos
+                            var rowAmount = row.amount.toFixed(2);
+                            var formattedAmount = new Intl.NumberFormat('es-ES', {
+                                minimumFractionDigits: 3,
+                                maximumFractionDigits: 3
+                            }).format(rowAmount);
+                            formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
+                            var saldoAmount = row.saldo.toFixed(2);
+                            var formattedSaldo = new Intl.NumberFormat('es-ES', {
+                                minimumFractionDigits: 3,
+                                maximumFractionDigits: 3
+                            }).format(saldoAmount);
+                            formattedSaldo = __currency_trans_from_en(formattedSaldo, true, true);
+                            var rowAcumulado = acumulado.toFixed(2);
+                            var formattedAcumulado = new Intl.NumberFormat('es-ES', {
+                                minimumFractionDigits: 3,
+                                maximumFractionDigits: 3
+                            }).format(rowAcumulado);
+                            formattedAcumulado = __currency_trans_from_en(formattedAcumulado, true, true);
+
+                            // Agregar la fila a la tabla con los datos formateados
+                            body.append(
+                                '<tr>' +
+                                '<td>' + row.invoice + '</td>' +
+                                '<td>' + formattedAmount + '</td>' +
+                                '<td>' + formattedSaldo + '</td>' +
+                                '<td>' + row.montoAdelanto.toFixed(2) + '</td>' +
+                                '<td>' + row.fechaVence + '</td>' +
+                                '<td>' + row.detalle + '</td>' +
+                                '<td>' + formattedAcumulado + '</td>' +
+                                '</tr>'
+                            );
+                        });
+                        var rowSubtotal = data.subtotal.toFixed(2);
+                        var formattedSubtotal = new Intl.NumberFormat('es-ES', {
+                            minimumFractionDigits: 3,
+                            maximumFractionDigits: 3
+                        }).format(rowSubtotal);
+                        formattedSubtotal = __currency_trans_from_en(formattedSubtotal, true, true);
+                        body.append('<tr><td colspan="7" style="text-align: right; font-weight: bold;">Subtotales ' + formattedSubtotal + '</td></tr>');
+                    });
+
+                    // Formatear el monto total general
+                    var rowGrandTotal = grandTotal.toFixed(2);
+                    var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
+                        minimumFractionDigits: 3,
+                        maximumFractionDigits: 3
+                    }).format(rowGrandTotal);
+                    formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
+                    // Añadir un div al final de la tabla con el monto total general
+                    $(win.document.body).append(
+                        '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
+                        'Monto Total de Facturas a pagar: ' + formattedGrandTotal +
+                        '</div>'
+                    );
+
+                    // Ajustar encabezados de la tabla para mostrar las columnas necesarias
+                    $(win.document.body).find('table thead tr').html(
+                        '<th>Factura</th><th>Total</th><th>Saldo</th><th>Monto Adelantos</th><th>Fecha Vence</th><th>Detalle</th><th>Acumulado</th>'
+                    );
+
+                    // Personalizar el cuerpo del documento
+                    $(win.document.body)
+                        .css('font-size', '10pt')
+                        .prepend(
+                            '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                            '<div style="text-align: center; margin-bottom: 10px;">' +
+                            '<h3 style="margin: 0;">Reporte de Cuentas por Pagar Autos Grecia (S.R.L)</h3>' +
+                            '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + $('#expense_date_vence').val() + '</p>' +
+                            '</div>'
+                        );
+
+                    $(win.document.body).find('table')
+                        .addClass('display')
+                        .css('font-size', 'inherit');
+                }
+            },
             {
                 extend: 'colvis',
                 text: 'Visibilidad de columna'
@@ -1546,7 +1658,7 @@ $(document).ready(function () {
         ]
     });
 
-    function getSelectedRows() {
+    function getSelectedRowsCuepag() {
         var selected_rows = [];
         var i = 0;
         $('.row-select:checked').each(function () {
@@ -1566,6 +1678,35 @@ $(document).ready(function () {
 
         return selected_rows;
     }
+
+    function getSelectedRows() {
+        var selected_rows = [];
+        var i = 0;
+    
+        $('.row-select:checked').each(function () {
+            // Obtener la fila del checkbox seleccionado
+            var row = $(this).closest('tr');
+            var provider = row.find('td:eq(2)').text();
+            var invoice = row.find('td:eq(3)').text();
+            var amount = parseFloat(row.find('td:eq(7)').text().replace(/[^\d.-]/g, ''));
+            var saldo = parseFloat(row.find('td:eq(8)').text().replace(/[^\d.-]/g, '')); // Asumiendo que saldo es igual al monto
+            var fechaVence = row.find('td:eq(5)').text();
+            var detalle = row.find('td:eq(9)').text();
+    
+            selected_rows[i++] = {
+                provider: provider.trim(),
+                invoice: invoice.trim(),
+                amount: amount,
+                saldo: saldo,
+                montoAdelanto: 0, // Valor quemado en 0
+                fechaVence: fechaVence.trim(),
+                detalle: detalle.trim()
+            };
+        });
+    
+        return selected_rows;
+    }
+    
 
     $('select#location_id, select#expense_for, select#expense_category_id, select#expense_payment_status').on(
         'change',
