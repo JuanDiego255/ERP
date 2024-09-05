@@ -74,6 +74,12 @@ class ExpenseController extends Controller
                     '=',
                     'bl.id'
                 )
+                ->join(
+                    'contacts AS ct',
+                    'transactions.contact_id',
+                    '=',
+                    'ct.id'
+                )
                 ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
                 ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
                 ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
@@ -103,7 +109,7 @@ class ExpenseController extends Controller
                     DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
                 )
                 ->groupBy('transactions.id')
-                ->orderBy('transactions.transaction_date','desc');
+                ->orderBy('ct.name','asc');
 
             //Add condition for expense for,used in sales representative expense report & list of expense
             if (request()->has('expense_for')) {

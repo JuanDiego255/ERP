@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\DetailTransaction;
+use App\Models\Transaction;
 use App\Models\VehicleBill;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Log;
@@ -42,7 +45,7 @@ class BillVehicleController extends Controller
                 'vehicle_bills.created_at'
             ]);
         if (request()->ajax()) {
-            
+
             return Datatables::of($bills)
                 ->addColumn(
                     'action',
@@ -106,7 +109,40 @@ class BillVehicleController extends Controller
             $bill_details['business_id'] = $business_id;
 
             //Create the employee
+
             VehicleBill::create($bill_details);
+
+            //Ingresar a cuentas por pagar
+            if ($request->is_cxp) {
+                $fechaCompra = Carbon::parse($request->fecha_compra);
+                $fechaVence = Carbon::parse($request->fecha_vence);
+                $diferenciaDias = $fechaVence->diffInDays($fechaCompra);
+                $user_id = $request->session()->get('user.id');
+                $transaction_data['business_id'] = $business_id;
+                $transaction_data['created_by'] = $user_id;
+                $transaction_data['location_id'] = 3;
+                $transaction_data['type'] = "expense";
+                $transaction_data['status'] = "final";
+                $transaction_data['is_quotation'] = "0";
+                $transaction_data['payment_status'] = "due";
+                $transaction_data['contact_id'] = $request->proveedor_id;
+                $transaction_data['ref_no'] = $request->factura;
+                $transaction_data['transaction_date'] = $request->fecha_compra;
+                $transaction_data['fecha_vence'] = $request->fecha_vence;
+                $transaction_data['additional_notes'] = $request->descripcion;
+                $transaction_data['final_total'] = $request->monto;
+                $transaction_data['total_before_tax'] = $request->monto;
+                $transaction_data['plazo'] = $diferenciaDias;
+                $transaction = Transaction::create($transaction_data);
+                DetailTransaction::create([
+                    'transaction_id' => $transaction->id,
+                    'total' => $request->monto,
+                    'cantidad' => 1,
+                    'descripcion' => $request->descripcion
+                ]);
+            }
+
+
             $output = [
                 'success' => 1,
                 'msg' => __("Se agregó el gasto con éxito")

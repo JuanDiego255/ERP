@@ -1350,9 +1350,6 @@ $(document).ready(function () {
     expense_table = $('#expense_table').DataTable({
         processing: true,
         serverSide: true,
-        aaSorting: [
-            [2, 'desc']
-        ],
         ajax: {
             url: '/expenses',
             data: function (d) {

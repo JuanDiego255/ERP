@@ -11,9 +11,13 @@
 
     <!-- Main content -->
     <section class="content">
-        {!! Form::open(['url' => action('Admin\BillVehicleController@store'), 'method' => 'post', 'id' => 'user_add_form']) !!}
+        {!! Form::open([
+            'url' => action('Admin\BillVehicleController@store'),
+            'method' => 'post',
+            'id' => 'user_add_form',
+        ]) !!}
         <div class="row">
-            {!! Form::hidden('product_id', $id, ['id' => 'product_id' ]); !!}
+            {!! Form::hidden('product_id', $id, ['id' => 'product_id']) !!}
             <div class="col-md-12">
                 @component('components.widget')
                     <div class="col-md-3">
@@ -53,6 +57,21 @@
                                 </span> --}}
                             </div>
                         </div>
+                    </div>                  
+
+                    <div class="col-sm-3 d-none" id="fecha_vence_container">
+                        <div class="form-group">
+                            {!! Form::label('fecha_vence', __('Fecha Vence') . ':*') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('fecha_vence', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'fecha_vence',
+                                ]) !!}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group col-md-12">
@@ -62,6 +81,14 @@
                                 'class' => 'form-control',
                                 'placeholder' => __('Descripción del gasto'),
                             ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('is_cxp', 1, false, ['class' => '', 'id' => 'is_cxp']) !!}
+                                {{ __('Generar cuenta por pagar') }}
+                            </label>
                         </div>
                     </div>
                 @endcomponent
@@ -79,4 +106,9 @@
     @stop
     @section('javascript')
         <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#fecha_vence_container').hide();                
+            });
+        </script>
     @endsection

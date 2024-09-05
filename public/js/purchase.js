@@ -62,6 +62,16 @@ $(document).ready(function() {
         $('#pay_term_type').val(data.pay_term_type);
     });
 
+    $('#is_cxp').change(function() {
+        if ($(this).is(':checked')) {
+            // Si está marcado, mostramos los campos
+            $('#fecha_vence_container').show();
+        } else {
+            // Si no está marcado, ocultamos los campos
+            $('#fecha_vence_container').hide();
+        }
+    });
+
     //Quick add supplier
     $(document).on('click', '.add_new_supplier', function() {
         $('#supplier_id').select2('close');
