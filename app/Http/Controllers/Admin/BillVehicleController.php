@@ -107,16 +107,15 @@ class BillVehicleController extends Controller
             ]);
             $business_id = $request->session()->get('user.business_id');
             $bill_details['business_id'] = $business_id;
-
-            //Create the employee
+            $bill_details['is_cxp'] = 0;
+            if ($request->is_cxp) {
+                $bill_details['is_cxp'] = 1;
+            }
 
             VehicleBill::create($bill_details);
 
             //Ingresar a cuentas por pagar
             if ($request->is_cxp) {
-                $fechaCompra = Carbon::parse($request->fecha_compra);
-                $fechaVence = Carbon::parse($request->fecha_vence);
-                $diferenciaDias = $fechaVence->diffInDays($fechaCompra);
                 $user_id = $request->session()->get('user.id');
                 $transaction_data['business_id'] = $business_id;
                 $transaction_data['created_by'] = $user_id;
@@ -132,7 +131,7 @@ class BillVehicleController extends Controller
                 $transaction_data['additional_notes'] = $request->descripcion;
                 $transaction_data['final_total'] = $request->monto;
                 $transaction_data['total_before_tax'] = $request->monto;
-                $transaction_data['plazo'] = $diferenciaDias;
+                $transaction_data['plazo'] = $request->plazo;
                 $transaction = Transaction::create($transaction_data);
                 DetailTransaction::create([
                     'transaction_id' => $transaction->id,

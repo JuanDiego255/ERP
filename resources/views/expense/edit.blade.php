@@ -53,7 +53,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('ref_no', __('Factura') . ':*') !!}
-                            {!! Form::text('ref_no', $expense->ref_no, ['class' => 'form-control', 'required']) !!}
+                            {!! Form::text('ref_no', $expense->ref_no, ['class' => 'form-control', 'required','id' => 'ref_no']) !!}
                         </div>
                     </div>
                     <div class="col-sm-2">
@@ -104,7 +104,7 @@
 
                     <input type="hidden" value="@num_format($expense->final_total)" name="final_total" id="final_total">
 
-                    
+
                 </div>
             </div>
         </div> <!--box end-->
@@ -168,6 +168,7 @@
         @endcomponent
         <div class="col-sm-12">
             <button type="submit" class="btn btn-primary pull-right">@lang('messages.update')</button>
+            <a href="{{url('/expenses')}}" class="btn btn-info pull-right">Cancelar</a>
         </div>
         {!! Form::close() !!}
     </section>
@@ -271,6 +272,44 @@
         $(document).on('click', '.remove-row', function() {
             $(this).closest('tr').remove();
             calculateExpensePaymentDue();
+        });
+        $('#ref_no').on('blur', function() {
+            var factura = $(this).val();
+            if (factura != "") {
+                $.ajax({
+                    url: '/expense/check-ref_no',
+                    type: 'POST',
+                    data: {
+                        ref_no: factura
+                    },
+                    success: function(response) {
+                        if (response.valid) {
+                            swal({
+                                title: "La factura digitada ya existe",
+                                icon: 'warning',
+                                buttons: {
+                                    confirm: {
+                                        text: "OK",
+                                        value: true,
+                                        visible: true,
+                                        className: "",
+                                        closeModal: true
+                                    }
+                                },
+                                dangerMode: true,
+                            }).then(willDelete => {
+                                if (willDelete) {
+                                    $('#ref_no').val('').focus();
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Manejo de errores
+                        console.error("Error in validation request:", error);
+                    }
+                });
+            }
         });
     </script>
 @endsection

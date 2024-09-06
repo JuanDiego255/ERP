@@ -17,6 +17,7 @@
             'id' => 'bill_edit_form',
         ]) !!}
         {!! Form::hidden('product_id', $bill->product_id, ['id' => 'product_id']) !!}
+        {!! Form::hidden('is_cxp', $bill->is_cxp, ['id' => 'is_cxp']) !!}
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget')
@@ -88,4 +89,47 @@
     @stop
     @section('javascript')
         <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
+        <script>
+            $(document).ready(function() {                
+                $('#factura').on('blur', function() {
+                    var factura = $(this).val();
+                    var is_cxp = $('#is_cxp').val();
+                    if (factura != "" && is_cxp == 1) {
+                        $.ajax({
+                            url: '/expense/check-ref_no',
+                            type: 'POST',
+                            data: {
+                                ref_no: factura
+                            },
+                            success: function(response) {          
+                                if (response.valid) {
+                                    swal({
+                                        title: "La factura digitada ya existe",
+                                        icon: 'warning',
+                                        buttons: {
+                                            confirm: {
+                                                text: "OK",
+                                                value: true,
+                                                visible: true,
+                                                className: "",
+                                                closeModal: true
+                                            }
+                                        },
+                                        dangerMode: true,
+                                    }).then(willDelete => {
+                                        if (willDelete) {
+                                            $('#factura').focus();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                // Manejo de errores
+                                console.error("Error in validation request:", error);
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
     @endsection

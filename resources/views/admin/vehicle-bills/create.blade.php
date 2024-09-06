@@ -35,7 +35,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('factura', __('Factura') . ':*') !!}
-                            {!! Form::text('factura', null, ['class' => 'form-control', 'required', 'placeholder' => __('# Factura')]) !!}
+                            {!! Form::text('factura', null, ['class' => 'form-control','id' => 'factura', 'required', 'placeholder' => __('# Factura')]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -57,8 +57,13 @@
                                 </span> --}}
                             </div>
                         </div>
-                    </div>                  
-
+                    </div>
+                    <div class="col-sm-1" id="plazo_container">
+                        <div class="form-group">
+                            {!! Form::label('plazo', __('Días plazo') . ':*') !!}
+                            {!! Form::text('plazo', null, ['class' => 'form-control', 'required', 'id' => 'plazo']) !!}
+                        </div>
+                    </div>
                     <div class="col-sm-3 d-none" id="fecha_vence_container">
                         <div class="form-group">
                             {!! Form::label('fecha_vence', __('Fecha Vence') . ':*') !!}
@@ -73,6 +78,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <div class="form-group col-md-12">
                         <div class="form-group">
@@ -108,7 +114,68 @@
         <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
         <script type="text/javascript">
             $(document).ready(function() {
-                $('#fecha_vence_container').hide();                
+                $('#fecha_vence_container, #plazo_container').hide();
+                $('#plazo').on('input', function() {
+                    // Obtiene el valor del plazo
+                    var plazo = parseInt($(this).val());
+
+                    // Verifica si es un número válido
+                    if (!isNaN(plazo) && plazo > 0) {
+                        // Calcula la fecha de vencimiento
+                        var fechaVence = new Date();
+                        fechaVence.setDate(fechaVence.getDate() + plazo);
+
+                        // Formatea la fecha en el formato deseado (YYYY-MM-DD)
+                        var dia = ("0" + fechaVence.getDate()).slice(-2);
+                        var mes = ("0" + (fechaVence.getMonth() + 1)).slice(-2);
+                        var anio = fechaVence.getFullYear();
+
+                        // Asigna la fecha formateada al campo de fecha_vence
+                        $('#fecha_vence').val(anio + '-' + mes + '-' + dia);
+                    } else {
+                        // Si el plazo no es válido, limpia el campo de fecha_vence
+                        $('#fecha_vence').val('');
+                    }
+                });
+                $('#factura').on('blur', function() {
+                    var factura = $(this).val();
+                    var is_cxp = $('#is_cxp').is(':checked');
+                    if (factura != "" && is_cxp) {
+                        $.ajax({
+                            url: '/expense/check-ref_no',
+                            type: 'POST',
+                            data: {
+                                ref_no: factura
+                            },
+                            success: function(response) {
+                                if (response.valid) {
+                                    swal({
+                                        title: "La factura digitada ya existe",
+                                        icon: 'warning',
+                                        buttons: {
+                                            confirm: {
+                                                text: "OK",
+                                                value: true,
+                                                visible: true,
+                                                className: "",
+                                                closeModal: true
+                                            }
+                                        },
+                                        dangerMode: true,
+                                    }).then(willDelete => {
+                                        if (willDelete) {
+                                            $('#factura').val('').focus();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                // Manejo de errores
+                                console.error("Error in validation request:", error);
+                            }
+                        });
+                    }
+                });
             });
         </script>
     @endsection

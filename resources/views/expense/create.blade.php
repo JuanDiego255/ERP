@@ -68,7 +68,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('ref_no', __('Num Factura') . ':*') !!}
-                            {!! Form::text('ref_no', null, ['class' => 'form-control', 'required']) !!}
+                            {!! Form::text('ref_no', null, ['class' => 'form-control', 'required', 'id' => 'ref_no']) !!}
                         </div>
                     </div>
                     <div class="col-sm-2">
@@ -226,6 +226,7 @@
         $(document).on('change', 'input#final_total, input.payment-amount', function() {
             calculateExpensePaymentDue();
         });
+
         function calculateExpensePaymentDue() {
             var final_total = 0;
 
@@ -301,6 +302,44 @@
             } else {
                 // Si el plazo no es válido, limpia el campo de fecha_vence
                 $('#fecha_vence').val('');
+            }
+        });
+        $('#ref_no').on('blur', function() {
+            var factura = $(this).val();
+            if (factura != "") {
+                $.ajax({
+                    url: '/expense/check-ref_no',
+                    type: 'POST',
+                    data: {
+                        ref_no: factura
+                    },
+                    success: function(response) {
+                        if (response.valid) {
+                            swal({
+                                title: "La factura digitada ya existe",
+                                icon: 'warning',
+                                buttons: {
+                                    confirm: {
+                                        text: "OK",
+                                        value: true,
+                                        visible: true,
+                                        className: "",
+                                        closeModal: true
+                                    }
+                                },
+                                dangerMode: true,
+                            }).then(willDelete => {
+                                if (willDelete) {
+                                    $('#ref_no').val('').focus();
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Manejo de errores
+                        console.error("Error in validation request:", error);
+                    }
+                });
             }
         });
     </script>

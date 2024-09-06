@@ -66,9 +66,12 @@ $(document).ready(function() {
         if ($(this).is(':checked')) {
             // Si está marcado, mostramos los campos
             $('#fecha_vence_container').show();
+            $('#plazo_container').show();
+            $('#factura').val('').focus();
         } else {
             // Si no está marcado, ocultamos los campos
             $('#fecha_vence_container').hide();
+            $('#plazo_container').hide();
         }
     });
 

@@ -11,6 +11,6 @@ class VehicleBill extends Model
 
     protected $fillable = [
         'fecha_compra', 'descripcion','monto', 'factura', 'product_id', 'proveedor_id',
-        'business_id'
+        'business_id','is_cxp'
     ];
 }

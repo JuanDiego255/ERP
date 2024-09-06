@@ -368,6 +368,23 @@ class ExpenseController extends Controller
         ];
     }
 
+    public function checkFacId(Request $request)
+    {
+        $ref_no = $request->ref_no;
+
+        $valid = 0;
+        if (!empty($ref_no)) {
+            $business_id = $request->session()->get('user.business_id');
+            $query = Transaction::where('business_id', $business_id)
+                ->where('ref_no', $ref_no);
+            $count = $query->count();
+            if ($count > 0) {
+                $valid = 1;
+            }
+        }
+        return response()->json(['valid' => $valid]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
