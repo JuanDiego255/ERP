@@ -49,12 +49,12 @@ class BillVehicleController extends Controller
             return Datatables::of($bills)
                 ->addColumn(
                     'action',
-                    '@can("employee.update")
+                    '@can("product.update")
                 <a href="{{ action(\'Admin\BillVehicleController@edit\', [$bill_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                 &nbsp;
                 @endcan
                 
-                @can("employee.delete")
+                @can("product.delete")
                                                                     <button data-href="{{ action(\'Admin\BillVehicleController@destroy\', [$bill_id]) }}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 @endcan'
                 )

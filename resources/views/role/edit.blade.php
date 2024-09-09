@@ -214,28 +214,36 @@
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'employee.view', in_array('employee.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver empleado') }}
+                                {!! Form::checkbox('permissions[]', 'employee.view', in_array('employee.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver empleado') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'employee.create', in_array('employee.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Crear empleado') }}
+                                {!! Form::checkbox('permissions[]', 'employee.create', in_array('employee.create', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Crear empleado') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'employee.update', in_array('employee.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar empleado') }}
+                                {!! Form::checkbox('permissions[]', 'employee.update', in_array('employee.update', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Editar empleado') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'employee.delete', in_array('employee.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar empleado') }}
+                                {!! Form::checkbox('permissions[]', 'employee.delete', in_array('employee.delete', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Eliminar empleado') }}
                             </label>
                         </div>
                     </div>
@@ -338,6 +346,49 @@
                                 {!! Form::checkbox('permissions[]', 'customer.delete', in_array('customer.delete', $role_permissions), [
                                     'class' => 'input-icheck',
                                 ]) !!} {{ __('role.customer.delete') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Fiadores')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'guarantor.view', in_array('guarantor.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver fiador') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'guarantor.create', in_array('guarantor.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Crear fiador') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'guarantor.update', in_array('guarantor.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar fiador') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'guarantor.delete', in_array('guarantor.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar fiador') }}
                             </label>
                         </div>
                     </div>
@@ -506,7 +557,7 @@
                 </div>
                 <hr>
             @endif --}}
-            <div class="row check_group">
+           {{--  <div class="row check_group">
                 <div class="col-md-3">
                     <h4>Ventas</h4>
                 </div>
@@ -692,8 +743,50 @@
                         </div>
                     @endif
                 </div>
-            </div>
+            </div> --}}
 
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Cuentas Por Pagar')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.view', in_array('cxp.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.create', in_array('cxp.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Agregar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.update', in_array('cxp.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.delete', in_array('cxp.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar cuentas') }}
+                            </label>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
             <hr>
 
             <div class="row check_group">

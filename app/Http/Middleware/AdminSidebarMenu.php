@@ -305,17 +305,22 @@ class AdminSidebarMenu
             } */
 
             //Expense dropdown
-            if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense'))) {
-                $menu
-                    ->dropdown(
-                        'Cuentas por pagar',
-                        function ($sub) {
-                            $sub->url(action('ExpenseController@index'), 'Lista de cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
-                            $sub->url(action('ExpenseController@create'), 'Agregar cuenta por pagar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']);
-                        },
-                        ['icon' => 'fa fas fa-minus-circle'],
-                    )
-                    ->order(45);
+            if (auth()->user()->can('cxp.view')) {
+                if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense'))) {
+                    $menu
+                        ->dropdown(
+                            'Cuentas por pagar',
+                            function ($sub) {
+
+                                $sub->url(action('ExpenseController@index'), 'Lista de cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
+                                if (auth()->user()->can('cxp.create')) {
+                                    $sub->url(action('ExpenseController@create'), 'Agregar cuenta por pagar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']);
+                                }
+                            },
+                            ['icon' => 'fa fas fa-minus-circle'],
+                        )
+                        ->order(45);
+                }
             }
 
             if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.access') || auth()->user()->can('revenues'))) {

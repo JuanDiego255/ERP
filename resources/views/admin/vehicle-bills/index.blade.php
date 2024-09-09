@@ -49,7 +49,7 @@
             <div class="col-md-9">
 
                 @component('components.widget', ['class' => 'box-primary', 'title' => __('Todos los gastos')])
-                    @can('user.create')
+                    @can('product.create')
                         @slot('tool')
                             <div class="box-tools">
                                 <a class="btn btn-block btn-primary" href="{{ action('Admin\BillVehicleController@create', [$id]) }}">
@@ -57,7 +57,7 @@
                             </div>
                         @endslot
                     @endcan
-                    @can('user.view')
+                    @can('product.view')
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="bills_table">
                                 <thead>
