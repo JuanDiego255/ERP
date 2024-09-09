@@ -20,7 +20,7 @@ use App\Models\Test;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['authh','language'])->group(function () {
+Route::middleware(['authh', 'language'])->group(function () {
     Route::get('/', function () {
         return view('welcome');
     });
@@ -33,8 +33,7 @@ Route::middleware(['authh','language'])->group(function () {
     Route::post('/business/register/check-email', 'BusinessController@postCheckEmail')->name('business.postCheckEmail');
 
     Route::get('/invoice/{token}', 'SellPosController@showInvoice')
-    ->name('show_invoice');
-
+        ->name('show_invoice');
 });
 
 Route::get('/payment', 'PaymentController@index')->name('payment.index');
@@ -48,27 +47,25 @@ Route::get('/payment/finish/{transaction_id}', 'PaymentController@finish')->name
 //Routes for authenticated users only
 Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin', 'CheckPayment'])->group(function () {
 
-    Route::group(['prefix' => '/naturezas'], function(){
+    Route::group(['prefix' => '/naturezas'], function () {
         Route::get('/', 'NaturezaController@index');
         Route::get('/new', 'NaturezaController@new');
         Route::post('/save', 'NaturezaController@save');
         Route::get('/delete/{id}', 'NaturezaController@delete');
         Route::get('/edit/{id}', 'NaturezaController@edit');
         Route::post('/update', 'NaturezaController@update');
-
     });
 
-    Route::group(['prefix' => '/cities'], function(){
+    Route::group(['prefix' => '/cities'], function () {
         Route::get('/', 'CityController@index');
         Route::get('/new', 'CityController@new');
         Route::post('/save', 'CityController@save');
 
         Route::get('/edit/{id}', 'CityController@edit');
         Route::post('/update', 'CityController@update');
-
     });
 
-    Route::group(['prefix' => '/veiculos'], function(){
+    Route::group(['prefix' => '/veiculos'], function () {
         Route::get('/', 'VeiculoController@index');
         Route::get('/new', 'VeiculoController@new');
         Route::post('/save', 'VeiculoController@save');
@@ -77,69 +74,64 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::post('/update', 'VeiculoController@update');
     });
 
-    Route::group(['prefix' => '/ibpt'], function(){
+    Route::group(['prefix' => '/ibpt'], function () {
         Route::get('/', 'IbptController@index');
         Route::get('/new', 'IbptController@new');
         Route::post('/save', 'IbptController@save');
         Route::get('/delete/{id}', 'IbptController@delete');
         Route::get('/list/{id}', 'IbptController@list');
         Route::get('/edit/{id}', 'IbptController@edit');
-
     });
 
-    Route::group(['prefix' => '/ecommerce'], function(){
+    Route::group(['prefix' => '/ecommerce'], function () {
         Route::get('/config', 'EcommerceController@config');
         Route::post('/save', 'EcommerceController@save');
-        
     });
 
-    Route::group(['prefix' => '/carrosselEcommerce'], function(){
+    Route::group(['prefix' => '/carrosselEcommerce'], function () {
         Route::get('/', 'CarrosselController@index');
         Route::get('/new', 'CarrosselController@create');
         Route::get('/edit/{id}', 'CarrosselController@edit');
         Route::post('/store', 'CarrosselController@store');
         Route::put('/update/{id}', 'CarrosselController@update');
         Route::delete('/delete/{id}', 'CarrosselController@delete');
-        
     });
 
-    Route::group(['prefix' => '/clienteEcommerce'], function(){
+    Route::group(['prefix' => '/clienteEcommerce'], function () {
         Route::get('/', 'ClienteEcommerceController@index');
         Route::get('/new', 'ClienteEcommerceController@create');
         Route::get('/edit/{id}', 'ClienteEcommerceController@edit');
         Route::post('/save', 'ClienteEcommerceController@save');
         Route::put('/update/{id}', 'ClienteEcommerceController@update');
         Route::delete('/delete/{id}', 'ClienteEcommerceController@delete');
-        
-        Route::get('/pedidos/{id}', 'ClienteEcommerceController@pedidos');
 
+        Route::get('/pedidos/{id}', 'ClienteEcommerceController@pedidos');
     });
 
-    Route::group(['prefix' => 'enderecosEcommerce'],function(){
+    Route::group(['prefix' => 'enderecosEcommerce'], function () {
         Route::get('/{cliente_id}', 'EnderecoEcommerceController@index');
         Route::get('/edit/{id}', 'EnderecoEcommerceController@edit');
-        Route::post('/update', 'EnderecoEcommerceController@update'); 
+        Route::post('/update', 'EnderecoEcommerceController@update');
     });
 
-    Route::group(['prefix' => '/pedidosEcommerce'], function(){
+    Route::group(['prefix' => '/pedidosEcommerce'], function () {
         Route::get('/', 'PedidoEcommerceController@index');
         Route::get('/ver/{id}', 'PedidoEcommerceController@ver');
         Route::post('/salvarCodigo', 'PedidoEcommerceController@salvarCodigo');
         Route::get('/gerarNFe/{id}', 'PedidoEcommerceController@gerarNFe');
         Route::post('/salvarVenda', 'PedidoEcommerceController@salvarVenda');
         Route::get('/consultarPagamentos', 'PedidoEcommerceController@consultarPagamentos');
-        
     });
 
-    Route::group(['prefix' => '/contatoEcommerce'], function(){
+    Route::group(['prefix' => '/contatoEcommerce'], function () {
         Route::get('/', 'ContatoController@index');
     });
 
-    Route::group(['prefix' => '/informativoEcommerce'], function(){
+    Route::group(['prefix' => '/informativoEcommerce'], function () {
         Route::get('/', 'InformativoController@index');
     });
-    
-    Route::group(['prefix' => '/freteGratis'], function(){
+
+    Route::group(['prefix' => '/freteGratis'], function () {
         Route::get('/', 'CidadeFreteGratisController@index');
         Route::get('/new', 'CidadeFreteGratisController@new');
         Route::post('/save', 'CidadeFreteGratisController@save');
@@ -148,7 +140,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::post('/update', 'CidadeFreteGratisController@update');
     });
 
-    Route::group(['prefix' => '/cupom'], function(){
+    Route::group(['prefix' => '/cupom'], function () {
         Route::get('/', 'CupomController@index');
         Route::get('/new', 'CupomController@new');
         Route::post('/save', 'CupomController@save');
@@ -157,7 +149,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::post('/update', 'CupomController@update');
     });
 
-    Route::group(['prefix' => '/cte'], function(){
+    Route::group(['prefix' => '/cte'], function () {
         Route::get('/', 'CteController@index');
         Route::get('/new', 'CteController@new');
         Route::post('/save', 'CteController@save');
@@ -180,16 +172,14 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
 
         Route::get('/xmls', 'CteController@xmls');
         Route::get('/filtroXml', 'CteController@filtroXml');
-        
+
         Route::get('/baixarZipXmlAprovado', 'CteController@baixarZipXmlAprovado');
         Route::get('/baixarZipXmlReprovado', 'CteController@baixarZipXmlReprovado');
 
         Route::post('/importarXml', 'CteController@importarXml');
-        
-        
     });
 
-    Route::group(['prefix' => '/mdfe'], function(){
+    Route::group(['prefix' => '/mdfe'], function () {
         Route::get('/', 'MdfeController@index');
         Route::get('/new', 'MdfeController@new');
         Route::post('/save', 'MdfeController@save');
@@ -213,23 +203,24 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
 
         Route::get('/xmls', 'MdfeController@xmls');
         Route::get('/filtroXml', 'MdfeController@filtroXml');
-        
+
         Route::get('/baixarZipXmlAprovado', 'MdfeController@baixarZipXmlAprovado');
         Route::get('/baixarZipXmlReprovado', 'MdfeController@baixarZipXmlReprovado');
-        
+
 
         Route::get('/naoencerrados', 'MdfeController@naoencerrados');
         Route::get('/encerrar/{chave}/{protocolo}/{location_id}', 'MdfeController@encerrar');
-        
     });
 
-    Route::group(['prefix' => '/manifesto'], function(){
+    Route::group(['prefix' => '/manifesto'], function () {
         Route::get('/', 'ManifestoController@index');
         Route::get('/byLocation/{location_id}', 'ManifestoController@getByLocation');
         Route::get('/buscarNovosDocumentos', 'ManifestoController@buscarNovosDocumentos');
         Route::get('/getDocumentosNovos', 'ManifestoController@getDocumentosNovos');
-        Route::get('/getDocumentosNovosLocation', 
-            'ManifestoController@getDocumentosNovosLocation');
+        Route::get(
+            '/getDocumentosNovosLocation',
+            'ManifestoController@getDocumentosNovosLocation'
+        );
 
         Route::get('/manifestar', 'ManifestoController@manifestar');
         Route::get('/imprimirDanfe/{id}', 'ManifestoController@imprimirDanfe');
@@ -239,10 +230,9 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::get('/atribuirEstoque', 'ManifestoController@atribuirEstoque');
         Route::post('/salvarFornecedor', 'ManifestoController@salvarFornecedor');
         Route::post('/salvarFatura', 'ManifestoController@salvarFatura');
-
     });
 
-    Route::group(['prefix' => '/transportadoras'], function(){
+    Route::group(['prefix' => '/transportadoras'], function () {
         Route::get('/', 'TransportadoraController@index');
         Route::get('/new', 'TransportadoraController@new');
         Route::post('/save', 'TransportadoraController@save');
@@ -251,7 +241,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::post('/update', 'TransportadoraController@update');
     });
 
-    Route::group(['prefix' => '/nfe'], function(){
+    Route::group(['prefix' => '/nfe'], function () {
         Route::get('/novo/{id}', 'NfeController@novo');
         Route::get('/renderizar/{id}', 'NfeController@renderizarDanfe');
         Route::get('/gerarXml/{id}', 'NfeController@gerarXml');
@@ -275,26 +265,24 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
 
         Route::get('/findCidade', 'NfeController@findCidade');
         Route::get('/enviarEmail/{id}', 'NfeController@enviarEmail');
-
-
     });
 
-    Route::group(['prefix' => '/nfelista'], function(){
+    Route::group(['prefix' => '/nfelista'], function () {
         Route::get('/', 'NfeController@lista');
     });
 
-    Route::group(['prefix' => '/nfcelista'], function(){
+    Route::group(['prefix' => '/nfcelista'], function () {
         Route::get('/', 'NfceController@lista');
     });
 
-    Route::group(['prefix' => '/nfce'], function(){
+    Route::group(['prefix' => '/nfce'], function () {
         Route::post('/transmitir', 'NfceController@transmtir');
         Route::get('/gerar/{id}', 'NfceController@gerar');
         Route::get('/gerarXml/{id}', 'NfceController@gerarXml');
         Route::get('/renderizar/{id}', 'NfceController@renderizarDanfce');
         Route::get('/imprimir/{id}', 'NfceController@imprimir');
         Route::get('/imprimirNaoFiscal/{id}', 'NfceController@imprimirNaoFiscal');
-        
+
         Route::get('/ver/{id}', 'NfceController@ver');
         Route::get('/baixarXml/{id}', 'NfceController@baixarXml');
         Route::post('/cancelar', 'NfceController@cancelar');
@@ -304,11 +292,9 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
 
         Route::get('/baixarZipXmlAprovado', 'NfceController@baixarZipXmlAprovado');
         Route::get('/baixarZipXmlReprovado', 'NfceController@baixarZipXmlReprovado');
-
-
     });
 
-    Route::group(['prefix' => '/purchase-xml'], function(){
+    Route::group(['prefix' => '/purchase-xml'], function () {
         Route::get('/', 'PurchaseXmlController@index');
         Route::post('/', 'PurchaseXmlController@verXml');
         Route::post('/save', 'PurchaseXmlController@save');
@@ -316,7 +302,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::get('/baixarXmlEntrada/{id}', 'PurchaseXmlController@baixarXmlEntrada');
     });
 
-    Route::group(['prefix' => '/nfeEntrada'], function(){
+    Route::group(['prefix' => '/nfeEntrada'], function () {
         Route::get('/novo/{id}', 'NfeEntradaController@novo');
         Route::get('/gerarXml', 'NfeEntradaController@gerarXml');
         Route::get('/renderizarDanfe', 'NfeEntradaController@renderizarDanfe');
@@ -326,10 +312,9 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::get('/baixarXml/{id}', 'NfeEntradaController@baixarXml');
         Route::post('/cancelar', 'NfeEntradaController@cancelar');
         Route::get('/imprimirCancelamento/{id}', 'NfeEntradaController@imprimirCancelamento');
-
     });
 
-    Route::group(['prefix' => '/devolucao'], function(){
+    Route::group(['prefix' => '/devolucao'], function () {
         Route::get('/', 'DevolucaoController@index');
         Route::post('/', 'DevolucaoController@verXml');
         Route::get('/lista', 'DevolucaoController@lista');
@@ -343,13 +328,12 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::get('/imprimir/{id}', 'DevolucaoController@imprimir');
         Route::get('/imprimirCancelamento/{id}', 'DevolucaoController@imprimirCancelamento');
         Route::get('/imprimirCorrecao/{id}', 'DevolucaoController@imprimirCorrecao');
-        
+
         Route::get('/delete/{id}', 'DevolucaoController@delete');
         Route::post('/transmitir', 'DevolucaoController@transmitir');
         Route::post('/cancelar', 'DevolucaoController@cancelar');
 
         Route::post('/corrigir', 'DevolucaoController@corrigir');
-
     });
 
     Route::get('/home', 'HomeController@index')->name('home');
@@ -357,19 +341,19 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/home/product-stock-alert', 'HomeController@getProductStockAlert');
     Route::get('/home/purchase-payment-dues', 'HomeController@getPurchasePaymentDues');
     Route::get('/home/sales-payment-dues', 'HomeController@getSalesPaymentDues');
-    
+
     Route::post('/test-email', 'BusinessController@testEmailConfiguration');
     Route::post('/test-sms', 'BusinessController@testSmsConfiguration');
     Route::get('/business/settings', 'BusinessController@getBusinessSettings')->name('business.getBusinessSettings');
     Route::post('/business/update', 'BusinessController@postBusinessSettings')->name('business.postBusinessSettings')
-    ->middleware('csv');
+        ->middleware('csv');
     Route::get('/user/profile', 'UserController@getProfile')->name('user.getProfile');
     Route::post('/user/update', 'UserController@updateProfile')->name('user.updateProfile');
     Route::post('/user/update-password', 'UserController@updatePassword')->name('user.updatePassword');
 
     Route::resource('brands', 'BrandController');
     Route::resource('bank', 'BankController');
-    
+
     Route::resource('payment-account', 'PaymentAccountController');
 
     Route::resource('tax-rates', 'TaxRateController');
@@ -412,10 +396,10 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/products/bulk-update', 'ProductController@bulkUpdate');
     Route::post('/products/bulk-update-location', 'ProductController@updateProductLocation');
     Route::get('/products/get-product-to-edit/{product_id}', 'ProductController@getProductToEdit');
-    
+
     Route::post('/products/get_sub_categories', 'ProductController@getSubCategories');
     Route::get('/products/get_sub_units', 'ProductController@getSubUnits');
-    
+
     Route::post('/products/product_form_part', 'ProductController@getProductVariationFormPart');
     Route::post('/products/get_product_variation_row', 'ProductController@getProductVariationRow');
     Route::post('/products/get_variation_template', 'ProductController@getVariationTemplate');
@@ -424,7 +408,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/products/quick_add', 'ProductController@quickAdd');
     Route::post('/products/save_quick_product', 'ProductController@saveQuickProduct');
     Route::get('/products/get-combo-product-entry-row', 'ProductController@getComboProductEntryRow');
-    
+
     Route::resource('products', 'ProductController');
 
     //Rutas para gastos de vehiculos
@@ -474,10 +458,32 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::put('/rubros/edit-employee-rubro', [EmployeeController::class, 'updateRubro'])->name('rubros.update');
     Route::post('/rubros/delete-employee-rubro/{id}', [EmployeeController::class, 'destroyRubro'])->name('rubros.delete');
     Route::post('/employee/store-action', [EmployeeController::class, 'storeAction'])->name('rubros.store');
-    
+
 
 
     Route::resource('rubros', 'RubrosController');
+    //Rutas para los tipo de planillas
+    Route::get('/tipo-planilla-index', 'PlanillaController@indexTipoPlanilla');
+    Route::get('/tipo-planilla-create', 'PlanillaController@createTipoPlanilla');
+    Route::get('/tipo-planilla-edit/{id}', 'PlanillaController@editTipoPlanilla');
+    Route::post('/tipo-planilla-store', 'PlanillaController@storeTipoPlanilla');
+    Route::put('/tipo-planilla-update/{id}', 'PlanillaController@updateTipoPlanilla');
+    Route::delete('/tipo-planilla-delete/{id}', 'PlanillaController@destroyTipoPlanilla');
+    //Rutas para los tipo de planillas
+    //Rutas para los tipo de planillas
+    Route::get('/planilla-index', 'PlanillaController@index');
+    Route::get('/planilla-create', 'PlanillaController@create');    
+    Route::post('/planilla-store', 'PlanillaController@store');
+    Route::post('/planilla-update/{id}', 'PlanillaController@update');
+    Route::post('/planilla-store-detalle/{id}', 'PlanillaController@createPlanillaDetalle');
+    Route::delete('/planilla-delete/{id}', 'PlanillaController@destroy');
+    Route::post('/planilla-update-approve/{id}', 'PlanillaController@updateApprove');
+    //Rutas para los tipo de planillas
+    //Rutas para los detalles de planillas
+    Route::get('/planilla-detalle-index/{id}', 'PlanillaController@indexDetallePlanilla');
+    Route::get('/planilla-detalle-view/{id}', 'PlanillaController@viewPayment');
+    Route::post('/planilla-detalle-update/{id}', 'PlanillaController@updatePlanillaDetalle');
+    //Rutas para los detalles de planillas
 
     Route::resource('group-taxes', 'GroupTaxController');
 
@@ -530,7 +536,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/reports/get-profit/{by?}', 'ReportController@getProfit');
     Route::get('/reports/items-report', 'ReportController@itemsReport');
     Route::get('/reports/get-stock-value', 'ReportController@getStockValue');
-    
+
     Route::get('business-location/activate-deactivate/{location_id}', 'BusinessLocationController@activateDeactivateLocation');
 
     //Business Location Settings...
@@ -590,7 +596,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     //Stock Transfer
     Route::get('stock-transfers/print/{id}', 'StockTransferController@printInvoice');
     Route::resource('stock-transfers', 'StockTransferController');
-    
+
     Route::get('/opening-stock/add/{product_id}', 'OpeningStockController@add');
     Route::post('/opening-stock/save', 'OpeningStockController@save');
 
@@ -606,12 +612,14 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('sell-return/get-product-row', 'SellReturnController@getProductRow');
     Route::get('/sell-return/print/{id}', 'SellReturnController@printInvoice');
     Route::get('/sell-return/add/{id}', 'SellReturnController@add');
-    
+
     //Backup
     Route::get('backup/download/{file_name}', 'BackUpController@download');
     Route::get('backup/delete/{file_name}', 'BackUpController@delete');
     Route::resource('backup', 'BackUpController', ['only' => [
-        'index', 'create', 'store'
+        'index',
+        'create',
+        'store'
     ]]);
 
     Route::get('selling-price-group/activate-deactivate/{id}', 'SellingPriceGroupController@activateDeactivate');
@@ -653,7 +661,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
         Route::post('/link-account', 'AccountReportsController@postLinkAccount');
         Route::get('/cash-flow', 'AccountController@cashFlow');
     });
-    
+
     Route::resource('account-types', 'AccountTypeController');
 
     //Restaurant module
@@ -691,17 +699,16 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('install-module', 'Install\InstallController@index');
     Route::get('instalSuper', 'Install\ModulesController@instalSuper');
     Route::resource('manage-modules', 'Install\ModulesController')
-    ->only(['index', 'destroy', 'update']);
+        ->only(['index', 'destroy', 'update']);
     Route::resource('warranties', 'WarrantyController');
 
     Route::resource('dashboard-configurator', 'DashboardConfiguratorController')
-    ->only(['edit', 'update']);
+        ->only(['edit', 'update']);
 
     //common controller for document & note
     Route::get('get-rubros-employee-page', 'DocumentAndNoteController@getRubrosEmployeePage');
     Route::post('post-document-upload', 'DocumentAndNoteController@postMedia');
     Route::resource('rubros-employee', 'DocumentAndNoteController');
-
 });
 
 
@@ -716,7 +723,7 @@ Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
 });
 
 //common route
-Route::middleware(['auth','language'])->group(function () {
+Route::middleware(['auth', 'language'])->group(function () {
     Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 });
 
@@ -736,7 +743,3 @@ Route::get('/cidades', 'CidadeController@lista');
 Route::get('/source', function () {
     return view('source');
 });
-
-
-
-

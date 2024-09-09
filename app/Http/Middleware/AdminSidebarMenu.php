@@ -95,10 +95,12 @@ class AdminSidebarMenu
                         function ($sub) {
                             if (auth()->user()->can('employee.view')) {
                                 $sub->url(action('EmployeeController@index'), __('Empleados'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'employees']);
-                            }
+                            }/* 
                             if (auth()->user()->can('rubros.view')) {
                                 $sub->url(action('RubrosController@index'), __('Rubros planilla'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'rubros']);
-                            }
+                            } */
+                            $sub->url(action('PlanillaController@indexTipoPlanilla'), __('Tipos de planilla'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'tipo-planilla-index']);
+                            $sub->url(action('PlanillaController@index'), __('Gestionar planillas'), ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'planilla-index']);
                         },
                         ['icon' => 'fa fas fa-address-book', 'id' => 'tour_step4'],
                     )
@@ -123,7 +125,7 @@ class AdminSidebarMenu
                                 __('barcode.print_labels'),
                                 ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'labels' && request()->segment(2) == 'show']
                             );
-                        } */                            
+                        } */
                             if (auth()->user()->can('product.create')) {
                                 /*  $sub->url(
                                 action('VariationTemplateController@index'),
@@ -310,7 +312,6 @@ class AdminSidebarMenu
                         function ($sub) {
                             $sub->url(action('ExpenseController@index'), 'Lista de cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
                             $sub->url(action('ExpenseController@create'), 'Agregar cuenta por pagar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']);
-                            
                         },
                         ['icon' => 'fa fas fa-minus-circle'],
                     )

@@ -77,6 +77,12 @@
                             {!! Form::text('salario_hora', null, ['class' => 'form-control', 'placeholder' => __('Salario por hora')]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('hora_extra', __('Hora extra (colones)') . ':') !!}
+                            {!! Form::text('hora_extra', null, ['class' => 'form-control', 'placeholder' => __('Hora extra')]) !!}
+                        </div>
+                    </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('puesto', 'Puesto' . ':*') !!}
                         {!! Form::select('puesto', ['vendedor' => 'Vendedor', 'legal' => 'Legal', 'admin' => 'Adminstrativo'], !empty($employee->puesto) ? $employee->puesto : null, ['class' => 'form-control', 'id' => 'gender','required', 'placeholder' => __( 'messages.please_select') ]); !!}
@@ -85,6 +91,20 @@
                         <div class="form-group">
                             {!! Form::label('comision_ventas', __('Comisión por ventas') . ':') !!}
                             {!! Form::text('comision_ventas', null, ['class' => 'form-control', 'placeholder' => __('Comisión por ventas')]) !!}
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            {!! Form::label('fecha_ingreso', __('Fecha Ingreso') . ':*') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('fecha_ingreso', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'fecha_ingreso',
+                                ]) !!}
+                            </div>
                         </div>
                     </div>
                 @endcomponent

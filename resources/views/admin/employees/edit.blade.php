@@ -33,7 +33,7 @@
                         <div class="form-group">
                             {!! Form::label('telephone', __('Teléfono') . ':') !!}
                             {!! Form::text('telephone', $employee->telephone, [
-                                'class' => 'form-control',                                
+                                'class' => 'form-control',
                                 'placeholder' => __('Teléfono'),
                             ]) !!}
                         </div>
@@ -113,9 +113,20 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('hora_extra', __('Hora extra (colones)') . ':') !!}
+                            {!! Form::text('hora_extra', $employee->hora_extra, ['class' => 'form-control', 'placeholder' => __('Hora extra')]) !!}
+                        </div>
+                    </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('puesto', 'Puesto' . ':*') !!}
-                        {!! Form::select('puesto', ['vendedor' => 'Vendedor', 'legal' => 'Legal', 'admin' => 'Adminstrativo'], !empty($employee->puesto) ? $employee->puesto : null, ['class' => 'form-control', 'id' => 'gender','required', 'placeholder' => __( 'messages.please_select') ]); !!}
+                        {!! Form::select(
+                            'puesto',
+                            ['vendedor' => 'Vendedor', 'legal' => 'Legal', 'admin' => 'Adminstrativo'],
+                            !empty($employee->puesto) ? $employee->puesto : null,
+                            ['class' => 'form-control', 'id' => 'gender', 'required', 'placeholder' => __('messages.please_select')],
+                        ) !!}
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">

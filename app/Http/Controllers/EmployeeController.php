@@ -35,7 +35,7 @@ class EmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $employees = Employees::where('business_id', $business_id)
                 ->select([
-                    'id', 'name', 'email', 'telephone', 'celular', 'status', 'salario_base', 'asociacion',
+                    'id','hora_extra', 'name', 'email', 'telephone', 'celular', 'status', 'salario_base', 'asociacion',
                     'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora', 'puesto', 'comision_ventas', 'business_id', 'created_at'
                 ]);
 
@@ -97,7 +97,7 @@ class EmployeeController extends Controller
             $employee_details = $request->only([
                 'name', 'telephone', 'celular', 'email', 'salario_base',
                 'asociacion', 'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora',
-                'puesto', 'comision_ventas',
+                'puesto', 'comision_ventas','hora_extra','fecha_ingreso'
             ]);
 
             $employee_details['status'] = 1;
@@ -225,7 +225,7 @@ class EmployeeController extends Controller
             $employee_details = $request->only([
                 'name', 'telephone', 'celular', 'email', 'salario_base',
                 'asociacion', 'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora',
-                'puesto', 'comision_ventas',
+                'puesto', 'comision_ventas','hora_extra'
             ]);
 
             $employee_details['status'] = 1;

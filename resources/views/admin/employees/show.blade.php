@@ -85,10 +85,10 @@
                                     aria-hidden="true"></i> @lang('Información del empleado')</a>
                         </li>
 
-                        <li>
+                        {{-- <li>
                             <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i
                                     class="fas fa-briefcase" aria-hidden="true"></i> Rubros fijos</a>
-                        </li>
+                        </li> --}}
                     </ul>
 
                     <div class="tab-content">
@@ -121,6 +121,9 @@
                                     </div>
                                     <div class="col-md-4">
                                         <p><strong>@lang('Deduccion C.C.S.S'): ₡{{ number_format($employee->ccss) }}</strong></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('Hora Extra'): ₡{{ number_format($employee->hora_extra) }}</strong></p>
                                     </div>
                                 </div>
                                 <div class="clearfix"></div>
@@ -173,11 +176,11 @@
                                 {!! Form::close() !!}
                             </div>
                         </div>
-                        <div class="tab-pane" id="documents_and_notes_tab">
+                       {{--  <div class="tab-pane" id="documents_and_notes_tab">
                             <input type="hidden" name="employee_id" id="employee_id" value="{{ $employee->id }}">
                             <div class="document_note_body">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>

@@ -12,7 +12,7 @@ class Employees extends Model
     protected $fillable = [
         'name', 'telephone','status', 'celular', 'email', 'salario_base',
         'asociacion', 'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora',
-        'puesto', 'comision_ventas','business_id','vacaciones'
+        'puesto', 'comision_ventas','business_id','vacaciones','hora_extra','fecha_ingreso'
     ];
 
 
