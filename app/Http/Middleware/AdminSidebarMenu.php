@@ -88,7 +88,7 @@ class AdminSidebarMenu
                     ->order(15);
             }
             //Nomina dropdown
-            if (auth()->user()->can('nomina.view')) {
+            if (auth()->user()->can('planilla.view')) {
                 $menu
                     ->dropdown(
                         __('Gestión administrativa'),

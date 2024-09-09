@@ -47,16 +47,15 @@ class PlanillaController extends Controller
             return Datatables::of($planillas)
                 ->addColumn(
                     'action',
-                    '@can("employee.update")
-                    @if($generada == 1)
-                        <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
-                    @else
+                    ' <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
+                    @can("planilla.update")
+                    @if($generada != 1)
                         <button data-href="{{ action(\'PlanillaController@createPlanillaDetalle\', [$planilla_id]) }}" class="btn btn-xs btn-primary generar_planilla_detalle"><i class="glyphicon glyphicon-edit"></i> @lang("Generar planilla")</button>
                     @endif
                     &nbsp;
                     @endcan
                         
-                    @can("employee.delete")
+                    @can("planilla.delete")
                         <button data-href="{{ action(\'PlanillaController@destroy\', [$planilla_id]) }}" class="btn btn-xs btn-danger delete_planilla_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                     @endcan'
                 )
@@ -482,6 +481,7 @@ class PlanillaController extends Controller
      */
     public function indexDetallePlanilla($id)
     {
+        $canUpdate = auth()->user()->can('planilla.update');
         $planilla = Planilla::where('id', $id)->first();
         $detalles_planillas = DetallePlanilla::where('detalle_planillas.planilla_id', $id)
             ->join('employees', 'detalle_planillas.employee_id', 'employees.id')
@@ -512,65 +512,112 @@ class PlanillaController extends Controller
                 ->addColumn(
                     'action',
                     '<a href="{{ action(\'PlanillaController@viewPayment\', [$id]) }}" class="btn btn-xs btn-info view-planilla"><i class="glyphicon glyphicon-eye-open"></i> @lang("Colilla de pago")</a>'
-
                 )
                 ->editColumn(
                     'total_ccss',
-                    '{!! Form::number("total_ccss", $total_ccss, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("total_ccss", $total_ccss, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("total_ccss", $total_ccss, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'hora_extra',
-                    '{!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'monto_hora_extra',
-                    '{!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'rebajados',
-                    '{!! Form::number("rebajados", $rebajados, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("rebajados", $rebajados, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("rebajados", $rebajados, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'deudas',
-                    '{!! Form::number("deudas", $deudas, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("deudas", $deudas, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("deudas", $deudas, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'adelantos',
-                    '{!! Form::number("adelantos", $adelantos, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("adelantos", $adelantos, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("adelantos", $adelantos, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'salario_base',
-                    '{!! Form::number("salario_base", $salario_base, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("salario_base", $salario_base, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("salario_base", $salario_base, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'bonificacion',
-                    '{!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'comisiones',
-                    '{!! Form::number("comisiones", $comisiones, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("comisiones", $comisiones, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("comisiones", $comisiones, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'cant_hora_extra',
-                    '{!! Form::number("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'prestamos',
-                    '{!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'asociacion',
-                    '{!! Form::number("asociacion", $asociacion, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}'
+                    '@can("planilla.update")
+        {!! Form::number("asociacion", $asociacion, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("asociacion", $asociacion, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
                 )
                 ->editColumn(
                     'total',
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$total}}">{{$total}}</span>'
                 )
-                ->rawColumns(['action', 'salario_base', 'hora_extra', 'adelantos', 'deudas', 'rebajados', 'monto_hora_extra', 'total_ccss', 'bonificacion', 'comisiones', 'cant_hora_extra', 'prestamos', 'asociacion', 'total'])
+                ->rawColumns(['action','salario_base', 'total_ccss', 'hora_extra', 'adelantos', 'deudas', 'rebajados', 'monto_hora_extra', 'bonificacion', 'comisiones', 'cant_hora_extra', 'prestamos', 'asociacion', 'total'])
                 ->make(true);
         }
 
-        return view('admin.planillas.index_detalle_planilla', compact('planilla', 'id'));
+        return view('admin.planillas.index_detalle_planilla', compact('planilla', 'id','canUpdate'));
     }
     public function viewPayment($id)
     {

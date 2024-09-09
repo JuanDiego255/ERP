@@ -459,7 +459,7 @@ return [
     'mail_host' => 'Host',
     'mail_port' => 'Port',
     'mail_username' => 'Username',
-    'mail_password' => Contraseña,
+    'mail_password' => 'Contraseña',
     'mail_encryption' => 'Criptografia',
     'mail_from_address' => 'Endereço',
     'mail_from_name' => 'Nome',

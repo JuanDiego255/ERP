@@ -5,6 +5,7 @@
 
     <!-- Content Header (Page header) -->
     <input type="hidden" id="planilla_id" value="{{ $id }}">
+    <input type="hidden" id="canUpdate" value="{{ $canUpdate }}">
     <section class="content-header">
         <h1>@lang('Planilla')
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
@@ -83,6 +84,7 @@
     <script type="text/javascript">
         //Roles table
         var planilla_id = $('#planilla_id').val();
+        var canUpdate = $('#canUpdate').val();
         $(document).ready(function() {
             var users_table = $('#planillas').DataTable({
                 processing: true,
@@ -156,7 +158,7 @@
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var employee_id = input.closest('tr').find('td').eq(2).text();
 
-                if (value >= 0) {
+                if (value >= 0 && canUpdate) {
                     $.ajax({
                         url: '/planilla-detalle-update/' + row_id,
                         method: 'POST',

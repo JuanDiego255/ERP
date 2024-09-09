@@ -61,7 +61,7 @@
                     <div class="col-sm-1" id="plazo_container">
                         <div class="form-group">
                             {!! Form::label('plazo', __('Días plazo') . ':*') !!}
-                            {!! Form::text('plazo', null, ['class' => 'form-control', 'required', 'id' => 'plazo']) !!}
+                            {!! Form::text('plazo', null, ['class' => 'form-control', 'id' => 'plazo']) !!}
                         </div>
                     </div>
                     <div class="col-sm-3 d-none" id="fecha_vence_container">
