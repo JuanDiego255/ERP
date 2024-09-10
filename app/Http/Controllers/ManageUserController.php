@@ -25,7 +25,6 @@ class ManageUserController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-
     }
 
     /**
@@ -44,23 +43,32 @@ class ManageUserController extends Controller
             $user_id = request()->session()->get('user.id');
 
             $users = User::where('business_id', $business_id)
-            ->user()
-            ->where('is_cmmsn_agnt', 0)
-            ->select(['id', 'username',
-                DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login']);
+                ->user()
+                ->where('is_cmmsn_agnt', 0)
+                ->select([
+                    'id',
+                    'username',
+                    DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"),
+                    'email',
+                    'allow_login'
+                ]);
+            $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+            if (!$is_admin && auth()->user()->can('view_own_expense')) {
+                $users->where('is_admin', '!=',1);
+            }
 
             return Datatables::of($users)
-            ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-            ->addColumn(
-                'role',
-                function ($row) {
-                    $role_name = $this->moduleUtil->getUserRoleName($row->id);
-                    return $role_name;
-                }
-            )
-            ->addColumn(
-                'action',
-                '@can("user.update")
+                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
+                ->addColumn(
+                    'role',
+                    function ($row) {
+                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+                        return $role_name;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    '@can("user.update")
                 <a href="{{action(\'ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                 &nbsp;
                 @endcan
@@ -71,14 +79,14 @@ class ManageUserController extends Controller
                 @can("user.delete")
                 <button data-href="{{action(\'ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 @endcan'
-            )
+                )
 
-            ->filterColumn('full_name', function ($query, $keyword) {
-                $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action', 'username'])
-            ->make(true);
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action', 'username'])
+                ->make(true);
         }
 
         return view('manage_user.index');
@@ -107,10 +115,10 @@ class ManageUserController extends Controller
         $roles  = $this->getRolesArray($business_id);
 
         $temp = [];
-        foreach($roles as $key => $r){
-            if($r == 'Cashier'){
+        foreach ($roles as $key => $r) {
+            if ($r == 'Cashier') {
                 $temp[$key] = 'Caixa';
-            }else{
+            } else {
                 $temp[$key] = $r;
             }
         }
@@ -120,14 +128,14 @@ class ManageUserController extends Controller
         $username_ext = $this->getUsernameExtension();
         $contacts = Contact::contactDropdown($business_id, true, false);
         $locations = BusinessLocation::where('business_id', $business_id)
-        ->Active()
-        ->get();
+            ->Active()
+            ->get();
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
 
         return view('manage_user.create')
-        ->with(compact('roles', 'username_ext', 'contacts', 'locations', 'form_partials'));
+            ->with(compact('roles', 'username_ext', 'contacts', 'locations', 'form_partials'));
     }
 
     /**
@@ -143,12 +151,35 @@ class ManageUserController extends Controller
         }
 
         try {
-            $user_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'selected_contacts', 'marital_status',
-                'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
-                'social_media_2', 'permanent_address', 'current_address',
-                'guardian_name', 'custom_field_1', 'custom_field_2',
-                'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent']);
-            
+            $user_details = $request->only([
+                'surname',
+                'first_name',
+                'last_name',
+                'username',
+                'email',
+                'password',
+                'selected_contacts',
+                'marital_status',
+                'blood_group',
+                'contact_number',
+                'fb_link',
+                'twitter_link',
+                'social_media_1',
+                'social_media_2',
+                'permanent_address',
+                'current_address',
+                'guardian_name',
+                'custom_field_1',
+                'custom_field_2',
+                'custom_field_3',
+                'custom_field_4',
+                'id_proof_name',
+                'id_proof_number',
+                'cmmsn_percent',
+                'gender',
+                'max_sales_discount_percent'
+            ]);
+
             $user_details['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
 
             $user_details['user_type'] = 'user';
@@ -160,7 +191,7 @@ class ManageUserController extends Controller
             } else {
                 $user_details['allow_login'] = 1;
             }
-            
+
             if (!isset($user_details['selected_contacts'])) {
                 $user_details['selected_contacts'] = false;
             }
@@ -225,7 +256,7 @@ class ManageUserController extends Controller
                 'msg' => __("user.user_added")
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => 0,
@@ -251,8 +282,8 @@ class ManageUserController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::where('business_id', $business_id)
-        ->with(['contactAccess'])
-        ->find($id);
+            ->with(['contactAccess'])
+            ->find($id);
 
         //Get user view part from modules
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
@@ -276,16 +307,16 @@ class ManageUserController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('business_id', $business_id)
-        ->with(['contactAccess'])
-        ->findOrFail($id);
+            ->with(['contactAccess'])
+            ->findOrFail($id);
 
         $roles = $this->getRolesArray($business_id);
 
         $temp = [];
-        foreach($roles as $key => $r){
-            if($r == 'Cashier'){
+        foreach ($roles as $key => $r) {
+            if ($r == 'Cashier') {
                 $temp[$key] = 'Caixa';
-            }else{
+            } else {
                 $temp[$key] = $r;
             }
         }
@@ -302,7 +333,7 @@ class ManageUserController extends Controller
         }
 
         $locations = BusinessLocation::where('business_id', $business_id)
-        ->get();
+            ->get();
 
         $permitted_locations = $user->permitted_locations();
         // print_r($permitted_locations);
@@ -311,9 +342,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-        
+
         return view('manage_user.edit')
-        ->with(compact('roles', 'user', 'contact_access', 'contacts', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact('roles', 'user', 'contact_access', 'contacts', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
     /**
@@ -329,11 +360,32 @@ class ManageUserController extends Controller
             abort(403, 'Unauthorized action.');
         }
         try {
-            $user_data = $request->only(['surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status',
-                'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
-                'social_media_2', 'permanent_address', 'current_address',
-                'guardian_name', 'custom_field_1', 'custom_field_2',
-                'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent']);
+            $user_data = $request->only([
+                'surname',
+                'first_name',
+                'last_name',
+                'email',
+                'selected_contacts',
+                'marital_status',
+                'blood_group',
+                'contact_number',
+                'fb_link',
+                'twitter_link',
+                'social_media_1',
+                'social_media_2',
+                'permanent_address',
+                'current_address',
+                'guardian_name',
+                'custom_field_1',
+                'custom_field_2',
+                'custom_field_3',
+                'custom_field_4',
+                'id_proof_name',
+                'id_proof_number',
+                'cmmsn_percent',
+                'gender',
+                'max_sales_discount_percent'
+            ]);
 
             $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
             $business_id = request()->session()->get('user.business_id');
@@ -381,7 +433,7 @@ class ManageUserController extends Controller
             }
 
             $user = User::where('business_id', $business_id)
-            ->findOrFail($id);
+                ->findOrFail($id);
 
             $user->update($user_data);
             $role_id = $request->input('role');
@@ -391,7 +443,7 @@ class ManageUserController extends Controller
                 if (!empty($previous_role)) {
                     $user->removeRole($user_role->name);
                 }
-                
+
                 $role = Role::findOrFail($role_id);
                 $user->assignRole($role->name);
             }
@@ -414,7 +466,7 @@ class ManageUserController extends Controller
                 'msg' => __("user.user_update_success")
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
                 'success' => 0,
@@ -440,28 +492,26 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             try {
                 $business_id = request()->session()->get('user.business_id');
-                
+
                 $user = User::where('business_id', $business_id)
-                ->where('id', $id)->first();
+                    ->where('id', $id)->first();
 
                 $usuarios = User::where('business_id', $business_id)->get();
 
-                if(sizeof($usuarios) > 1){
+                if (sizeof($usuarios) > 1) {
                     $user->delete();
                     $output = [
                         'success' => true,
                         'msg' => __("user.user_delete_success")
                     ];
-                }else{
+                } else {
                     $output = [
                         'success' => false,
                         'msg' => "Não é possivel remover o ultimo usuário!"
                     ];
                 }
-
-                
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -475,7 +525,7 @@ class ManageUserController extends Controller
 
     private function getUsernameExtension()
     {
-        $extension = !empty(System::getProperty('enable_business_based_username')) ? '-' .str_pad(session()->get('business.id'), 2, 0, STR_PAD_LEFT) : null;
+        $extension = !empty(System::getProperty('enable_business_based_username')) ? '-' . str_pad(session()->get('business.id'), 2, 0, STR_PAD_LEFT) : null;
         return $extension;
     }
 
@@ -542,18 +592,17 @@ class ManageUserController extends Controller
         }
         if (!empty($permissions)) {
             $user->givePermissionTo($permissions);
-
         } else {
             //if no location permission given revoke previous permissions
             if (!empty($permitted_locations)) {
                 $revoked_permissions = [];
-                try{
+                try {
                     foreach ($permitted_locations as $key => $value) {
                         $revoke_permissions[] = 'location.' . $value;
                     }
 
                     $user->revokePermissionTo($revoke_permissions);
-                }catch(\Exception $e){
+                } catch (\Exception $e) {
                     // $user->revokePermissionTo($permitted_locations);
                 }
             }
