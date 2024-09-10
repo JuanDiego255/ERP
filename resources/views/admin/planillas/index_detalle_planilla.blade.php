@@ -295,7 +295,7 @@
                         0; // Hora extra (input)
                     var cant_hora_extra = parseInt(row.find('td:eq(7) input').val()) ||
                         0; // Cantidad de horas extra (input)
-                    var monto_hora_extra = parseFloat(row.find('td:eq(8) input')) ||
+                    var monto_hora_extra = parseFloat(row.find('td:eq(8) input').val()) ||
                         0; // Monto por hora extra (input)
                     var prestamos = parseFloat(row.find('td:eq(9) input').val()) ||
                         0; // Préstamos (input)
