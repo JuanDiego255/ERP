@@ -7,14 +7,16 @@
     <input type="hidden" id="planilla_id" value="{{ $id }}">
     <input type="hidden" id="canUpdate" value="{{ $canUpdate }}">
     <input type="hidden" id="aprobada" value="{{ $planilla->aprobada }}">
+    <input type="hidden" id="fecha_desde" value="{{ $planilla->fecha_desde }}">
+    <input type="hidden" id="fecha_hasta" value="{{ $planilla->fecha_hasta }}">
     <section class="content-header">
         <h1>@lang('Planilla')
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                            <li class="active">Here</li>
-                                                                                                                        </ol> -->
+                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                <li class="active">Here</li>
+                                                                                                                                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -87,6 +89,8 @@
         var planilla_id = $('#planilla_id').val();
         var canUpdate = $('#canUpdate').val();
         var aprobada = $('#aprobada').val();
+        var fecha_desde = $('#fecha_desde').val();
+        var fecha_hasta = $('#fecha_hasta').val();
         $(document).ready(function() {
             var users_table = $('#planillas').DataTable({
                 processing: true,
@@ -115,10 +119,7 @@
                     {
                         "data": "bonificacion"
                     },
-                    /* 
-                                        {
-                                            "data": "comisiones"
-                                        }, */
+                    // { "data": "comisiones" },
                     {
                         "data": "hora_extra"
                     },
@@ -128,20 +129,12 @@
                     {
                         "data": "monto_hora_extra"
                     },
-                    /* 
-                                        {
-                                            "data": "adelantos"
-                                        }, */
+                    // { "data": "adelantos" },
                     {
                         "data": "prestamos"
                     },
-                    /* 
-                                        {
-                                            "data": "deudas"
-                                        },
-                                        {
-                                            "data": "rebajados"
-                                        }, */
+                    // { "data": "deudas" },
+                    // { "data": "rebajados" },
                     {
                         "data": "total_ccss"
                     },
@@ -150,12 +143,12 @@
                     }
                 ],
                 fnDrawCallback: function(oSettings) {
-                    // Sum and display total
                     var total = sum_table_col($('#planillas'), 'final-total');
                     updatePlanillaTotal();
                 },
-                dom: '<"text-center"B>frtip', // Esto habilita el contenedor para los botones
-                buttons: [{
+                dom: '<"text-center"B>frtip',
+                buttons: [
+                    {
                         extend: 'pageLength',
                         text: 'Mostrando 25',
                         titleAttr: 'Mostrar registros'
@@ -167,14 +160,10 @@
                     {
                         text: 'Enviar Comprobantes',
                         action: function(e, dt, node, config) {
-                            // Recoge los datos del formulario si es necesario
                             var data = $(this).serialize();
-
-                            // Realiza la petición AJAX
                             $.ajax({
                                 method: 'get',
-                                url: '/planilla-send-payments/' +
-                                    planilla_id,
+                                url: '/planilla-send-payments/' + planilla_id,
                                 dataType: 'json',
                                 data: data,
                                 success: function(result) {
@@ -191,12 +180,148 @@
                                 }
                             });
                         }
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Reporte Planilla',
+                        customize: function(win) {
+                            $(win.document.body).find('h1').remove();
+                            $(win.document.body).find('div.printHeader').remove();
+                            var body = $(win.document.body).find('table tbody');
+
+                            // Función para formatear valores monetarios
+                            function formatCurrency(value) {
+                                value = value.toFixed(2);
+                                var formattedValue = new Intl.NumberFormat('es-ES', {
+                                    minimumFractionDigits: 3,
+                                    maximumFractionDigits: 3
+                                }).format(value);
+                                return __currency_trans_from_en(formattedValue, true, true);
+                            }
+
+                            // Llama a la función que agrupa los datos de la planilla
+                            var groupedData =
+                        groupPlanillaData(); // Ajusta la función si es necesario
+                            var grandTotal = 0; // Para almacenar el total general de salarios
+
+                            body.empty();
+
+                            // Insertar las filas agrupadas en el reporte
+                            groupedData.forEach(function(row) {
+                                // Calcula totales por fila si es necesario
+                                grandTotal += row.total; // Sumar al total general
+
+                                // Formateo de los valores para la tabla usando la función de formato
+                                var formattedSalarioBase = __currency_trans_from_en(row.salario_base, true, true);
+                                var formattedBonificacion = __currency_trans_from_en(row.bonificacion, true, true);
+                                var formattedHoraExtra = __currency_trans_from_en(row.monto_hora_extra, true, true);
+                                var formattedPrestamos = __currency_trans_from_en(row.prestamos, true, true);
+                                var formattedTotal = formatCurrency(row.total);
+                                var formattedCCSS = __currency_trans_from_en(row.total_ccss, true, true);
+
+                                // Inserta cada fila con sus datos formateados
+                                body.append(
+                                    '<tr>' +
+                                    '<td>' + row.name + '</td>' +
+                                    '<td>' + formattedSalarioBase + '</td>' +
+                                    '<td>' + formattedBonificacion + '</td>' +
+                                    '<td>' + formattedHoraExtra + '</td>' +
+                                    '<td>' + formattedPrestamos + '</td>' +
+                                    '<td>' + formattedCCSS + '</td>' +
+                                    '<td>' + formattedTotal + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+
+                            // Formatear y agregar el total general al final
+                            var formattedGrandTotal = formatCurrency(grandTotal);
+
+                            $(win.document.body).append(
+                                '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
+                                'Monto Total de Planilla: ' + formattedGrandTotal +
+                                '</div>'
+                            );
+
+                            // Ajustar encabezados de la tabla para la planilla
+                            $(win.document.body).find('table thead tr').html(
+                                '<th>Nombre</th>' +
+                                '<th>Salario Base</th>' +
+                                '<th>Bonificación</th>' +
+                                '<th>Monto Hora</th>' +
+                                '<th>Préstamos</th>' +
+                                '<th>C.C.S.S</th>' +
+                                '<th>Total</th>'
+                            );
+
+                            // Personalizar el estilo del documento
+                            $(win.document.body)
+                                .css('font-size', '10pt')
+                                .prepend(
+                                    '<img src="' + window.location.origin +
+                                    '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                                    '<div style="text-align: center; margin-bottom: 10px;">' +
+                                    '<h3 style="margin: 0;">Reporte de Planilla Autos Grecia (S.R.L)</h3>' +
+                                    '<p style="margin-top: 5px; text-align:center;">Planilla del: ' +
+                                    fecha_desde + ' al ' + fecha_hasta + '</p>' +
+                                    '</div>'
+                                );
+
+                            $(win.document.body).find('table')
+                                .addClass('display')
+                                .css('font-size', 'inherit');
+                        }
                     }
+
+
                 ]
             });
 
-            // Guardar el valor inicial al enfocar
-            // Guardar el valor inicial al enfocar
+            function groupPlanillaData() {
+                var selected_rows = [];
+                var i = 0;
+
+                // Recorre cada fila de la tabla de planillas
+                $('#planillas tbody tr').each(function() {
+                    var row = $(this);
+
+                    // Extrae los valores desde los inputs dentro de cada columna correspondiente
+                    var employee_id = row.find('td:eq(2)').text(); // ID del empleado (texto)
+                    var name = row.find('td:eq(3)').text(); // Nombre del empleado (texto)
+                    var salario_base = parseFloat(row.find('td:eq(4) input[type="number"]').val()) ||
+                        0; // Salario base
+                    var bonificacion = parseFloat(row.find('td:eq(5) input').val()) ||
+                        0; // Bonificación (input)
+                    var hora_extra = parseFloat(row.find('td:eq(6) input').val()) ||
+                        0; // Hora extra (input)
+                    var cant_hora_extra = parseInt(row.find('td:eq(7) input').val()) ||
+                        0; // Cantidad de horas extra (input)
+                    var monto_hora_extra = parseFloat(row.find('td:eq(8) input')) ||
+                        0; // Monto por hora extra (input)
+                    var prestamos = parseFloat(row.find('td:eq(9) input').val()) ||
+                        0; // Préstamos (input)
+                    var total_ccss = parseFloat(row.find('td:eq(10) input').val()) ||
+                        0; // Total CCSS (input)
+                    var total = parseFloat(row.find('td:eq(11)').text().replace(/[^\d.-]/g, ''));
+
+                    // Agrega la fila seleccionada con los datos relevantes al array de filas seleccionadas
+                    selected_rows[i++] = {
+                        employee_id: employee_id.trim(),
+                        name: name.trim(),
+                        salario_base: salario_base,
+                        bonificacion: bonificacion,
+                        hora_extra: hora_extra,
+                        cant_hora_extra: cant_hora_extra,
+                        monto_hora_extra: monto_hora_extra,
+                        prestamos: prestamos,
+                        total_ccss: total_ccss,
+                        total: total
+                    };
+                });
+
+                return selected_rows;
+            }
+
+
             $('#planillas').on('focus', 'input[type="number"]', function() {
                 var input = $(this);
                 input.data('initialValue', input.val()); // Guarda el valor inicial
@@ -238,6 +363,7 @@
                     });
                 }
             });
+
             function updatePlanillaTotal() {
                 var total = sum_table_col($('#planillas'), 'final-total'); // Reutilizando tu función de suma
                 $('#total').text(total);

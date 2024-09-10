@@ -527,19 +527,15 @@ class PlanillaController extends Controller
                 )
                 ->editColumn(
                     'hora_extra',
-                    '@can("planilla.update")
-        {!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
-        @else
-        {!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
-        @endcan'
+                    '
+        {!! Form::number("hora_extra", $hora_extra, array_merge(["class" => "form-control"],  ["readonly"])) !!}
+       '
                 )
                 ->editColumn(
                     'monto_hora_extra',
-                    '@can("planilla.update")
-        {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
-        @else
+                    '
         {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
-        @endcan'
+       '
                 )/* 
                 ->editColumn(
                     'rebajados',
