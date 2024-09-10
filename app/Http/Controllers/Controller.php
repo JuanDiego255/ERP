@@ -98,6 +98,7 @@ class Controller extends BaseController
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
             'autoVietnamese' => true,
+            'format' => 'A4',
             'autoArabic' => true
         ]);
     }

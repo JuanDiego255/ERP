@@ -7,10 +7,13 @@ use App\Models\DetallePlanilla;
 use App\Models\Employees;
 use App\Models\Planilla;
 use App\Models\TipoPlanilla;
+use App\Notifications\CustomerNotification;
+use App\Notifications\TestEmailNotification;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class PlanillaController extends Controller
 {
@@ -613,11 +616,11 @@ class PlanillaController extends Controller
                     'total',
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$total}}">{{$total}}</span>'
                 )
-                ->rawColumns(['action','salario_base', 'total_ccss', 'hora_extra', 'adelantos', 'deudas', 'rebajados', 'monto_hora_extra', 'bonificacion', 'comisiones', 'cant_hora_extra', 'prestamos', 'asociacion', 'total'])
+                ->rawColumns(['action', 'salario_base', 'total_ccss', 'hora_extra', 'adelantos', 'deudas', 'rebajados', 'monto_hora_extra', 'bonificacion', 'comisiones', 'cant_hora_extra', 'prestamos', 'asociacion', 'total'])
                 ->make(true);
         }
 
-        return view('admin.planillas.index_detalle_planilla', compact('planilla', 'id','canUpdate'));
+        return view('admin.planillas.index_detalle_planilla', compact('planilla', 'id', 'canUpdate'));
     }
     public function viewPayment($id)
     {
@@ -701,4 +704,156 @@ class PlanillaController extends Controller
         return redirect()->back()->with('status', $output);
     }
     //Metodos para detalle planillas
+    //Enviar correo
+    /**
+     * Handles the testing of email configuration
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function sendPaymentsEmail($id)
+    {
+        try {
+            $detalles_planillas = DetallePlanilla::where('detalle_planillas.planilla_id', $id)
+                ->join('employees', 'detalle_planillas.employee_id', 'employees.id')
+                ->join('planillas', 'detalle_planillas.planilla_id', 'planillas.id')
+                ->select([
+                    'detalle_planillas.id as id',
+                    'detalle_planillas.salario_base as salario_base',
+                    'detalle_planillas.bonificacion as bonificacion',
+                    'detalle_planillas.comisiones as comisiones',
+                    'detalle_planillas.cant_hora_extra as cant_hora_extra',
+                    'detalle_planillas.monto_hora_extra as monto_hora_extra',
+                    'detalle_planillas.adelantos as adelantos',
+                    'detalle_planillas.prestamos as prestamos',
+                    'detalle_planillas.asociacion as asociacion',
+                    'detalle_planillas.total as total',
+                    'detalle_planillas.observaciones as observaciones',
+                    'detalle_planillas.deudas as deudas',
+                    'detalle_planillas.rebajados as rebajados',
+                    'detalle_planillas.total_ccss as total_ccss',
+                    'detalle_planillas.hora_extra as hora_extra',
+                    'employees.name as name',
+                    'employees.email as email',
+                    'employees.id as employee_id',
+                    'planillas.aprobada as aprobada',
+                    'planillas.fecha_desde as fecha_desde',
+                    'planillas.fecha_hasta as fecha_hasta'
+                ])->get();
+
+
+            foreach ($detalles_planillas as $detalle) {
+                if ($detalle->email != "") {
+                    $namePdf = "Comprobante de pago del " . $detalle->fecha_desde . " al " . $detalle->fecha_hasta . " - " . $detalle->name;
+                    $data = [
+                        'to_email' => $detalle->email,
+                        'subject' => 'Colilla de pago del: ' . $detalle->fecha_desde . ' al ' . $detalle->fecha_hasta,
+                        'email_body' => 'Adjunto encuentra la colilla de pago de esta quincena'
+                    ];
+
+                    $data['email_settings'] = request()->session()->get('business.email_settings');
+
+                    $for_pdf = true;
+                    $html = view('admin.planillas.email')->with(compact(
+                        'detalle',
+                        'for_pdf'
+                    ))->render();
+                    $mpdf = $this->getMpdf();
+                    $mpdf->WriteHTML($html);
+
+                    $file = config('constants.mpdf_temp_path') . '/' . time() . '_colilla_de_pago.pdf';
+                    $mpdf->Output($file, 'F');
+
+                    $data['attachment'] =  $file;
+                    $data['attachment_name'] =  $namePdf;
+                    Notification::route('mail', $data['to_email'])->notify(new CustomerNotification($data));
+
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+            }
+
+            $output = ['success' => true, 'msg' => __('lang_v1.notification_sent_successfully')];
+        } catch (\Exception $e) {
+            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => "File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage()
+            ];
+        }
+
+        return $output;
+    }
+    public function sendPaymentsEmailDetallado($id)
+    {
+        try {
+            $detalle = DetallePlanilla::where('detalle_planillas.id', $id)
+                ->join('employees', 'detalle_planillas.employee_id', 'employees.id')
+                ->join('planillas', 'detalle_planillas.planilla_id', 'planillas.id')
+                ->select([
+                    'detalle_planillas.id as id',
+                    'detalle_planillas.salario_base as salario_base',
+                    'detalle_planillas.bonificacion as bonificacion',
+                    'detalle_planillas.comisiones as comisiones',
+                    'detalle_planillas.cant_hora_extra as cant_hora_extra',
+                    'detalle_planillas.monto_hora_extra as monto_hora_extra',
+                    'detalle_planillas.adelantos as adelantos',
+                    'detalle_planillas.prestamos as prestamos',
+                    'detalle_planillas.asociacion as asociacion',
+                    'detalle_planillas.total as total',
+                    'detalle_planillas.observaciones as observaciones',
+                    'detalle_planillas.deudas as deudas',
+                    'detalle_planillas.rebajados as rebajados',
+                    'detalle_planillas.total_ccss as total_ccss',
+                    'detalle_planillas.hora_extra as hora_extra',
+                    'employees.name as name',
+                    'employees.email as email',
+                    'employees.id as employee_id',
+                    'planillas.aprobada as aprobada',
+                    'planillas.fecha_desde as fecha_desde',
+                    'planillas.fecha_hasta as fecha_hasta'
+                ])->first();
+            if ($detalle->email != "") {
+                $namePdf = "Comprobante de pago del " . $detalle->fecha_desde . " al " . $detalle->fecha_hasta . " - " . $detalle->name;
+                $data = [
+                    'to_email' => $detalle->email,
+                    'subject' => 'Colilla de pago del: ' . $detalle->fecha_desde . ' al ' . $detalle->fecha_hasta,
+                    'email_body' => 'Adjunto encuentra la colilla de pago de esta quincena'
+                ];
+
+                $data['email_settings'] = request()->session()->get('business.email_settings');
+
+                $for_pdf = true;
+                $html = view('admin.planillas.email')->with(compact(
+                    'detalle',
+                    'for_pdf'
+                ))->render();
+                $mpdf = $this->getMpdf();
+                $mpdf->WriteHTML($html);
+
+                $file = config('constants.mpdf_temp_path') . '/' . time() . '_colilla_de_pago.pdf';
+                $mpdf->Output($file, 'F');
+
+                $data['attachment'] =  $file;
+                $data['attachment_name'] =  $namePdf;
+                Notification::route('mail', $data['to_email'])->notify(new CustomerNotification($data));
+
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            $output = ['success' => true, 'msg' => __('lang_v1.notification_sent_successfully')];
+        } catch (\Exception $e) {
+            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => "File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage()
+            ];
+        }
+
+        return $output;
+    }
 }

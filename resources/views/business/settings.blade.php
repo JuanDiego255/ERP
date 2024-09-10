@@ -21,17 +21,17 @@
                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
                     <div class="list-group">
                         <a href="#" class="list-group-item text-center active">@lang('business.business')</a>
-                        <a href="#" class="list-group-item text-center">Tarifas @show_tooltip(__('tooltip.business_tax'))</a>
+                        {{-- <a href="#" class="list-group-item text-center">Tarifas @show_tooltip(__('tooltip.business_tax'))</a> --}}
                         <a href="#" class="list-group-item text-center">@lang('business.product')</a>
-                        <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
+                       {{--  <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
                         <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
-                        <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a>
-                        <a href="#" class="list-group-item text-center">Otros</a>
+                        <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a> --}}
+                       {{--  <a href="#" class="list-group-item text-center">Otros</a> --}}
                         <a href="#" class="list-group-item text-center">Sistema</a>
-                        <a href="#" class="list-group-item text-center">@lang('lang_v1.prefixes')</a>
+                       {{--  <a href="#" class="list-group-item text-center">@lang('lang_v1.prefixes')</a> --}}
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.email_settings')</a>
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.sms_settings')</a>
-                        <a href="#" class="list-group-item text-center">@lang('lang_v1.reward_point_settings')</a>
+                        {{-- <a href="#" class="list-group-item text-center">@lang('lang_v1.reward_point_settings')</a> --}}
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.modules')</a>
                         <a href="#" class="list-group-item text-center">@lang('lang_v1.custom_labels')</a>
                     </div>
@@ -41,26 +41,26 @@
                     @include('business.partials.settings_business')
                     <!-- tab 1 end -->
                     <!-- tab 2 start -->
-                    @include('business.partials.settings_tax')
+                   {{--  @include('business.partials.settings_tax') --}}
                     <!-- tab 2 end -->
                     <!-- tab 3 start -->
                     @include('business.partials.settings_product')
                     <!-- tab 3 end -->
                     <!-- tab 4 start -->
-                    @include('business.partials.settings_sales')
-                    @include('business.partials.settings_pos')
+                    {{-- @include('business.partials.settings_sales')
+                    @include('business.partials.settings_pos') --}}
                     <!-- tab 4 end -->
                     <!-- tab 5 start -->
-                    @include('business.partials.settings_purchase')
+                    {{-- @include('business.partials.settings_purchase') --}}
                     <!-- tab 5 end -->
                     <!-- tab 6 start -->
-                    @include('business.partials.settings_dashboard')
+                    {{-- @include('business.partials.settings_dashboard') --}}
                     <!-- tab 6 end -->
                     <!-- tab 7 start -->
                     @include('business.partials.settings_system')
                     <!-- tab 7 end -->
                     <!-- tab 8 start -->
-                    @include('business.partials.settings_prefixes')
+                    {{-- @include('business.partials.settings_prefixes') --}}
                     <!-- tab 8 end -->
                     <!-- tab 9 start -->
                     @include('business.partials.settings_email')
@@ -69,7 +69,7 @@
                     @include('business.partials.settings_sms')
                     <!-- tab 10 end -->
                     <!-- tab 11 start -->
-                    @include('business.partials.settings_reward_point')
+                    {{-- @include('business.partials.settings_reward_point') --}}
                     <!-- tab 11 end -->
                     <!-- tab 12 start -->
                     @include('business.partials.settings_modules')

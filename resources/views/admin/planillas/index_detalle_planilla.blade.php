@@ -11,9 +11,9 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                <li class="active">Here</li>
-                                                                                            </ol> -->
+                                                                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                    <li class="active">Here</li>
+                                                                                                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -148,7 +148,46 @@
                     // Sum and display total
                     var total = sum_table_col($('#planillas'), 'final-total');
                     updatePlanillaTotal();
-                }
+                },
+                dom: '<"text-center"B>frtip', // Esto habilita el contenedor para los botones
+                buttons: [{
+                        extend: 'pageLength',
+                        text: 'Mostrando 25',
+                        titleAttr: 'Mostrar registros'
+                    },
+                    {
+                        extend: 'colvis',
+                        text: 'Visibilidad de columna'
+                    },
+                    {
+                        text: 'Enviar Comprobantes',
+                        action: function(e, dt, node, config) {
+                            // Recoge los datos del formulario si es necesario
+                            var data = $(this).serialize();
+
+                            // Realiza la petición AJAX
+                            $.ajax({
+                                method: 'get',
+                                url: '/planilla-send-payments/' +
+                                    planilla_id,
+                                dataType: 'json',
+                                data: data,
+                                success: function(result) {
+                                    if (result.success === true) {
+                                        toastr.success(result.msg);
+                                    } else {
+                                        toastr.error(result.msg);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    toastr.error(
+                                        'Ocurrió un error al enviar los comprobantes.'
+                                    );
+                                }
+                            });
+                        }
+                    }
+                ]
             });
 
             $('#planillas').on('blur', 'input[type="number"]', function() {
@@ -184,6 +223,25 @@
                 $('#total').text(total);
                 __currency_convert_recursively($('#planillas')); // Conversión de moneda si aplica
             }
+        });
+
+        $(document).on('click', 'button.sendPaymentDetail', function() {
+            var data = $(this).serialize();
+            var detalle_id = $('#detalle_id').val();
+
+            $.ajax({
+                method: 'get',
+                url: '/planilla-send-payments-id/' + detalle_id,
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    if (result.success === true) {
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
         });
 
         $(document).on('click', 'a.view-planilla', function(e) {

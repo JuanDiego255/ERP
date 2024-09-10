@@ -20,6 +20,7 @@ use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use NFePHP\Common\Certificate;
 use Modules\Superadmin\Entities\Subscription;
@@ -524,7 +525,7 @@ class BusinessController extends Controller
     public function postBusinessSettings(Request $request)
     {   
 
-        $this->_validate($request);
+        //$this->_validate($request);
 
         if (!auth()->user()->can('business_settings.access')) {
             abort(403, 'Unauthorized action.');
@@ -536,13 +537,10 @@ class BusinessController extends Controller
                 return $notAllowed;
             }
 
-            $cidade_id = $request->cidade_id;
-            $cidade = City::find($cidade_id);
-
-            $request->merge([ 'city' => $cidade->nome]);
+            $request->merge([ 'city' => "Grecia"]);
 
 
-            $business_details = $request->only(['name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'default_profit_percent', 'default_sales_tax', 'default_sales_discount', 'sell_price_tax', 'sku_prefix', 'time_zone', 'fy_start_month', 'accounting_method', 'transaction_edit_days', 'sales_cmsn_agnt', 'item_addition_method', 'currency_symbol_placement', 'on_product_expiry',
+            $business_details = $request->only(['name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'default_profit_percent', 'default_sales_tax', 'default_sales_discount', 'sell_price_tax', 'sku_prefix', 'time_zone', 'fy_start_month', 'accounting_method', 'transaction_edit_days', 'sales_cmsn_agnt', 'item_addition_method', 'currency_symbol_placement',
                 'stop_selling_before', 'default_unit', 'expiry_type', 'date_format',
                 'time_format', 'ref_no_prefixes', 'theme_color', 'email_settings',
                 'sms_settings', 'rp_name', 'amount_for_unit_rp',
@@ -592,9 +590,9 @@ class BusinessController extends Controller
             }
 
             $business_details['enable_product_expiry'] = !empty($request->input('enable_product_expiry')) &&  $request->input('enable_product_expiry') == 1 ? 1 : 0;
-            if ($business_details['on_product_expiry'] == 'keep_selling') {
+            /* if ($business_details['on_product_expiry'] == 'keep_selling') {
                 $business_details['stop_selling_before'] = null;
-            }
+            } */
 
             $business_details['stock_expiry_alert_days'] = !empty($request->input('stock_expiry_alert_days')) ? $request->input('stock_expiry_alert_days') : 30;
 
@@ -681,11 +679,11 @@ class BusinessController extends Controller
                 'msg' => __('business.settings_updated_success')
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong')
+                'msg' => $e->getMessage()
             ];
         }
         return redirect('business/settings')->with('status', $output);

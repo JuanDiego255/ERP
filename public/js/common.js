@@ -88,7 +88,8 @@ $(document).ready(function() {
             }
         },
 
-        invalidHandler: function() {
+        invalidHandler: function(error) {
+            console.log(error);
             toastr.error(LANG.some_error_in_input_field);
         },
     });

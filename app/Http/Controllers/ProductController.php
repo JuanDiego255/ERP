@@ -117,11 +117,6 @@ class ProductController extends Controller
 
             )->groupBy('products.id');
 
-            $type = request()->get('type', null);
-            if (!empty($type)) {
-                $products->where('products.type', $type);
-            }
-
             $category_id = request()->get('category_id', null);
             if (!empty($category_id)) {
                 $products->where('products.category_id', $category_id);
@@ -130,38 +125,7 @@ class ProductController extends Controller
             $brand_id = request()->get('brand_id', null);
             if (!empty($brand_id)) {
                 $products->where('products.brand_id', $brand_id);
-            }
-
-            $unit_id = request()->get('unit_id', null);
-            if (!empty($unit_id)) {
-                $products->where('products.unit_id', $unit_id);
-            }
-
-            $tax_id = request()->get('tax_id', null);
-            if (!empty($tax_id)) {
-                $products->where('products.tax', $tax_id);
-            }
-
-            $active_state = request()->get('active_state', null);
-            if ($active_state == 'active') {
-                $products->Active();
-            }
-            if ($active_state == 'inactive') {
-                $products->Inactive();
-            }
-            $not_for_selling = request()->get('not_for_selling', null);
-            if ($not_for_selling == 'true') {
-                $products->ProductNotForSales();
-            }
-
-            $ecommerce = request()->get('ecommerce', null);
-            if ($ecommerce == 'true') {
-                $products->where('products.ecommerce', 1);
-            }
-
-            if (!empty(request()->get('repair_model_id'))) {
-                $products->where('products.repair_model_id', request()->get('repair_model_id'));
-            }
+            }     
             $products->orderBy('created_at','desc');
 
             return Datatables::of($products)

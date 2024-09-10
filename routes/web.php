@@ -482,6 +482,8 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     //Rutas para los detalles de planillas
     Route::get('/planilla-detalle-index/{id}', 'PlanillaController@indexDetallePlanilla');
     Route::get('/planilla-detalle-view/{id}', 'PlanillaController@viewPayment');
+    Route::get('/planilla-send-payments/{id}', 'PlanillaController@sendPaymentsEmail');
+    Route::get('/planilla-send-payments-id/{id}', 'PlanillaController@sendPaymentsEmailDetallado');
     Route::post('/planilla-detalle-update/{id}', 'PlanillaController@updatePlanillaDetalle');
     //Rutas para los detalles de planillas
 

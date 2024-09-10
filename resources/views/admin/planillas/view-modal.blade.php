@@ -1,3 +1,4 @@
+<input type="hidden" id="detalle_id" value="{{ $detalle->id }}">
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -80,6 +81,9 @@
             <button type="button" class="btn btn-primary no-print" aria-label="Print"
                 onclick="$(this).closest('div.modal').printThis();">
                 <i class="fa fa-print"></i> @lang('messages.print')
+            </button>
+            <button type="button" class="btn btn-info sendPaymentDetail" aria-label="Print" id="sendPaymentDetail">
+                <i class="fa fa-envelope"></i> @lang('Enviar comprobante')
             </button>
             <button type="button" class="btn btn-default no-print" data-dismiss="modal">@lang('messages.close')</button>
         </div>

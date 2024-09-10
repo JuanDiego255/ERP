@@ -29,7 +29,7 @@
 "business" => "Empresa", /* modified */
 "address" => "Dirección",
 "logo_help" => "El logotipo anterior (si existe) será reemplazado",
-"update_settings" => "Ajustes de actualización",
+"update_settings" => "Guardar Configuración",
 "business_settings" => "Configuración de la empresa", /* modified */
 "settings_updated_success" => "Configuración actualizada con éxito",
 "default_profit_percent" => "Porcentaje de beneficio predeterminado",

@@ -6,7 +6,7 @@
                 {!! Form::text('name', $business->name, ['class' => 'form-control', 'required',
                 'placeholder' => __('business.business_name')]); !!}
             </div>
-        </div>
+        </div>{{-- 
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('razao_social',__('business.business_razao') . ':*') !!}
@@ -14,9 +14,9 @@
                 'placeholder' => __('business.business_razao'), 'minlength' => '10']); !!}
 
             </div>
-        </div>
+        </div> --}}
 
-        <div class="col-sm-4">
+{{--         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('start_date', 'Data de início:') !!}
                 <div class="input-group">
@@ -27,8 +27,8 @@
                     {!! Form::text('start_date', @format_date($business->start_date), ['class' => 'form-control start-date-picker','placeholder' => __('business.start_date'), 'readonly']); !!}
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4">
+        </div> --}}
+{{--         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('default_profit_percent', __('business.default_profit_percent') . ':*') !!} @show_tooltip(__('tooltip.default_profit_percent'))
                 <div class="input-group">
@@ -38,7 +38,7 @@
                     {!! Form::text('default_profit_percent', @num_format($business->default_profit_percent), ['class' => 'form-control input_number']); !!}
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="clearfix"></div>
         <div class="col-sm-4">
             <div class="form-group">
@@ -76,7 +76,7 @@
                 <p class="help-block"><i> @lang('business.logo_help')</i></p>
             </div>
         </div>
-        <div class="col-md-4">
+        {{-- <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('fy_start_month', __('business.fy_start_month') . ':') !!} @show_tooltip(__('tooltip.fy_start_month'))
                 <div class="input-group">
@@ -86,8 +86,8 @@
                     {!! Form::select('fy_start_month', $months, $business->fy_start_month, ['class' => 'form-control select2', 'required']); !!}
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4">
+        </div> --}}
+        {{-- <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
                 @show_tooltip(__('tooltip.accounting_method'))
@@ -98,7 +98,7 @@
                     {!! Form::select('accounting_method', $accounting_methods, $business->accounting_method, ['class' => 'form-control select2', 'required']); !!}
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="clearfix"></div>
         <div class="col-sm-4">
             <div class="form-group">
@@ -145,30 +145,30 @@
             </div>
         </div>
 
-        <div class="col-sm-4">
+       {{--  <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('cnpj', 'CPF/CNPJ' . ':*') !!}
                 {!! Form::text('cnpj', $business->cnpj, ['class' => 'form-control', 'required', 'data-mask="00.000.000/0000-00"', 
                 'placeholder' => 'CNPJ']); !!}
             </div>
-        </div>
+        </div> --}}
 
-        <div class="col-sm-4">
+       {{--  <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('ie', 'IE' . ':*') !!}
                 {!! Form::text('ie', $business->ie, ['class' => 'form-control', 'required',
                 'placeholder' => 'IE']); !!}
             </div>
-        </div>
+        </div> --}}
 
         <div class="clearfix"></div>
-        <div class="col-sm-4">
+       {{--  <div class="col-sm-4">
             <div class="form-group">
                 <label for="certificado">Certificado:</label>
                 <input name="certificado" type="file" id="certificado">
                 <p class="help-block"><i>O Certificado anterior (se existir) será substituído</i></p>
             </div>
-        </div>
+        </div> --}}
 
         @if($infoCertificado != null && $infoCertificado != -1)
         <h5>Serial: <strong>{{$infoCertificado['serial']}}</strong></h5>
@@ -183,17 +183,17 @@
 
         <div class="clearfix"></div>
 
-        <div class="col-sm-2">
+        {{-- <div class="col-sm-2">
             <div class="form-group">
                 {!! Form::label('senha_certificado', 'Contraseña' . ':*') !!}
                 {!! Form::text('senha_certificado', '', ['class' => 'form-control',
                 'placeholder' => 'Contraseña']); !!}
             </div>
         </div>
-
+ --}}
         <div class="clearfix"></div>
 
-        <div class="col-sm-6">
+       {{--  <div class="col-sm-6">
             <div class="form-group">
                 {!! Form::label('rua', 'Calle' . ':*') !!}
                 {!! Form::text('rua', $business->rua, ['class' => 'form-control', 'required',
@@ -213,11 +213,11 @@
                 {!! Form::label('cidade_id', 'Ciudades:*') !!}
                 {!! Form::select('cidade_id', $cities, $business->cidade_id, ['class' => 'form-control select2', 'required']); !!}
             </div>
-        </div>
+        </div> --}}
 
         <div class="clearfix"></div>
 
-        <div class="col-sm-3">
+       {{--  <div class="col-sm-3">
             <div class="form-group">
                 {!! Form::label('bairro', 'Barrio' . ':*') !!}
                 {!! Form::text('bairro', $business->bairro, ['class' => 'form-control', 'required',
@@ -239,19 +239,19 @@
                 {!! Form::text('telefone', $business->telefone, ['class' => 'form-control', 'required', 'data-mask="00 000000000"',
                 'placeholder' => 'Teléfono']); !!}
             </div>
-        </div>
+        </div> --}}
 
 
-        <div class="col-md-3">
+        {{-- <div class="col-md-3">
             <div class="form-group">
 
                 {!! Form::label('regime', 'Regime' . ':') !!}
                 {!! Form::select('regime', ['1' => 'Simples', '3' => 'Normal'], $business->regime, ['class' => 'form-control select2', 'required']); !!}
             </div>
-        </div>
+        </div> --}}
 
         <div class="clearfix"></div>
-
+{{-- 
         <div class="col-sm-3">
             <div class="form-group">
                 {!! Form::label('ultimo_numero_nfe', 'Ultimo Núm. NFe' . ':*') !!}
@@ -266,9 +266,9 @@
                 {!! Form::text('ultimo_numero_nfce', $business->ultimo_numero_nfce, ['class' => 'form-control', 'required',
                 'placeholder' => 'Ultimo Núm. NFCe']); !!}
             </div>
-        </div>
+        </div> --}}
 
-        <div class="col-sm-3">
+       {{--  <div class="col-sm-3">
             <div class="form-group">
                 {!! Form::label('inscricao_municipal', 'Inscrição municipal' . ':*') !!}
                 {!! Form::text('inscricao_municipal', $business->inscricao_municipal, ['class' => 'form-control',
@@ -290,19 +290,19 @@
                 {!! Form::text('numero_serie_nfce', $business->numero_serie_nfce, ['class' => 'form-control', 'required',
                 'placeholder' => 'Núm. Série NFC-e']); !!}
             </div>
-        </div>
+        </div> --}}
 
         <div class="col-md-3">
             <div class="form-group">
 
                 {!! Form::label('ambiente', 'Ambiente' . ':') !!}
-                {!! Form::select('ambiente', ['1' => 'Produção', '2' => 'Homologado'], $business->ambiente, ['class' => 'form-control select2', 'required']); !!}
+                {!! Form::select('ambiente', ['1' => 'Producción', '2' => 'Aprobado'], $business->ambiente, ['class' => 'form-control select2', 'required']); !!}
             </div>
         </div>
 
         <div class="clearfix"></div>
 
-        <div class="col-sm-3">
+       {{--  <div class="col-sm-3">
             <div class="form-group">
                 {!! Form::label('csc_id', 'CSCID' . ':*') !!}
                 {!! Form::text('csc_id', $business->csc_id, ['class' => 'form-control', 'required', 
@@ -323,7 +323,7 @@
                 {!! Form::text('aut_xml', $business->aut_xml, ['class' => 'form-control cnpj', 
                 'placeholder' => 'AUT XML']); !!}
             </div>
-        </div>
+        </div> --}}
 
     </div>
 </div>
