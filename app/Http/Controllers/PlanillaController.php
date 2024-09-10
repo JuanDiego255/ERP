@@ -8,7 +8,6 @@ use App\Models\Employees;
 use App\Models\Planilla;
 use App\Models\TipoPlanilla;
 use App\Notifications\CustomerNotification;
-use App\Notifications\TestEmailNotification;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,10 +49,12 @@ class PlanillaController extends Controller
             return Datatables::of($planillas)
                 ->addColumn(
                     'action',
-                    ' <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
+                    '
                     @can("planilla.update")
                     @if($generada != 1)
                         <button data-href="{{ action(\'PlanillaController@createPlanillaDetalle\', [$planilla_id]) }}" class="btn btn-xs btn-primary generar_planilla_detalle"><i class="glyphicon glyphicon-edit"></i> @lang("Generar planilla")</button>
+                    @else
+                     <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
                     @endif
                     &nbsp;
                     @endcan
@@ -539,7 +540,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                )/* 
                 ->editColumn(
                     'rebajados',
                     '@can("planilla.update")
@@ -547,7 +548,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("rebajados", $rebajados, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                ) *//* 
                 ->editColumn(
                     'deudas',
                     '@can("planilla.update")
@@ -555,7 +556,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("deudas", $deudas, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                ) *//* 
                 ->editColumn(
                     'adelantos',
                     '@can("planilla.update")
@@ -563,7 +564,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("adelantos", $adelantos, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                ) */
                 ->editColumn(
                     'salario_base',
                     '@can("planilla.update")
@@ -579,7 +580,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                )/* 
                 ->editColumn(
                     'comisiones',
                     '@can("planilla.update")
@@ -587,7 +588,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("comisiones", $comisiones, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                ) */
                 ->editColumn(
                     'cant_hora_extra',
                     '@can("planilla.update")
@@ -603,7 +604,7 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                )/* 
                 ->editColumn(
                     'asociacion',
                     '@can("planilla.update")
@@ -611,12 +612,12 @@ class PlanillaController extends Controller
         @else
         {!! Form::number("asociacion", $asociacion, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
-                )
+                ) */
                 ->editColumn(
                     'total',
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$total}}">{{$total}}</span>'
                 )
-                ->rawColumns(['action', 'salario_base', 'total_ccss', 'hora_extra', 'adelantos', 'deudas', 'rebajados', 'monto_hora_extra', 'bonificacion', 'comisiones', 'cant_hora_extra', 'prestamos', 'asociacion', 'total'])
+                ->rawColumns(['action', 'salario_base', 'total_ccss', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
                 ->make(true);
         }
 

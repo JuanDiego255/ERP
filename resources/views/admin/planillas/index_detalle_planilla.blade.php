@@ -6,14 +6,15 @@
     <!-- Content Header (Page header) -->
     <input type="hidden" id="planilla_id" value="{{ $id }}">
     <input type="hidden" id="canUpdate" value="{{ $canUpdate }}">
+    <input type="hidden" id="aprobada" value="{{ $planilla->aprobada }}">
     <section class="content-header">
         <h1>@lang('Planilla')
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                    <li class="active">Here</li>
-                                                                                                                </ol> -->
+                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                            <li class="active">Here</li>
+                                                                                                                        </ol> -->
     </section>
 
     <!-- Main content -->
@@ -30,21 +31,21 @@
                                 <th>@lang('Empleado')</th>
                                 <th>@lang('Salario base')</th>
                                 <th>@lang('Bonificación')</th>
-                                <th>@lang('Comisiones')</th>
+                                {{-- <th>@lang('Comisiones')</th> --}}
                                 <th>@lang('Hora Extra. Emp')</th>
                                 <th>@lang('Cant. Hora Extra')</th>
                                 <th>@lang('Monto Hora Extra')</th>
-                                <th>@lang('Adelantos')</th>
+                                {{--  <th>@lang('Adelantos')</th> --}}
                                 <th>@lang('Prestamos')</th>
-                                <th>@lang('Deudas')</th>
-                                <th>@lang('Rebajados')</th>
+                                {{-- <th>@lang('Deudas')</th>
+                                <th>@lang('Rebajados')</th> --}}
                                 <th>@lang('C.C.S.S')</th>
                                 <th>@lang('Total')</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr class="bg-gray font-17 text-center footer-total">
-                                <td colspan="14"><strong>@lang('sale.total'):</strong></td>
+                                <td colspan="10"><strong>@lang('sale.total'):</strong></td>
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="total" data-currency_symbol ="true"></span></td>
                             </tr>
@@ -85,6 +86,7 @@
         //Roles table
         var planilla_id = $('#planilla_id').val();
         var canUpdate = $('#canUpdate').val();
+        var aprobada = $('#aprobada').val();
         $(document).ready(function() {
             var users_table = $('#planillas').DataTable({
                 processing: true,
@@ -113,9 +115,10 @@
                     {
                         "data": "bonificacion"
                     },
-                    {
-                        "data": "comisiones"
-                    },
+                    /* 
+                                        {
+                                            "data": "comisiones"
+                                        }, */
                     {
                         "data": "hora_extra"
                     },
@@ -125,18 +128,20 @@
                     {
                         "data": "monto_hora_extra"
                     },
-                    {
-                        "data": "adelantos"
-                    },
+                    /* 
+                                        {
+                                            "data": "adelantos"
+                                        }, */
                     {
                         "data": "prestamos"
                     },
-                    {
-                        "data": "deudas"
-                    },
-                    {
-                        "data": "rebajados"
-                    },
+                    /* 
+                                        {
+                                            "data": "deudas"
+                                        },
+                                        {
+                                            "data": "rebajados"
+                                        }, */
                     {
                         "data": "total_ccss"
                     },
@@ -190,14 +195,26 @@
                 ]
             });
 
+            // Guardar el valor inicial al enfocar
+            // Guardar el valor inicial al enfocar
+            $('#planillas').on('focus', 'input[type="number"]', function() {
+                var input = $(this);
+                input.data('initialValue', input.val()); // Guarda el valor inicial
+            });
+
             $('#planillas').on('blur', 'input[type="number"]', function() {
                 var input = $(this);
                 var value = input.val();
+                var initialValue = input.data('initialValue'); // Recupera el valor inicial
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var employee_id = input.closest('tr').find('td').eq(2).text();
 
-                if (value >= 0 && canUpdate) {
+                // Solo procede si el valor cambió
+                if (value != initialValue && value >= 0 && canUpdate && aprobada != 1) {
+                    // Deshabilita todos los campos de entrada mientras se procesa la solicitud
+                    $('input[type="number"]').prop('disabled', true);
+
                     $.ajax({
                         url: '/planilla-detalle-update/' + row_id,
                         method: 'POST',
@@ -212,12 +229,15 @@
                             }
                         },
                         error: function(xhr) {
-                            // Handle error
+                            // Manejo de error
+                        },
+                        complete: function() {
+                            // Rehabilita los campos de entrada después de que la solicitud se complete
+                            $('input[type="number"]').prop('disabled', false);
                         }
                     });
                 }
             });
-
             function updatePlanillaTotal() {
                 var total = sum_table_col($('#planillas'), 'final-total'); // Reutilizando tu función de suma
                 $('#total').text(total);
