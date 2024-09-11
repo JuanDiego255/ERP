@@ -6,7 +6,7 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('Editar gasto')</h1>
+        <h1>@lang('Editar gasto')<p>Si la factura esta ligada a Cuentas Por Pagar, no puedes modificar la fecha de vencimiento</p></h1>
     </section>
 
     <!-- Main content -->

@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\VehicleBill;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Log;
 
@@ -171,15 +172,25 @@ class BillVehicleController extends Controller
     {
         if (request()->ajax()) {
             try {
+                DB::beginTransaction();
                 $business_id = request()->session()->get('user.business_id');
-                $rubro = VehicleBill::where('business_id', $business_id)
+                $bill = VehicleBill::where('business_id', $business_id)
                     ->where('id', $id)->first();
-                $rubro->delete();
+                $is_cxp = $bill->is_cxp;
+                if ($is_cxp == 1) {
+                    $factura = Transaction::where('business_id', $business_id)
+                        ->where('ref_no', $bill->factura)
+                        ->firstOrFail();
+                    $factura->delete();
+                }
+                $bill->delete();
+                DB::commit();
                 $output = [
                     'success' => true,
                     'msg' => __("Gasto eliminado con éxito")
                 ];
             } catch (\Exception $e) {
+                DB::rollBack();
                 Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
                 $output = [
@@ -228,6 +239,7 @@ class BillVehicleController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            DB::beginTransaction();
             $bill_details = $request->only([
                 'fecha_compra',
                 'monto',
@@ -241,13 +253,30 @@ class BillVehicleController extends Controller
             $bill_details['business_id'] = $business_id;
             $bill = VehicleBill::where('business_id', $business_id)
                 ->findOrFail($id);
+            $is_cxp = $bill->is_cxp;
+            if ($is_cxp == 1) {
+                $factura = Transaction::where('business_id', $business_id)
+                    ->where('ref_no', $bill->factura)
+                    ->firstOrFail();
+                    $data = [
+                        'ref_no' => $request->factura,
+                        'contact_id' => $request->proveedor_id,
+                        'total_before_tax' => $request->monto,
+                        'final_total' => $request->monto,
+                        'additional_notes' => $request->descripcion,
+                        'transaction_date' => $request->fecha_compra
+                    ];
+                $factura->update($data);
+            }
 
             $bill->update($bill_details);
+            DB::commit();
             $output = [
                 'success' => 1,
                 'msg' => __("Gasto actualiado con éxito")
             ];
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [

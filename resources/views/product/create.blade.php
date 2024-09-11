@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('vehiculos.add_new_product')</h1>
         <!-- <ol class="breadcrumb">
-                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                <li class="active">Here</li>
-                              </ol> -->
+                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                    <li class="active">Here</li>
+                                  </ol> -->
     </section>
 
     <!-- Main content -->
@@ -107,14 +107,14 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                  <div class="form-group">
-                      {!! Form::label('comprado_a', __('Comprado a') . ':') !!}
-                      {!! Form::text('comprado_a', !empty($duplicate_product->comprado_a) ? $duplicate_product->comprado_a : null, [
-                          'class' => 'form-control',
-                          'placeholder' => __('Comprado a'),
-                      ]) !!}
-                  </div>
-              </div>
+                    <div class="form-group">
+                        {!! Form::label('comprado_a', __('Comprado a') . ':') !!}
+                        {!! Form::text('comprado_a', !empty($duplicate_product->comprado_a) ? $duplicate_product->comprado_a : null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Comprado a'),
+                        ]) !!}
+                    </div>
+                </div>
 
 
 

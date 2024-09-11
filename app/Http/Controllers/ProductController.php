@@ -584,15 +584,16 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
+    {/* 
         if (!auth()->user()->can('product.update')) {
             abort(403, 'Unauthorized action.');
-        }
+        } */
 
         $business_id = request()->session()->get('user.business_id');
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::where('business_id', $business_id)
             ->pluck('name', 'id');
+            
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
         $taxes = $tax_dropdown['tax_rates'];
@@ -617,7 +618,7 @@ class ProductController extends Controller
 
         //Get units.
         $units = Unit::forDropdown($business_id, true);
-        $sub_units = $this->productUtil->getSubUnits($business_id, $product->unit_id, true);
+        //$sub_units = $this->productUtil->getSubUnits($business_id, $product->unit_id, true);
 
         //Get all business locations
         $business_locations = BusinessLocation::forDropdown($business_id);
@@ -644,7 +645,7 @@ class ProductController extends Controller
             ->with('listaCST_PIS_COFINS', $listaCST_PIS_COFINS)
             ->with('listaCST_IPI', $listaCST_IPI)
             ->with('unidadesDeMedida', $unidadesDeMedida)
-            ->with(compact('categories', 'brands', 'units', 'sub_units', 'taxes', 'tax_attributes', 'barcode_types', 'product', 'sub_categories', 'default_profit_percent', 'business_locations', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
+            ->with(compact('categories', 'brands', 'units', 'taxes', 'tax_attributes', 'barcode_types', 'product', 'sub_categories', 'default_profit_percent', 'business_locations', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
     }
 
     /**
@@ -750,24 +751,24 @@ class ProductController extends Controller
             }
 
             $product->name = $product_details['name'];
-            $product->brand_id = $product_details['brand_id'];
-            $product->unit_id = $product_details['unit_id'];
+            $product->brand_id = $product_details['brand_id'];/* 
+            $product->unit_id = $product_details['unit_id']; */
             $product->category_id = $product_details['category_id'];
-            $product->tax = $product_details['tax'];
-            $product->barcode_type = $product_details['barcode_type'];
+           /*  $product->tax = $product_details['tax']; */
+            /* $product->barcode_type = $product_details['barcode_type']; */
             $product->sku = $product_details['sku'];
-            $product->alert_quantity = $product_details['alert_quantity'];
-            $product->tax_type = $product_details['tax_type'];
-            $product->weight = isset($product_details['weight']) ? str_replace(",", ".", $product_details['weight']) : 0;
-            $product->product_custom_field1 = $product_details['product_custom_field1'];
+           /*  $product->alert_quantity = $product_details['alert_quantity'];
+            $product->tax_type = $product_details['tax_type']; */
+            //$product->weight = isset($product_details['weight']) ? str_replace(",", ".", $product_details['weight']) : 0;
+            /* $product->product_custom_field1 = $product_details['product_custom_field1'];
             $product->product_custom_field2 = $product_details['product_custom_field2'];
             $product->product_custom_field3 = $product_details['product_custom_field3'];
-            $product->product_custom_field4 = $product_details['product_custom_field4'];
+            $product->product_custom_field4 = $product_details['product_custom_field4']; */
             $product->product_description = $product_details['product_description'];
             $product->sub_unit_ids = !empty($product_details['sub_unit_ids']) ? $product_details['sub_unit_ids'] : null;
             $product->warranty_id = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
 
-            $product->perc_icms = $product_details['perc_icms'];
+            /* $product->perc_icms = $product_details['perc_icms'];
             $product->perc_pis = $product_details['perc_pis'];
             $product->perc_cofins = $product_details['perc_cofins'];
             $product->perc_ipi = $product_details['perc_ipi'];
@@ -779,8 +780,8 @@ class ProductController extends Controller
             $product->cst_cofins = $product_details['cst_cofins'];
             $product->cst_ipi = $product_details['cst_ipi'];
             $product->ncm = $product_details['ncm'];
-            $product->cest = $product_details['cest'];
-            $product->codigo_barras = $product_details['codigo_barras'];
+            $product->cest = $product_details['cest']; */
+            /* $product->codigo_barras = $product_details['codigo_barras'];
 
             $product->codigo_anp = $product_details['codigo_anp'];
             $product->perc_glp = $product_details['perc_glp'];
@@ -816,22 +817,27 @@ class ProductController extends Controller
             $product->cMod = $product_details['cMod'];
             $product->cCorDENATRAN = $product_details['cCorDENATRAN'];
             $product->lota = $product_details['lota'];
-            $product->tpRest = $product_details['tpRest'];
-            $product->ecommerce = $product_details['ecommerce'] ?? 0;
-            $product->destaque = $product_details['destaque'] ?? 0;
-            $product->novo = $product_details['novo'] ?? 0;
-            $product->altura = isset($product_details['altura']) ? str_replace(",", ".", $product_details['altura']) : 0;
-            $product->largura = isset($product_details['largura']) ? str_replace(",", ".", $product_details['largura']) : 0;
-            $product->comprimento = isset($product_details['comprimento']) ? str_replace(",", ".", $product_details['comprimento']) : 0;
-            $product->valor_ecommerce = isset($product_details['valor_ecommerce']) ? str_replace(",", ".", $product_details['valor_ecommerce']) : 0;
-
-            if (!empty($request->input('enable_stock')) &&  $request->input('enable_stock') == 1) {
+            $product->tpRest = $product_details['tpRest']; */
+            //$product->ecommerce = $product_details['ecommerce'] ?? 0;
+            //$product->destaque = $product_details['destaque'] ?? 0;
+            //$product->novo = $product_details['novo'] ?? 0;
+            //$product->altura = isset($product_details['altura']) ? str_replace(",", ".", $product_details['altura']) : 0;
+            //$product->largura = isset($product_details['largura']) ? str_replace(",", ".", $product_details['largura']) : 0;
+           /*  $product->comprimento = isset($product_details['comprimento']) ? str_replace(",", ".", $product_details['comprimento']) : 0;
+            $product->valor_ecommerce = isset($product_details['valor_ecommerce']) ? str_replace(",", ".", $product_details['valor_ecommerce']) : 0; */
+            $product->comprado_a = $request->comprado_a;
+            $product->model = $request->model;
+            $product->dua = $request->dua;
+            $product->color = $request->color;
+            $product->bin = $request->bin;
+            $product->placa = $request->placa;
+            /* if (!empty($request->input('enable_stock')) &&  $request->input('enable_stock') == 1) {
                 $product->enable_stock = 1;
             } else {
                 $product->enable_stock = 0;
-            }
+            } */
 
-            $product->not_for_selling = (!empty($request->input('not_for_selling')) &&  $request->input('not_for_selling') == 1) ? 1 : 0;
+            //$product->not_for_selling = (!empty($request->input('not_for_selling')) &&  $request->input('not_for_selling') == 1) ? 1 : 0;
 
             if (!empty($request->input('sub_category_id'))) {
                 $product->sub_category_id = $request->input('sub_category_id');
@@ -850,11 +856,11 @@ class ProductController extends Controller
                 }
             }
 
-            if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
+           /*  if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
                 $product->enable_sr_no = 1;
             } else {
                 $product->enable_sr_no = 0;
-            }
+            } */
 
             //upload document
             $file_name = $this->productUtil->uploadFile($request, 'image', config('constants.product_img_path'), 'image');
