@@ -784,7 +784,21 @@
                                 {!! Form::checkbox('permissions[]', 'cxp.delete', in_array('cxp.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar cuentas') }}
                             </label>
                         </div>
-                    </div>                    
+                    </div>        
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.payments', in_array('purchase.payments', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Agregar pagos') }}
+                            </label>
+                        </div>
+                    </div>       
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.view', in_array('purchase.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver pagos') }}
+                            </label>
+                        </div>
+                    </div>            
                 </div>
             </div>
             <hr>

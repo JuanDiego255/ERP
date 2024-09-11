@@ -441,6 +441,20 @@
                                 {!! Form::checkbox('permissions[]', 'cxp.delete', false, ['class' => 'input-icheck']) !!} {{ __('Eliminar cuentas') }}
                             </label>
                         </div>
+                    </div>     
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.payments', false, ['class' => 'input-icheck']) !!} {{ __('Agregar pagos') }}
+                            </label>
+                        </div>
+                    </div>  
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.view', false, ['class' => 'input-icheck']) !!} {{ __('Ver pagos') }}
+                            </label>
+                        </div>
                     </div>                    
                 </div>
             </div>
