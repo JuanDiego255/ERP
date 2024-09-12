@@ -50,14 +50,16 @@ class PlanillaController extends Controller
                 ->addColumn(
                     'action',
                     '
-                    @can("planilla.update")
+                  
                     @if($generada != 1)
-                        <button data-href="{{ action(\'PlanillaController@createPlanillaDetalle\', [$planilla_id]) }}" class="btn btn-xs btn-primary generar_planilla_detalle"><i class="glyphicon glyphicon-edit"></i> @lang("Generar planilla")</button>
+                        @can("planilla.create")
+                            <button data-href="{{ action(\'PlanillaController@createPlanillaDetalle\', [$planilla_id]) }}" class="btn btn-xs btn-primary generar_planilla_detalle"><i class="glyphicon glyphicon-edit"></i> @lang("Generar planilla")</button>
+                        @endcan
                     @else
-                     <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
+                        <a href="{{ action(\'PlanillaController@indexDetallePlanilla\', [$planilla_id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye-open"></i>@if($aprobada == 1) @lang("Ver planilla") @else @lang("Gestionar planilla") @endif</a>
                     @endif
                     &nbsp;
-                    @endcan
+                  
                         
                     @can("planilla.delete")
                         <button data-href="{{ action(\'PlanillaController@destroy\', [$planilla_id]) }}" class="btn btn-xs btn-danger delete_planilla_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>

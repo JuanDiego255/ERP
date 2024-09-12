@@ -14,9 +14,9 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                <li class="active">Here</li>
-                                                                                                                                                            </ol> -->
+                                                                                                                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                    <li class="active">Here</li>
+                                                                                                                                                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -61,18 +61,19 @@
             'method' => 'post',
             'id' => 'planilla_update_approve_form',
         ]) !!}
-
-        <div class="row">
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">
-                    @if ($planilla->aprobada == 0)
-                        @lang('Aprobar Planilla')
-                    @else
-                        @lang('Desaprobar Planilla')
-                    @endif
-                </button>
+        @can('planilla.update')
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">
+                        @if ($planilla->aprobada == 0)
+                            @lang('Aprobar Planilla')
+                        @else
+                            @lang('Desaprobar Planilla')
+                        @endif
+                    </button>
+                </div>
             </div>
-        </div>
+        @endcan
         {!! Form::close() !!}
 
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
@@ -147,8 +148,7 @@
                     updatePlanillaTotal();
                 },
                 dom: '<"text-center"B>frtip',
-                buttons: [
-                    {
+                buttons: [{
                         extend: 'pageLength',
                         text: 'Mostrando 25',
                         titleAttr: 'Mostrar registros'
@@ -201,7 +201,7 @@
 
                             // Llama a la función que agrupa los datos de la planilla
                             var groupedData =
-                        groupPlanillaData(); // Ajusta la función si es necesario
+                                groupPlanillaData(); // Ajusta la función si es necesario
                             var grandTotal = 0; // Para almacenar el total general de salarios
 
                             body.empty();
@@ -212,12 +212,17 @@
                                 grandTotal += row.total; // Sumar al total general
 
                                 // Formateo de los valores para la tabla usando la función de formato
-                                var formattedSalarioBase = __currency_trans_from_en(row.salario_base, true, true);
-                                var formattedBonificacion = __currency_trans_from_en(row.bonificacion, true, true);
-                                var formattedHoraExtra = __currency_trans_from_en(row.monto_hora_extra, true, true);
-                                var formattedPrestamos = __currency_trans_from_en(row.prestamos, true, true);
+                                var formattedSalarioBase = __currency_trans_from_en(row
+                                    .salario_base, true, true);
+                                var formattedBonificacion = __currency_trans_from_en(row
+                                    .bonificacion, true, true);
+                                var formattedHoraExtra = __currency_trans_from_en(row
+                                    .monto_hora_extra, true, true);
+                                var formattedPrestamos = __currency_trans_from_en(row
+                                    .prestamos, true, true);
                                 var formattedTotal = formatCurrency(row.total);
-                                var formattedCCSS = __currency_trans_from_en(row.total_ccss, true, true);
+                                var formattedCCSS = __currency_trans_from_en(row.total_ccss,
+                                    true, true);
 
                                 // Inserta cada fila con sus datos formateados
                                 body.append(
