@@ -158,7 +158,6 @@ class ExpenseController extends Controller
                     $expenses->where('transactions.expense_category_id', $expense_category_id);
                 }
             }
-
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $expenses->whereIn('transactions.location_id', $permitted_locations);

@@ -1,8 +1,8 @@
-$(document).ready(function() {
+$(document).ready(function () {
     var start = $('input[name="date-filter"]:checked').data('start');
     var end = $('input[name="date-filter"]:checked').data('end');
     update_statistics(start, end);
-    $(document).on('change', 'input[name="date-filter"], #dashboard_location', function() {
+    $(document).on('change', 'input[name="date-filter"], #dashboard_location', function () {
         var start = $('input[name="date-filter"]:checked').data('start');
         var end = $('input[name="date-filter"]:checked').data('end');
         update_statistics(start, end);
@@ -16,7 +16,7 @@ $(document).ready(function() {
         searching: false,
         dom: 'Btirp',
         ajax: '/home/product-stock-alert',
-        fnDrawCallback: function(oSettings) {
+        fnDrawCallback: function (oSettings) {
             __currency_convert_recursively($('#stock_alert_table'));
         },
     });
@@ -28,7 +28,7 @@ $(document).ready(function() {
         searching: false,
         dom: 'Btirp',
         ajax: '/home/purchase-payment-dues',
-        fnDrawCallback: function(oSettings) {
+        fnDrawCallback: function (oSettings) {
             __currency_convert_recursively($('#purchase_payment_dues_table'));
         },
     });
@@ -41,7 +41,7 @@ $(document).ready(function() {
         searching: false,
         dom: 'Btirp',
         ajax: '/home/sales-payment-dues',
-        fnDrawCallback: function(oSettings) {
+        fnDrawCallback: function (oSettings) {
             __currency_convert_recursively($('#sales_payment_dues_table'));
         },
     });
@@ -54,18 +54,31 @@ $(document).ready(function() {
         dom: 'Btirp',
         ajax: {
             url: '/reports/stock-expiry',
-            data: function(d) {
+            data: function (d) {
                 d.exp_date_filter = $('#stock_expiry_alert_days').val();
             },
         },
-        order: [[3, 'asc']],
-        columns: [
-            { data: 'product', name: 'p.name' },
-            { data: 'location', name: 'l.name' },
-            { data: 'stock_left', name: 'stock_left' },
-            { data: 'exp_date', name: 'exp_date' },
+        order: [
+            [3, 'asc']
         ],
-        fnDrawCallback: function(oSettings) {
+        columns: [{
+                data: 'product',
+                name: 'p.name'
+            },
+            {
+                data: 'location',
+                name: 'l.name'
+            },
+            {
+                data: 'stock_left',
+                name: 'stock_left'
+            },
+            {
+                data: 'exp_date',
+                name: 'exp_date'
+            },
+        ],
+        fnDrawCallback: function (oSettings) {
             __show_date_diff_for_human($('#stock_expiry_alert_table'));
             __currency_convert_recursively($('#stock_expiry_alert_table'));
         },
@@ -77,7 +90,11 @@ function update_statistics(start, end) {
     if ($('#dashboard_location').length > 0) {
         location_id = $('#dashboard_location').val();
     }
-    var data = { start: start, end: end, location_id: location_id };
+    var data = {
+        start: start,
+        end: end,
+        location_id: location_id
+    };
     //get purchase details
     var loader = '<i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>';
     $('.total_purchase').html(loader);
@@ -85,21 +102,22 @@ function update_statistics(start, end) {
     $('.total_sell').html(loader);
     $('.invoice_due').html(loader);
     $('.total_expense').html(loader);
+    $('.vehicle_due').html(loader);
+    $('.vehicle_mant').html(loader);
     $.ajax({
         method: 'get',
         url: '/home/get-totals',
         dataType: 'json',
         data: data,
-        success: function(data) {
+        success: function (data) {
             //purchase details
-            $('.total_purchase').html(__currency_trans_from_en(data.total_purchase, true));
-            $('.purchase_due').html(__currency_trans_from_en(data.purchase_due, true));
-
-            //sell details
-            $('.total_sell').html(__currency_trans_from_en(data.total_sell, true));
-            $('.invoice_due').html(__currency_trans_from_en(data.invoice_due, true));
-            //expense details
+            $('.vehicle_count').html(data.product_count);
+            $('.vehicle_mant').html(data.product_count_mant);
             $('.total_expense').html(__currency_trans_from_en(data.total_expense, true));
+            $('.vehicle_due').html(__currency_trans_from_en(data.sum_bill, true));
         },
+        error: function (data) {
+            console.log(data);
+        }
     });
 }

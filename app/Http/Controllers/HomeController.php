@@ -6,6 +6,7 @@ use App\Models\BusinessLocation;
 
 use App\Charts\CommonChart;
 use App\Models\Currency;
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Utils\BusinessUtil;
 
@@ -14,6 +15,7 @@ use App\Utils\TransactionUtil;
 use App\Models\VariationLocationDetails;
 use Datatables;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -206,44 +208,35 @@ class HomeController extends Controller
      */
     public function getTotals()
     {
-        if (request()->ajax()) {
-            $start = request()->start;
-            $end = request()->end;
-            $location_id = request()->location_id;
+        try {
             $business_id = request()->session()->get('user.business_id');
-
-            $purchase_details = $this->transactionUtil->getPurchaseTotals($business_id, $start, $end, $location_id);
-
-            $sell_details = $this->transactionUtil->getSellTotals($business_id, $start, $end, $location_id);
-
-            $transaction_types = [
-                'purchase_return', 'sell_return', 'expense'
-            ];
-
-            $transaction_totals = $this->transactionUtil->getTransactionTotals(
-                $business_id,
-                $transaction_types,
-                $start,
-                $end
-            );
-
-            $total_purchase_inc_tax = !empty($purchase_details['total_purchase_inc_tax']) ? $purchase_details['total_purchase_inc_tax'] : 0;
-            $total_purchase_return_inc_tax = $transaction_totals['total_purchase_return_inc_tax'];
-
-            $total_purchase = $total_purchase_inc_tax - $total_purchase_return_inc_tax;
-            $output = $purchase_details;
-            $output['total_purchase'] = $total_purchase;
-
-            $total_sell_inc_tax = !empty($sell_details['total_sell_inc_tax']) ? $sell_details['total_sell_inc_tax'] : 0;
-            $total_sell_return_inc_tax = !empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
-
-            $output['total_sell'] = $total_sell_inc_tax - $total_sell_return_inc_tax;
-
-            $output['invoice_due'] = $sell_details['invoice_due'];
-            $output['total_expense'] = $transaction_totals['total_expense'];
-            
-            return $output;
+            $productsCount = Product::where('is_show',1)->count();
+            $productsCountMant = Product::where('is_mant',1)->count();
+            if (request()->ajax()) {
+                $start = request()->start;
+                $end = request()->end;
+                $business_id = request()->session()->get('user.business_id');           
+                $transaction_types = [
+                  'expense'
+                ];
+    
+                $transaction_totals = $this->transactionUtil->getTransactionTotals(
+                    $business_id,
+                    $transaction_types,
+                    $start,
+                    $end
+                );
+        
+                $output['total_expense'] = $transaction_totals['total_expense'];
+                $output['sum_bill'] = $transaction_totals['sum_bill'];            
+                $output['product_count'] = $productsCount;
+                $output['product_count_mant'] = $productsCountMant;
+                
+            }
+        } catch (Exception $th) {
+            $output['error'] = $th->getMessage();
         }
+        return $output;       
     }
 
     /**

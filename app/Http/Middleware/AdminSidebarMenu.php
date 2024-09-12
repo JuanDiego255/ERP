@@ -475,26 +475,26 @@ class AdminSidebarMenu
                                 //     'Cidades',
                                 //     ['icon' => 'fa fa-map-signs', 'active' => request()->segment(1) == 'cities', 'id' => "cities"]
                                 // );
-                                $sub->url(action('BusinessLocationController@index'), __('business.business_locations'), ['icon' => 'fa fas fa-map-marker', 'active' => request()->segment(1) == 'business-location']);
+                                /* $sub->url(action('BusinessLocationController@index'), __('business.business_locations'), ['icon' => 'fa fas fa-map-marker', 'active' => request()->segment(1) == 'business-location']); */
                             }
 
                             //natureza operacao
                             /* if (auth()->user()->can('access_shipping')) {
                                 $sub->url('/naturezas', 'Naturezas de operação', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'naturezas' && request()->segment(2) == null]);
                             } */
-                            if (auth()->user()->can('invoice_settings.access')) {
+                            /* if (auth()->user()->can('invoice_settings.access')) {
                                 $sub->url(action('InvoiceSchemeController@index'), __('invoice.invoice_settings'), ['icon' => 'fa fas fa-file', 'active' => in_array(request()->segment(1), ['invoice-schemes', 'invoice-layouts'])]);
                             }
                             if (auth()->user()->can('barcode_settings.access')) {
                                 $sub->url(action('BarcodeController@index'), __('barcode.barcode_settings'), ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'barcodes']);
-                            }
+                            } */
                             if (auth()->user()->can('access_printers')) {
                                 $sub->url(action('PrinterController@index'), 'Impresoras', ['icon' => 'fa fas fa-share-alt', 'active' => request()->segment(1) == 'printers']);
                             }
 
-                            if (auth()->user()->can('tax_rate.view') || auth()->user()->can('tax_rate.create')) {
+                           /*  if (auth()->user()->can('tax_rate.view') || auth()->user()->can('tax_rate.create')) {
                                 $sub->url(action('TaxRateController@index'), __('tax_rate.tax_rates'), ['icon' => 'fa fas fa-bolt', 'active' => request()->segment(1) == 'tax-rates']);
-                            }
+                            } */
 
                             if (in_array('tables', $enabled_modules) && auth()->user()->can('access_tables')) {
                                 $sub->url(action('Restaurant\TableController@index'), __('restaurant.tables'), ['icon' => 'fa fas fa-table', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'tables']);

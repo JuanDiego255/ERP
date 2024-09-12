@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('product.edit_product')</h1>
         <!-- <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                    <li class="active">Here</li>
-                  </ol> -->
+                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                            <li class="active">Here</li>
+                          </ol> -->
     </section>
 
     <!-- Main content -->
@@ -75,11 +75,11 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
-                        {!! Form::label('bin', __('Bin') . ':*') !!}
+                        {!! Form::label('bin', __('VIN') . ':*') !!}
                         {!! Form::text('bin', $product->bin, [
                             'class' => 'form-control',
                             'required',
-                            'placeholder' => __('Bin'),
+                            'placeholder' => __('VIN'),
                         ]) !!}
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-4 @if (!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif">
+                {{-- <div class="col-sm-4 @if (!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif">
                     <div class="form-group">
                         {!! Form::label('sku', __('product.sku') . ':*') !!} @show_tooltip(__('tooltip.sku'))
                         {!! Form::text('sku', $product->sku, [
@@ -122,7 +122,7 @@
                             'required',
                         ]) !!}
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- <div class="clearfix"></div> -->
 
@@ -194,21 +194,62 @@
                         ]) !!}
                     </div>
                 </div>
-
                 <div class="clearfix"></div>
-
-                {{-- <div class="col-sm-4">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('kilometraje', __('Kilometraje') . ':') !!}
+                        {!! Form::text('kilometraje', $product->kilometraje, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Kilometraje'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('combustible', __('Tipo de combustible') . ':') !!}
+                        {!! Form::text('combustible', $product->combustible, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Tipo de combustible'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('traccion', __('Tracción') . ':') !!}
+                        {!! Form::text('traccion', $product->traccion, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Tracción'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-sm-4">
                     <div class="form-group">
                         <br>
                         <label>
-                            {!! Form::checkbox('enable_stock', 1, $product->enable_stock, [
+                            {!! Form::checkbox('is_show', 1, $product->is_show == 1 ? true : 0, [
                                 'class' => 'input-icheck',
-                                'id' => 'enable_stock',
-                            ]) !!} <strong>@lang('product.manage_stock')</strong>
-                        </label>@show_tooltip(__('tooltip.enable_stock')) <p class="help-block"><i>@lang('product.enable_stock_help')</i></p>
+                                'id' => 'is_show',
+                            ]) !!} <strong>@lang('Se muestra en piso?')</strong>
+                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
+                        mantenimiento')) <p class="help-block">
+                            <i>@lang('Este check indica si el vehículo se está mostrando en la venta')</i>
+                        </p>
                     </div>
-                </div> --}}
-               {{--  <div class="col-sm-4" id="alert_quantity_div" @if (!$product->enable_stock) style="display:none" @endif>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <br>
+                        <label>
+                            {!! Form::checkbox('is_mant', 1, $product->is_mant == 1 ? true : 0, [
+                                'class' => 'input-icheck',
+                                'id' => 'is_mant',
+                            ]) !!} <strong>@lang('Se encuentra en mantenimiento?')</strong>
+                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
+                        exhibición')) <p class="help-block"><i>@lang('Este check indica si el vehículo se encuentra en mantenimiento')</i></p>
+                    </div>
+                </div>
+                {{--  <div class="col-sm-4" id="alert_quantity_div" @if (!$product->enable_stock) style="display:none" @endif>
                     <div class="form-group">
                         {!! Form::label('alert_quantity', __('product.alert_quantity') . ':') !!} @show_tooltip(__('tooltip.alert_quantity'))
                         {!! Form::number('alert_quantity', $product->alert_quantity, [
@@ -266,7 +307,7 @@
             </div>
         @endcomponent
 
-      {{--   @if (in_array('ecommerce', $enabled_modules) && auth()->user()->can('ecommerce.view'))
+        {{--   @if (in_array('ecommerce', $enabled_modules) && auth()->user()->can('ecommerce.view'))
 
             <div class="box @if (!empty($class)) {{ $class }} @else box-primary @endif" id="accordion">
                 <div class="box-header with-border" style="cursor: pointer;">
@@ -1050,13 +1091,13 @@
             <div class="col-sm-12">
                 <div class="text-center">
                     <div class="btn-group">
-                       {{--  @if ($selling_price_group_count)
+                        {{--  @if ($selling_price_group_count)
                             <button type="submit" value="submit_n_add_selling_prices"
                                 class="btn btn-warning submit_product_form">@lang('lang_v1.save_n_add_selling_price_group_prices')</button>
                         @endif --}}
 
                         @can('product.opening_stock')
-                           {{--  <button type="submit" @if (empty($product->enable_stock)) disabled="true" @endif
+                            {{--  <button type="submit" @if (empty($product->enable_stock)) disabled="true" @endif
                                 id="opening_stock_button" value="update_n_edit_opening_stock"
                                 class="btn bg-purple submit_product_form">@lang('lang_v1.update_n_edit_opening_stock')</button> --}}
                             @endif

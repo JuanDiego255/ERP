@@ -23,6 +23,7 @@ use App\Models\TransactionSellLine;
 use App\Models\TransactionSellLinesPurchaseLines;
 use App\Models\Variation;
 use App\Models\VariationLocationDetails;
+use App\Models\VehicleBill;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -74,7 +75,7 @@ class TransactionUtil extends Util
             'delivered_to' => isset($input['delivered_to']) ? $input['delivered_to'] : null,
             'shipping_charges' => isset($input['shipping_charges']) ? $uf_data ? $this->num_uf($input['shipping_charges']) : $input['shipping_charges'] : 0,
             'exchange_rate' => !empty($input['exchange_rate']) ?
-            $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
+                $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
             'selling_price_group_id' => isset($input['selling_price_group_id']) ? $input['selling_price_group_id'] : null,
             'pay_term_number' => isset($input['pay_term_number']) ? $input['pay_term_number'] : null,
             'pay_term_type' => isset($input['pay_term_type']) ? $input['pay_term_type'] : null,
@@ -101,7 +102,7 @@ class TransactionUtil extends Util
             'round_off_amount' => !empty($input['round_off_amount']) ? $input['round_off_amount'] : 0,
             'import_batch' => !empty($input['import_batch']) ? $input['import_batch'] : null,
             'import_time' => !empty($input['import_time']) ? $input['import_time'] : null,
-            
+
             'natureza_id' => isset($input['natureza_id']) ? $input['natureza_id'] : null,
             'transportadora_id' => isset($input['transportadora_id']) ? $input['transportadora_id'] : null,
             'placa' => isset($input['placa']) ? $input['placa'] : '',
@@ -115,14 +116,14 @@ class TransactionUtil extends Util
             'peso_bruto' => isset($input['peso_bruto']) ? $input['peso_bruto'] : 0,
             'estado' => 'NOVO',
             'cpf_nota' => $input['cpf_nota'] ?? '',
-            'troco' => $input['valor_recebido'] > 0 ? ($input['valor_recebido'] - $final_total) : 0 ,
+            'troco' => $input['valor_recebido'] > 0 ? ($input['valor_recebido'] - $final_total) : 0,
             'valor_recebido' => $input['valor_recebido'] > 0 ? $input['valor_recebido'] : $invoice_total['total_before_tax'],
             'referencia_nfe' => isset($input['referencia_nfe']) ? $input['referencia_nfe'] : '',
 
         ]);
 
-return $transaction;
-}
+        return $transaction;
+    }
 
     /**
      * Add Sell transaction
@@ -141,10 +142,10 @@ return $transaction;
 
         if (!is_object($transaction)) {
             $transaction = Transaction::where('id', $transaction_id)
-            ->where('business_id', $business_id)
-            ->firstOrFail();
+                ->where('business_id', $business_id)
+                ->firstOrFail();
         }
-        
+
         //Update invoice number if changed from draft to finalize or vice-versa
         $invoice_no = $transaction->invoice_no;
         if ($transaction->status != $input['status'] && $change_invoice_number) {
@@ -173,7 +174,7 @@ return $transaction;
             'shipping_status' => isset($input['shipping_status']) ? $input['shipping_status'] : null,
             'delivered_to' => isset($input['delivered_to']) ? $input['delivered_to'] : null,
             'exchange_rate' => !empty($input['exchange_rate']) ?
-            $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
+                $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
             'selling_price_group_id' => isset($input['selling_price_group_id']) ? $input['selling_price_group_id'] : null,
             'pay_term_number' => isset($input['pay_term_number']) ? $input['pay_term_number'] : null,
             'pay_term_type' => isset($input['pay_term_type']) ? $input['pay_term_type'] : null,
@@ -209,7 +210,7 @@ return $transaction;
             'peso_bruto' => isset($input['peso_bruto']) ? $input['peso_bruto'] : 0,
             'estado' => 'NOVO',
             'cpf_nota' => $input['cpf_nota'] ?? '',
-            'troco' => $input['valor_recebido'] > 0 ? (number_format($input['valor_recebido'] - $invoice_total['final_total'], 2)) : 0 ,
+            'troco' => $input['valor_recebido'] > 0 ? (number_format($input['valor_recebido'] - $invoice_total['final_total'], 2)) : 0,
             'valor_recebido' => $input['valor_recebido'] > 0 ? $input['valor_recebido'] : $invoice_total['total_before_tax'],
             'referencia_nfe' => isset($input['referencia_nfe']) ? $input['referencia_nfe'] : ''
         ];
@@ -217,7 +218,7 @@ return $transaction;
         if (!empty($input['transaction_date'])) {
             $update_date['transaction_date'] = $input['transaction_date'];
         }
-        
+
         $transaction->fill($update_date);
         $transaction->update();
 
@@ -259,7 +260,7 @@ return $transaction;
 
 
                 $edit_ids[] = $product['transaction_sell_lines_id'];
-                
+
                 $this->editSellLine($product, $location_id, $status_before, $multiplier);
 
                 //update or create modifiers for existing sell lines
@@ -288,7 +289,7 @@ return $transaction;
                     }
                 }
             } else {
-                $products_modified_combo[] = $product;  
+                $products_modified_combo[] = $product;
 
                 //calculate unit price and unit price before discount
                 $uf_unit_price = $uf_data ? $this->num_uf($product['unit_price']) : $product['unit_price'];
@@ -305,7 +306,7 @@ return $transaction;
                     }
                 }
                 $uf_quantity = $uf_data ? $this->num_uf($product['quantity']) : $product['quantity'];
-                $uf_item_tax = $uf_data ?$this->num_uf($product['item_tax']) : $product['item_tax'];
+                $uf_item_tax = $uf_data ? $this->num_uf($product['item_tax']) : $product['item_tax'];
                 $uf_unit_price_inc_tax = $uf_data ? $this->num_uf($product['unit_price_inc_tax']) : $product['unit_price_inc_tax'];
                 $line = [
                     'product_id' => $product['product_id'],
@@ -370,9 +371,9 @@ return $transaction;
         $deleted_lines = [];
         if (!empty($edit_ids)) {
             $deleted_lines = TransactionSellLine::where('transaction_id', $transaction->id)
-            ->whereNotIn('id', $edit_ids)
-            ->whereNull('parent_sell_line_id')
-            ->select('id')->get()->toArray();
+                ->whereNotIn('id', $edit_ids)
+                ->whereNull('parent_sell_line_id')
+                ->select('id')->get()->toArray();
             $combo_delete_lines = TransactionSellLine::whereIn('parent_sell_line_id', $deleted_lines)->where('children_type', 'combo')->select('id')->get()->toArray();
             $deleted_lines = array_merge($deleted_lines, $combo_delete_lines);
 
@@ -484,7 +485,7 @@ return $transaction;
     {
         //Get the old order quantity
         $sell_line = TransactionSellLine::with(['product', 'warranties'])
-        ->find($product['transaction_sell_lines_id']);
+            ->find($product['transaction_sell_lines_id']);
 
         //Adjust quanity
         if ($status_before != 'draft') {
@@ -505,7 +506,8 @@ return $transaction;
         }
 
         //Update sell lines.
-        $sell_line->fill(['product_id' => $product['product_id'],
+        $sell_line->fill([
+            'product_id' => $product['product_id'],
             'variation_id' => $product['variation_id'],
             'quantity' => $this->num_uf($product['quantity']) * $multiplier,
             'unit_price_before_discount' => $unit_price_before_discount,
@@ -552,7 +554,7 @@ return $transaction;
     {
         if (!empty($transaction_line_ids)) {
             $sell_lines = TransactionSellLine::whereIn('id', $transaction_line_ids)
-            ->get();
+                ->get();
 
             //Adjust quanity
             if ($adjust_qty) {
@@ -562,7 +564,7 @@ return $transaction;
             }
 
             TransactionSellLine::whereIn('id', $transaction_line_ids)
-            ->delete();
+                ->delete();
         }
     }
 
@@ -584,9 +586,9 @@ return $transaction;
             if ($enable_stock == 1) {
                 //Adjust Quantity in variations location table
                 VariationLocationDetails::where('variation_id', $variation_id)
-                ->where('product_id', $product_id)
-                ->where('location_id', $location_id)
-                ->increment('qty_available', $increment_qty);
+                    ->where('product_id', $product_id)
+                    ->where('location_id', $location_id)
+                    ->increment('qty_available', $increment_qty);
             }
         }
     }
@@ -604,7 +606,7 @@ return $transaction;
         $payments_formatted = [];
         $edit_ids = [0];
         $account_transactions = [];
-        
+
         if (!is_object($transaction)) {
             $transaction = Transaction::findOrFail($transaction);
         }
@@ -642,8 +644,8 @@ return $transaction;
                         $payment['account_id'] = !empty($payments[0]['account_id']) ? $payments[0]['account_id'] : null;
                     }
 
-                    if($payment['method'] == 'boleto' && sizeof($boletoData) > 0){
-                        foreach($boletoData as $b){
+                    if ($payment['method'] == 'boleto' && sizeof($boletoData) > 0) {
+                        foreach ($boletoData as $b) {
 
                             $payment_data = [
                                 'amount' => str_replace(",", ".", $b->valor),
@@ -681,7 +683,7 @@ return $transaction;
 
                             array_push($idsBoleto, $revenue->id);
                         }
-                    }else{
+                    } else {
 
                         $payment_data = [
                             'amount' => $payment_amount,
@@ -717,7 +719,7 @@ return $transaction;
                         $account_transactions[$c] = [];
                         $revenue = $this->insertRevenue($transaction, ($payment['vencimento'] == "" ? NULL : $this->parseDate($payment['vencimento'])), $payment_amount, (empty($user_id) ? auth()->user()->id : $user_id), $payment['method']);
 
-                    //create account transaction
+                        //create account transaction
                         if (!empty($payment['account_id'])) {
                             $payment_data['transaction_type'] = $transaction->type;
                             $account_transactions[$c] = $payment_data;
@@ -743,7 +745,7 @@ return $transaction;
                 }
             }
         }
-        
+
         if (!empty($payments_formatted)) {
             $transaction->payment_lines()->saveMany($payments_formatted);
 
@@ -756,18 +758,19 @@ return $transaction;
             }
         }
 
-        if(sizeof($idsBoleto) > 0) return $idsBoleto;
+        if (sizeof($idsBoleto) > 0) return $idsBoleto;
         return true;
     }
 
-    protected function insertRevenue($transaction, $vencimento, $valor, $user_id, $tipo_pagamento){
+    protected function insertRevenue($transaction, $vencimento, $valor, $user_id, $tipo_pagamento)
+    {
 
         $recebido = false;
-        if($tipo_pagamento == 'cash' || $tipo_pagamento == 'pix'){
+        if ($tipo_pagamento == 'cash' || $tipo_pagamento == 'pix') {
             $recebido = true;
         }
 
-        if($vencimento == date('Y-m-d')){
+        if ($vencimento == date('Y-m-d')) {
             $recebido = true;
         }
 
@@ -792,7 +795,8 @@ return $transaction;
         return $revenue;
     }
 
-    private function parseDate($date){
+    private function parseDate($date)
+    {
         return date('Y-m-d', strtotime(str_replace("/", "-", $date)));
     }
 
@@ -817,14 +821,14 @@ return $transaction;
         }
 
         unset($payment['transaction_no_1'], $payment['transaction_no_2'], $payment['transaction_no_3']);
-        
+
         $payment['amount'] = $uf_data ? $this->num_uf($payment['amount']) : $payment['amount'];
 
         $tp = TransactionPayment::where('id', $payment_id)
-        ->first();
+            ->first();
 
         $transaction_type = !empty($transaction->type) ? $transaction->type : null;
-        
+
         $tp->update($payment);
 
         //event
@@ -843,7 +847,7 @@ return $transaction;
     public function getPaymentDetails($transaction_id)
     {
         $payment_lines = TransactionPayment::where('transaction_id', $transaction_id)
-        ->get()->toArray();
+            ->get()->toArray();
 
         return $payment_lines;
     }
@@ -905,7 +909,7 @@ return $transaction;
         if ($il->show_state == 1 && !empty($location_details->state)) {
             $temp[] = strtoupper($location_details->state);
         }
-        
+
         if ($il->show_country == 1 &&  !empty($location_details->country)) {
             $temp[] = strtoupper($location_details->country);
         }
@@ -978,8 +982,8 @@ return $transaction;
         $output['customer_custom_fields'] = '';
         if ($il->show_customer == 1) {
             $output['customer_label'] = !empty($il->customer_label) ? $il->customer_label : '';
-            $output['customer_name'] = !empty($customer->name) ? $customer->name: '';
-            
+            $output['customer_name'] = !empty($customer->name) ? $customer->name : '';
+
             if (!empty($output['customer_name']) && $receipt_printer_type != 'printer') {
                 $output['customer_info'] .= $customer->landmark;
                 $output['customer_info'] .= '<br>' . implode(',', array_filter([$customer->city, $customer->state, $customer->country]));
@@ -1073,7 +1077,7 @@ return $transaction;
                 }
             }
         }
-        
+
         $show_currency = true;
         if ($receipt_printer_type == 'printer' && trim($business_details->currency_symbol) != '$') {
             $show_currency = false;
@@ -1102,7 +1106,7 @@ return $transaction;
             }
 
             $details = $this->_receiptDetailsSellLines($lines, $il, $business_details);
-            
+
             $output['lines'] = $details['lines'];
             $output['taxes'] = [];
             $total_quantity = 0;
@@ -1177,7 +1181,7 @@ return $transaction;
         $output['discount_label'] .= ($transaction->discount_type == 'percentage') ? ' (' .  $discount_amount . '%) :' : '';
 
         if ($transaction->discount_type == 'percentage') {
-            $discount = ($transaction->discount_amount/100) * $transaction->total_before_tax;
+            $discount = ($transaction->discount_amount / 100) * $transaction->total_before_tax;
         } else {
             $discount = $transaction->discount_amount;
         }
@@ -1230,7 +1234,7 @@ return $transaction;
             $output['total_label'] = $invoice_layout->total_label . ':';
             $output['total'] = $this->num_f($transaction->final_total, $show_currency, $business_details);
         }
-        
+
         //Paid & Amount due, only if final
         if ($transaction_type == 'sell' && $transaction->status == 'final') {
             $paid_amount = $this->getTotalPaid($transaction->id);
@@ -1259,212 +1263,220 @@ return $transaction;
                         $method = !empty($payment_types[$value['method']]) ? $payment_types[$value['method']] : '';
                         if ($value['method'] == 'cash') {
                             $output['payments'][] =
-                            ['method' => $method . ($value['is_return'] == 1 ? ' (' . $il->change_return_label . ')(-)' : ''),
-                            'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                            'date' => $this->format_date($value['paid_on'], false, $business_details)
-                        ];
-                        if ($value['is_return'] == 1) {
+                                [
+                                    'method' => $method . ($value['is_return'] == 1 ? ' (' . $il->change_return_label . ')(-)' : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                            if ($value['is_return'] == 1) {
+                            }
+                        } elseif ($value['method'] == 'card') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'cheque') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['cheque_number']) ? (', Cheque Number:' . $value['cheque_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'bank_transfer') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['bank_account_number']) ? (', Account Number:' . $value['bank_account_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'other') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method,
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'custom_pay_1') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'custom_pay_2') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
+                        } elseif ($value['method'] == 'custom_pay_3') {
+                            $output['payments'][] =
+                                [
+                                    'method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                ];
                         }
-                    } elseif ($value['method'] == 'card') {
-                        $output['payments'][] =
-                        ['method' => $method . (!empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
-                        'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                        'date' => $this->format_date($value['paid_on'], false, $business_details)
-                    ];
-                } elseif ($value['method'] == 'cheque') {
-                    $output['payments'][] =
-                    ['method' => $method . (!empty($value['cheque_number']) ? (', Cheque Number:' . $value['cheque_number']) : ''),
-                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                    'date' => $this->format_date($value['paid_on'], false, $business_details)
-                ];
-            } elseif ($value['method'] == 'bank_transfer') {
-                $output['payments'][] =
-                ['method' => $method . (!empty($value['bank_account_number']) ? (', Account Number:' . $value['bank_account_number']) : ''),
-                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                'date' => $this->format_date($value['paid_on'], false, $business_details)
-            ];
-        } elseif ($value['method'] == 'other') {
-            $output['payments'][] =
-            ['method' => $method,
-            'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-            'date' => $this->format_date($value['paid_on'], false, $business_details)
-        ];
-    } elseif ($value['method'] == 'custom_pay_1') {
-        $output['payments'][] =
-        ['method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
-        'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-        'date' => $this->format_date($value['paid_on'], false, $business_details)
-    ];
-} elseif ($value['method'] == 'custom_pay_2') {
-    $output['payments'][] =
-    ['method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
-    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-    'date' => $this->format_date($value['paid_on'], false, $business_details)
-];
-} elseif ($value['method'] == 'custom_pay_3') {
-    $output['payments'][] =
-    ['method' => $method . (!empty($value['transaction_no']) ? (', ' . trans("lang_v1.transaction_no") . ':' . $value['transaction_no']) : ''),
-    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-    'date' => $this->format_date($value['paid_on'], false, $business_details)
-];
-}
-}
-}
-}
-}
+                    }
+                }
+            }
+        }
 
         //Check for barcode
-$output['barcode'] = ($il->show_barcode == 1) ? $transaction->invoice_no : false;
+        $output['barcode'] = ($il->show_barcode == 1) ? $transaction->invoice_no : false;
 
         //Additional notes
-$output['additional_notes'] = $transaction->additional_notes;
-$output['footer_text'] = $invoice_layout->footer_text;
+        $output['additional_notes'] = $transaction->additional_notes;
+        $output['footer_text'] = $invoice_layout->footer_text;
 
         //Barcode related information.
-$output['show_barcode'] = !empty($il->show_barcode) ? true : false;
+        $output['show_barcode'] = !empty($il->show_barcode) ? true : false;
 
         //Module related information.
-$il->module_info = !empty($il->module_info) ? json_decode($il->module_info, true) : [];
-if (!empty($il->module_info['tables']) && $this->isModuleEnabled('tables')) {
+        $il->module_info = !empty($il->module_info) ? json_decode($il->module_info, true) : [];
+        if (!empty($il->module_info['tables']) && $this->isModuleEnabled('tables')) {
             //Table label & info
-    $output['table_label'] = null;
-    $output['table'] = null;
-    if (isset($il->module_info['tables']['show_table'])) {
-        $output['table_label'] = !empty($il->module_info['tables']['table_label']) ? $il->module_info['tables']['table_label'] : '';
-        if (!empty($transaction->res_table_id)) {
-            $table = ResTable::find($transaction->res_table_id);
-        }
+            $output['table_label'] = null;
+            $output['table'] = null;
+            if (isset($il->module_info['tables']['show_table'])) {
+                $output['table_label'] = !empty($il->module_info['tables']['table_label']) ? $il->module_info['tables']['table_label'] : '';
+                if (!empty($transaction->res_table_id)) {
+                    $table = ResTable::find($transaction->res_table_id);
+                }
 
                 //res_table_id
-        $output['table'] = !empty($table->name) ? $table->name : '';
-    }
-}
+                $output['table'] = !empty($table->name) ? $table->name : '';
+            }
+        }
 
-if (!empty($il->module_info['types_of_service']) && $this->isModuleEnabled('types_of_service') && !empty($transaction->types_of_service_id)) {
+        if (!empty($il->module_info['types_of_service']) && $this->isModuleEnabled('types_of_service') && !empty($transaction->types_of_service_id)) {
             //Table label & info
-    $output['types_of_service_label'] = null;
-    $output['types_of_service'] = null;
-    if (isset($il->module_info['types_of_service']['show_types_of_service'])) {
-        $output['types_of_service_label'] = !empty($il->module_info['types_of_service']['types_of_service_label']) ? $il->module_info['types_of_service']['types_of_service_label'] : '';
-        $output['types_of_service'] = $transaction->types_of_service->name;
-    }
+            $output['types_of_service_label'] = null;
+            $output['types_of_service'] = null;
+            if (isset($il->module_info['types_of_service']['show_types_of_service'])) {
+                $output['types_of_service_label'] = !empty($il->module_info['types_of_service']['types_of_service_label']) ? $il->module_info['types_of_service']['types_of_service_label'] : '';
+                $output['types_of_service'] = $transaction->types_of_service->name;
+            }
 
-    if (isset($il->module_info['types_of_service']['show_tos_custom_fields'])) {
-        $output['types_of_service_custom_fields'] = [];
-        if (!empty($transaction->service_custom_field_1)) {
-            $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_1')] = $transaction->service_custom_field_1;
+            if (isset($il->module_info['types_of_service']['show_tos_custom_fields'])) {
+                $output['types_of_service_custom_fields'] = [];
+                if (!empty($transaction->service_custom_field_1)) {
+                    $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_1')] = $transaction->service_custom_field_1;
+                }
+                if (!empty($transaction->service_custom_field_2)) {
+                    $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_2')] = $transaction->service_custom_field_2;
+                }
+                if (!empty($transaction->service_custom_field_3)) {
+                    $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_3')] = $transaction->service_custom_field_3;
+                }
+                if (!empty($transaction->service_custom_field_4)) {
+                    $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_4')] = $transaction->service_custom_field_4;
+                }
+            }
         }
-        if (!empty($transaction->service_custom_field_2)) {
-            $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_2')] = $transaction->service_custom_field_2;
-        }
-        if (!empty($transaction->service_custom_field_3)) {
-            $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_3')] = $transaction->service_custom_field_3;
-        }
-        if (!empty($transaction->service_custom_field_4)) {
-            $output['types_of_service_custom_fields'][__('lang_v1.service_custom_field_4')] = $transaction->service_custom_field_4;
-        }
-    }
-}
 
-if (!empty($il->module_info['service_staff']) && $this->isModuleEnabled('service_staff')) {
+        if (!empty($il->module_info['service_staff']) && $this->isModuleEnabled('service_staff')) {
             //Waiter label & info
-    $output['service_staff_label'] = null;
-    $output['service_staff'] = null;
-    if (isset($il->module_info['service_staff']['show_service_staff'])) {
-        $output['service_staff_label'] = !empty($il->module_info['service_staff']['service_staff_label']) ? $il->module_info['service_staff']['service_staff_label'] : '';
-        if (!empty($transaction->res_waiter_id)) {
-            $waiter = \App\Models\User::find($transaction->res_waiter_id);
-        }
+            $output['service_staff_label'] = null;
+            $output['service_staff'] = null;
+            if (isset($il->module_info['service_staff']['show_service_staff'])) {
+                $output['service_staff_label'] = !empty($il->module_info['service_staff']['service_staff_label']) ? $il->module_info['service_staff']['service_staff_label'] : '';
+                if (!empty($transaction->res_waiter_id)) {
+                    $waiter = \App\Models\User::find($transaction->res_waiter_id);
+                }
 
                 //res_table_id
-        $output['service_staff'] = !empty($waiter->id) ? implode(' ', [$waiter->first_name, $waiter->last_name]) : '';
-    }
-}
+                $output['service_staff'] = !empty($waiter->id) ? implode(' ', [$waiter->first_name, $waiter->last_name]) : '';
+            }
+        }
 
         //Repair module details
-if (!empty($il->module_info['repair']) && $transaction->sub_type == 'repair') {
-    if (!empty($il->module_info['repair']['show_repair_status'])) {
-        $output['repair_status_label'] = $il->module_info['repair']['repair_status_label'];
-        $output['repair_status'] = '';
-        if (!empty($transaction->repair_status_id)) {
-            $repair_status = \Modules\Repair\Entities\RepairStatus::find($transaction->repair_status_id);
-            $output['repair_status'] = $repair_status->name;
-        }
-    }
+        if (!empty($il->module_info['repair']) && $transaction->sub_type == 'repair') {
+            if (!empty($il->module_info['repair']['show_repair_status'])) {
+                $output['repair_status_label'] = $il->module_info['repair']['repair_status_label'];
+                $output['repair_status'] = '';
+                if (!empty($transaction->repair_status_id)) {
+                    $repair_status = \Modules\Repair\Entities\RepairStatus::find($transaction->repair_status_id);
+                    $output['repair_status'] = $repair_status->name;
+                }
+            }
 
-    if (!empty($il->module_info['repair']['show_repair_warranty'])) {
-        $output['repair_warranty_label'] = $il->module_info['repair']['repair_warranty_label'];
-        $output['repair_warranty'] = '';
-        if (!empty($transaction->repair_warranty_id)) {
-            $repair_warranty = \App\Warranty::find($transaction->repair_warranty_id);
-            $output['repair_warranty'] = $repair_warranty->name;
-        }
-    }
+            if (!empty($il->module_info['repair']['show_repair_warranty'])) {
+                $output['repair_warranty_label'] = $il->module_info['repair']['repair_warranty_label'];
+                $output['repair_warranty'] = '';
+                if (!empty($transaction->repair_warranty_id)) {
+                    $repair_warranty = \App\Warranty::find($transaction->repair_warranty_id);
+                    $output['repair_warranty'] = $repair_warranty->name;
+                }
+            }
 
-    if (!empty($il->module_info['repair']['show_serial_no'])) {
-        $output['serial_no_label'] = $il->module_info['repair']['serial_no_label'];
-        $output['repair_serial_no'] = $transaction->repair_serial_no;
-    }
+            if (!empty($il->module_info['repair']['show_serial_no'])) {
+                $output['serial_no_label'] = $il->module_info['repair']['serial_no_label'];
+                $output['repair_serial_no'] = $transaction->repair_serial_no;
+            }
 
-    if (!empty($il->module_info['repair']['show_defects'])) {
-        $output['defects_label'] = $il->module_info['repair']['defects_label'];
-        $output['repair_defects'] = $transaction->repair_defects;
-    }
+            if (!empty($il->module_info['repair']['show_defects'])) {
+                $output['defects_label'] = $il->module_info['repair']['defects_label'];
+                $output['repair_defects'] = $transaction->repair_defects;
+            }
 
-    if (!empty($il->module_info['repair']['show_model'])) {
-        $output['model_no_label'] = $il->module_info['repair']['model_no_label'];
+            if (!empty($il->module_info['repair']['show_model'])) {
+                $output['model_no_label'] = $il->module_info['repair']['model_no_label'];
 
-        $output['repair_model_no'] = '';
+                $output['repair_model_no'] = '';
 
-        if (!empty($transaction->repair_model_id)) {
-            $device_model = \Modules\Repair\Entities\DeviceModel::find($transaction->repair_model_id);
+                if (!empty($transaction->repair_model_id)) {
+                    $device_model = \Modules\Repair\Entities\DeviceModel::find($transaction->repair_model_id);
 
-            if (!empty($device_model)) {
-                $output['repair_model_no'] = $device_model->name;
+                    if (!empty($device_model)) {
+                        $output['repair_model_no'] = $device_model->name;
+                    }
+                }
+            }
+
+            if (!empty($il->module_info['repair']['show_repair_checklist'])) {
+                $output['repair_checklist_label'] = $il->module_info['repair']['repair_checklist_label'];
+                $output['checked_repair_checklist'] = $transaction->repair_checklist;
+
+                $checklists = [];
+                if (!empty($transaction->repair_model_id)) {
+                    $model = \Modules\Repair\Entities\DeviceModel::find($transaction->repair_model_id);
+
+                    if (!empty($model) && !empty($model->repair_checklist)) {
+                        $checklists = explode('|', $model->repair_checklist);
+                    }
+                }
+
+                $output['repair_checklist'] = $checklists;
+            }
+
+            if (!empty($il->module_info['repair']['show_device'])) {
+                $output['device_label'] = $il->module_info['repair']['device_label'];
+                $device = \App\Category::find($transaction->repair_device_id);
+
+                $output['repair_device'] = '';
+                if (!empty($device)) {
+                    $output['repair_device'] = $device->name;
+                }
+            }
+
+            if (!empty($il->module_info['repair']['show_brand'])) {
+                $output['brand_label'] = $il->module_info['repair']['brand_label'];
+                $brand = \App\Brands::find($transaction->repair_brand_id);
+                $output['repair_brand'] = '';
+                if (!empty($brand)) {
+                    $output['repair_brand'] = $brand->name;
+                }
             }
         }
+
+        $output['design'] = $il->design;
+        $output['table_tax_headings'] = !empty($il->table_tax_headings) ? array_filter(json_decode($il->table_tax_headings), 'strlen') : null;
+        return (object)$output;
     }
-
-    if (!empty($il->module_info['repair']['show_repair_checklist'])) {
-        $output['repair_checklist_label'] = $il->module_info['repair']['repair_checklist_label'];
-        $output['checked_repair_checklist'] = $transaction->repair_checklist;
-
-        $checklists = [];
-        if (!empty($transaction->repair_model_id)) {
-            $model = \Modules\Repair\Entities\DeviceModel::find($transaction->repair_model_id);
-
-            if (!empty($model) && !empty($model->repair_checklist)) {
-                $checklists = explode('|', $model->repair_checklist);
-            }
-        }
-
-        $output['repair_checklist'] = $checklists;
-    }
-
-    if (!empty($il->module_info['repair']['show_device'])) {
-        $output['device_label'] = $il->module_info['repair']['device_label'];
-        $device = \App\Category::find($transaction->repair_device_id);
-
-        $output['repair_device'] = '';
-        if (!empty($device)) {
-            $output['repair_device'] = $device->name;
-        }
-    }
-
-    if (!empty($il->module_info['repair']['show_brand'])) {
-        $output['brand_label'] = $il->module_info['repair']['brand_label'];
-        $brand = \App\Brands::find($transaction->repair_brand_id);
-        $output['repair_brand'] = '';
-        if (!empty($brand)) {
-            $output['repair_brand'] = $brand->name;
-        }
-    }
-}
-
-$output['design'] = $il->design;
-$output['table_tax_headings'] = !empty($il->table_tax_headings) ? array_filter(json_decode($il->table_tax_headings), 'strlen') : null;
-return (object)$output;
-}
 
     /**
      * Returns each line details for sell invoice display
@@ -1481,7 +1493,7 @@ return (object)$output;
         $product_custom_fields_settings = !empty($il->product_custom_fields) ? $il->product_custom_fields : [];
 
         $is_warranty_enabled = !empty($business_details->common_settings['enable_product_warranty']) ? true : false;
-        
+
         foreach ($lines as $line) {
             $product = $line->product;
             $variation = $line->variations;
@@ -1524,7 +1536,7 @@ return (object)$output;
             ];
 
             $temp = [];
-            
+
             if (!empty($product->product_custom_field1) && in_array('product_custom_field1', $product_custom_fields_settings)) {
                 $temp[] = $product->product_custom_field1;
             }
@@ -1573,7 +1585,7 @@ return (object)$output;
                 $line_array['brand'] = !empty($brand->name) ? $brand->name : '';
             }
             if ($il->show_sku == 1) {
-                $line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '' ;
+                $line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '';
             }
             if ($il->show_image == 1) {
                 $media = $variation->media;
@@ -1639,9 +1651,9 @@ return (object)$output;
                         //Fields for 4th column
                         'line_total' => $this->num_f($modifier_line->unit_price_inc_tax * $line->quantity, false, $business_details),
                     ];
-                    
+
                     if ($il->show_sku == 1) {
-                        $modifier_line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '' ;
+                        $modifier_line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '';
                     }
                     if ($il->show_cat_code == 1) {
                         $modifier_line_array['cat_code'] = !empty($cat->short_code) ? $cat->short_code : '';
@@ -1714,7 +1726,7 @@ return (object)$output;
 
                 'unit_price' => $this->num_f($line->unit_price, false, $business_details),
                 'tax' => $this->num_f($line->item_tax, false, $business_details),
-                'tax_name' => !empty($tax_details) ? $tax_details->name: null,
+                'tax_name' => !empty($tax_details) ? $tax_details->name : null,
 
                 //Field for 3rd column
                 'unit_price_inc_tax' => $this->num_f($line->unit_price_inc_tax, false, $business_details),
@@ -1752,7 +1764,7 @@ return (object)$output;
                 $line_array['brand'] = !empty($brand->name) ? $brand->name : '';
             }
             if ($il->show_sku == 1) {
-                $line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '' ;
+                $line_array['sub_sku'] = !empty($variation->sub_sku) ? $variation->sub_sku : '';
             }
             if ($il->show_cat_code == 1) {
                 $line_array['cat_code'] = !empty($cat->short_code) ? $cat->short_code : '';
@@ -1792,9 +1804,9 @@ return (object)$output;
                 $scheme = $this->getInvoiceScheme($business_id, $location_id);
             } else {
                 $scheme = InvoiceScheme::where('business_id', $business_id)
-                ->find($invoice_scheme_id);
+                    ->find($invoice_scheme_id);
             }
-            
+
             if ($scheme->scheme_type == 'blank') {
                 $prefix = $scheme->prefix;
             } else {
@@ -1821,9 +1833,9 @@ return (object)$output;
     private function getInvoiceScheme($business_id, $location_id)
     {
         $scheme_id = BusinessLocation::where('business_id', $business_id)
-        ->where('id', $location_id)
-        ->first()
-        ->invoice_scheme_id;
+            ->where('id', $location_id)
+            ->first()
+            ->invoice_scheme_id;
         if (!empty($scheme_id) && $scheme_id != 0) {
             $scheme = InvoiceScheme::find($scheme_id);
         }
@@ -1831,8 +1843,8 @@ return (object)$output;
         //Check if scheme is not found then return default scheme
         if (empty($scheme)) {
             $scheme = InvoiceScheme::where('business_id', $business_id)
-            ->where('is_default', 1)
-            ->first();
+                ->where('is_default', 1)
+                ->first();
         }
 
         return $scheme;
@@ -1849,13 +1861,13 @@ return (object)$output;
     public function getPurchaseProducts($business_id, $transaction_id)
     {
         $products = Transaction::join('purchase_lines as pl', 'transactions.id', '=', 'pl.transaction_id')
-        ->leftjoin('products as p', 'pl.product_id', '=', 'p.id')
-        ->leftjoin('variations as v', 'pl.variation_id', '=', 'v.id')
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.id', $transaction_id)
-        ->where('transactions.type', 'purchase')
-        ->select('p.id as product_id', 'p.name as product_name', 'v.id as variation_id', 'v.name as variation_name', 'pl.quantity as quantity')
-        ->get();
+            ->leftjoin('products as p', 'pl.product_id', '=', 'p.id')
+            ->leftjoin('variations as v', 'pl.variation_id', '=', 'v.id')
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.id', $transaction_id)
+            ->where('transactions.type', 'purchase')
+            ->select('p.id as product_id', 'p.name as product_name', 'v.id as variation_id', 'v.name as variation_name', 'pl.quantity as quantity')
+            ->get();
         return $products;
     }
 
@@ -1870,16 +1882,16 @@ return (object)$output;
     public function getPurchaseTotals($business_id, $start_date = null, $end_date = null, $location_id = null)
     {
         $query = Transaction::where('business_id', $business_id)
-        ->where('type', 'purchase')
-        ->select(
-            'final_total',
-            DB::raw("(final_total - tax_amount) as total_exc_tax"),
-            DB::raw("SUM((SELECT SUM(tp.amount) FROM transaction_payments as tp WHERE tp.transaction_id=transactions.id)) as total_paid"),
-            DB::raw('SUM(total_before_tax) as total_before_tax'),
-            'shipping_charges'
-        )
-        ->groupBy('transactions.id');
-        
+            ->where('type', 'purchase')
+            ->select(
+                'final_total',
+                DB::raw("(final_total - tax_amount) as total_exc_tax"),
+                DB::raw("SUM((SELECT SUM(tp.amount) FROM transaction_payments as tp WHERE tp.transaction_id=transactions.id)) as total_paid"),
+                DB::raw('SUM(total_before_tax) as total_before_tax'),
+                'shipping_charges'
+            )
+            ->groupBy('transactions.id');
+
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
         if ($permitted_locations != 'all') {
@@ -1905,7 +1917,7 @@ return (object)$output;
         //$output['total_purchase_exc_tax'] = $purchase_details->sum('total_exc_tax');
         $output['total_purchase_exc_tax'] = $purchase_details->sum('total_before_tax');
         $output['purchase_due'] = $purchase_details->sum('final_total') -
-        $purchase_details->sum('total_paid');
+            $purchase_details->sum('total_paid');
         $output['total_shipping_charges'] = $purchase_details->sum('shipping_charges');
 
         return $output;
@@ -1922,17 +1934,17 @@ return (object)$output;
     public function getSellTotals($business_id, $start_date = null, $end_date = null, $location_id = null, $created_by = null)
     {
         $query = Transaction::where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', 'final')
-        ->select(
-            'transactions.id',
-            'final_total',
-            DB::raw("(final_total - tax_amount) as total_exc_tax"),
-            DB::raw('(SELECT SUM(IF(tp.is_return = 1, -1*tp.amount, tp.amount)) FROM transaction_payments as tp WHERE tp.transaction_id = transactions.id) as total_paid'),
-            DB::raw('SUM(total_before_tax) as total_before_tax'),
-            'shipping_charges'
-        )
-        ->groupBy('transactions.id');
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', 'final')
+            ->select(
+                'transactions.id',
+                'final_total',
+                DB::raw("(final_total - tax_amount) as total_exc_tax"),
+                DB::raw('(SELECT SUM(IF(tp.is_return = 1, -1*tp.amount, tp.amount)) FROM transaction_payments as tp WHERE tp.transaction_id = transactions.id) as total_paid'),
+                DB::raw('SUM(total_before_tax) as total_before_tax'),
+                'shipping_charges'
+            )
+            ->groupBy('transactions.id');
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -1981,28 +1993,28 @@ return (object)$output;
     {
         //Calculate purchase taxes
         $query1 = Transaction::where('transactions.business_id', $business_id)
-        ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
-        ->whereIn('type', ['purchase', 'purchase_return'])
-        ->whereNotNull('transactions.tax_id')
-        ->select(
-            DB::raw("SUM( IF(type='purchase', transactions.tax_amount, -1 * transactions.tax_amount) ) as transaction_tax"),
-            'T.name as tax_name',
-            'T.id as tax_id',
-            'T.is_tax_group'
-        );
+            ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
+            ->whereIn('type', ['purchase', 'purchase_return'])
+            ->whereNotNull('transactions.tax_id')
+            ->select(
+                DB::raw("SUM( IF(type='purchase', transactions.tax_amount, -1 * transactions.tax_amount) ) as transaction_tax"),
+                'T.name as tax_name',
+                'T.id as tax_id',
+                'T.is_tax_group'
+            );
 
         //Calculate purchase line taxes
         $query2 = Transaction::where('transactions.business_id', $business_id)
-        ->leftjoin('purchase_lines as pl', 'transactions.id', '=', 'pl.transaction_id')
-        ->leftjoin('tax_rates as T', 'pl.tax_id', '=', 'T.id')
-        ->where('type', 'purchase')
-        ->whereNotNull('pl.tax_id')
-        ->select(
-            DB::raw("SUM( (pl.quantity - pl.quantity_returned) * pl.item_tax ) as product_tax"),
-            'T.name as tax_name',
-            'T.id as tax_id',
-            'T.is_tax_group'
-        );
+            ->leftjoin('purchase_lines as pl', 'transactions.id', '=', 'pl.transaction_id')
+            ->leftjoin('tax_rates as T', 'pl.tax_id', '=', 'T.id')
+            ->where('type', 'purchase')
+            ->whereNotNull('pl.tax_id')
+            ->select(
+                DB::raw("SUM( (pl.quantity - pl.quantity_returned) * pl.item_tax ) as product_tax"),
+                'T.name as tax_name',
+                'T.id as tax_id',
+                'T.is_tax_group'
+            );
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -2022,10 +2034,10 @@ return (object)$output;
         }
 
         $transaction_tax_details = $query1->groupBy('T.id')
-        ->get();
+            ->get();
 
         $product_tax_details = $query2->groupBy('T.id')
-        ->get();
+            ->get();
         $tax_details = [];
         foreach ($transaction_tax_details as $transaction_tax) {
             $tax_details[$transaction_tax->tax_id]['tax_name'] = $transaction_tax->tax_name;
@@ -2077,30 +2089,30 @@ return (object)$output;
     {
         //Calculate sell taxes
         $query1 = Transaction::where('transactions.business_id', $business_id)
-        ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
-        ->whereIn('type', ['sell', 'sell_return'])
-        ->whereNotNull('transactions.tax_id')
-        ->where('transactions.status', '=', 'final')
-        ->select(
-            DB::raw("SUM( IF(type='sell', transactions.tax_amount, -1 * transactions.tax_amount) ) as transaction_tax"),
-            'T.name as tax_name',
-            'T.id as tax_id',
-            'T.is_tax_group'
-        );
+            ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
+            ->whereIn('type', ['sell', 'sell_return'])
+            ->whereNotNull('transactions.tax_id')
+            ->where('transactions.status', '=', 'final')
+            ->select(
+                DB::raw("SUM( IF(type='sell', transactions.tax_amount, -1 * transactions.tax_amount) ) as transaction_tax"),
+                'T.name as tax_name',
+                'T.id as tax_id',
+                'T.is_tax_group'
+            );
 
         //Calculate sell line taxes
         $query2 = Transaction::where('transactions.business_id', $business_id)
-        ->leftjoin('transaction_sell_lines as tsl', 'transactions.id', '=', 'tsl.transaction_id')
-        ->leftjoin('tax_rates as T', 'tsl.tax_id', '=', 'T.id')
-        ->where('type', 'sell')
-        ->whereNotNull('tsl.tax_id')
-        ->where('transactions.status', '=', 'final')
-        ->select(
-            DB::raw("SUM( (tsl.quantity - tsl.quantity_returned) * tsl.item_tax ) as product_tax"),
-            'T.name as tax_name',
-            'T.id as tax_id',
-            'T.is_tax_group'
-        );
+            ->leftjoin('transaction_sell_lines as tsl', 'transactions.id', '=', 'tsl.transaction_id')
+            ->leftjoin('tax_rates as T', 'tsl.tax_id', '=', 'T.id')
+            ->where('type', 'sell')
+            ->whereNotNull('tsl.tax_id')
+            ->where('transactions.status', '=', 'final')
+            ->select(
+                DB::raw("SUM( (tsl.quantity - tsl.quantity_returned) * tsl.item_tax ) as product_tax"),
+                'T.name as tax_name',
+                'T.id as tax_id',
+                'T.is_tax_group'
+            );
 
         ///Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -2120,10 +2132,10 @@ return (object)$output;
         }
 
         $transaction_tax_details = $query1->groupBy('T.id')
-        ->get();
+            ->get();
 
         $product_tax_details = $query2->groupBy('T.id')
-        ->get();
+            ->get();
         $tax_details = [];
         foreach ($transaction_tax_details as $transaction_tax) {
             $tax_details[$transaction_tax->tax_id]['tax_name'] = $transaction_tax->tax_name;
@@ -2175,15 +2187,15 @@ return (object)$output;
     {
         //Calculate expense taxes
         $query = Transaction::where('transactions.business_id', $business_id)
-        ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
-        ->where('type', 'expense')
-        ->whereNotNull('transactions.tax_id')
-        ->select(
-            DB::raw("SUM(transactions.tax_amount) as transaction_tax"),
-            'T.name as tax_name',
-            'T.id as tax_id',
-            'T.is_tax_group'
-        );
+            ->leftjoin('tax_rates as T', 'transactions.tax_id', '=', 'T.id')
+            ->where('type', 'expense')
+            ->whereNotNull('transactions.tax_id')
+            ->select(
+                DB::raw("SUM(transactions.tax_amount) as transaction_tax"),
+                'T.name as tax_name',
+                'T.id as tax_id',
+                'T.is_tax_group'
+            );
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -2200,7 +2212,7 @@ return (object)$output;
         }
 
         $transaction_tax_details = $query->groupBy('T.id')
-        ->get();
+            ->get();
 
         $tax_details = [];
         foreach ($transaction_tax_details as $transaction_tax) {
@@ -2227,23 +2239,23 @@ return (object)$output;
     }
 
     /**
-    * Gives total sells of last 30 days day-wise
-    *
-    * @param int $business_id
-    * @param array $filters
-    *
-    * @return Obj
-    */
+     * Gives total sells of last 30 days day-wise
+     *
+     * @param int $business_id
+     * @param array $filters
+     *
+     * @return Obj
+     */
     public function getSellsLast30Days($business_id, $group_by_location = false)
     {
         $query = Transaction::leftjoin('transactions as SR', function ($join) {
             $join->on('SR.return_parent_id', '=', 'transactions.id')
-            ->where('SR.type', 'sell_return');
+                ->where('SR.type', 'sell_return');
         })
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', 'final')
-        ->whereBetween(DB::raw('date(transactions.transaction_date)'), [\Carbon::now()->subDays(30), \Carbon::now()]);
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', 'final')
+            ->whereBetween(DB::raw('date(transactions.transaction_date)'), [\Carbon::now()->subDays(30), \Carbon::now()]);
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -2255,7 +2267,7 @@ return (object)$output;
             DB::raw("DATE_FORMAT(transactions.transaction_date, '%Y-%m-%d') as date"),
             DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0) ) as total_sells")
         )
-        ->groupBy(DB::raw('Date(transactions.transaction_date)'));
+            ->groupBy(DB::raw('Date(transactions.transaction_date)'));
 
         if ($group_by_location) {
             $query->addSelect('transactions.location_id');
@@ -2271,36 +2283,36 @@ return (object)$output;
     }
 
     /**
-    * Gives total sells of current FY month-wise
-    *
-    * @param int $business_id
-    * @param string $start
-    * @param string $end
-    *
-    * @return Obj
-    */
+     * Gives total sells of current FY month-wise
+     *
+     * @param int $business_id
+     * @param string $start
+     * @param string $end
+     *
+     * @return Obj
+     */
     public function getSellsCurrentFy($business_id, $start, $end, $group_by_location = false)
     {
         $query = Transaction::leftjoin('transactions as SR', function ($join) {
             $join->on('SR.return_parent_id', '=', 'transactions.id')
-            ->where('SR.type', 'sell_return');
+                ->where('SR.type', 'sell_return');
         })
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', 'final')
-        ->whereBetween(DB::raw('date(transactions.transaction_date)'), [$start, $end]);
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', 'final')
+            ->whereBetween(DB::raw('date(transactions.transaction_date)'), [$start, $end]);
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
-        
+
         $query->groupBy(DB::raw("DATE_FORMAT(transactions.transaction_date, '%Y-%m')"))
-        ->select(
-            DB::raw("DATE_FORMAT(transactions.transaction_date, '%m-%Y') as yearmonth"),
-            DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0)) as total_sells")
-        );
+            ->select(
+                DB::raw("DATE_FORMAT(transactions.transaction_date, '%m-%Y') as yearmonth"),
+                DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0)) as total_sells")
+            );
         if ($group_by_location) {
             $query->addSelect('transactions.location_id');
             $query->groupBy('transactions.location_id');
@@ -2310,7 +2322,7 @@ return (object)$output;
         if (!$group_by_location) {
             $sells = $sells->pluck('total_sells', 'yearmonth');
         }
-        
+
         return $sells;
     }
 
@@ -2329,8 +2341,8 @@ return (object)$output;
         $type = 'by_category'
     ) {
         $query = Transaction::leftjoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
-        ->where('transactions.business_id', $business_id)
-        ->where('type', 'expense');
+            ->where('transactions.business_id', $business_id)
+            ->where('type', 'expense');
         // ->where('payment_status', 'paid');
 
         $permitted_locations = auth()->user()->permitted_locations();
@@ -2351,8 +2363,10 @@ return (object)$output;
         }
 
         if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-            $query->whereBetween(DB::raw('date(transaction_date)'), [$filters['start_date'],
-                $filters['end_date']]);
+            $query->whereBetween(DB::raw('date(transaction_date)'), [
+                $filters['start_date'],
+                $filters['end_date']
+            ]);
         }
 
         //Check tht type of report and return data accordingly
@@ -2361,15 +2375,15 @@ return (object)$output;
                 DB::raw("SUM( final_total ) as total_expense"),
                 'ec.name as category'
             )
-            ->groupBy('expense_category_id')
-            ->get();
+                ->groupBy('expense_category_id')
+                ->get();
         } elseif ($type == 'total') {
             $expenses = $query->select(
                 DB::raw("SUM( final_total ) as total_expense")
             )
-            ->first();
+                ->first();
         }
-        
+
         return $expenses;
     }
 
@@ -2383,9 +2397,9 @@ return (object)$output;
     public function getTotalPaid($transaction_id)
     {
         $total_paid = TransactionPayment::where('transaction_id', $transaction_id)
-        ->select(DB::raw('SUM(IF( is_return = 0, amount, amount*-1))as total_paid'))
-        ->first()
-        ->total_paid;
+            ->select(DB::raw('SUM(IF( is_return = 0, amount, amount*-1))as total_paid'))
+            ->first()
+            ->total_paid;
 
         return $total_paid;
     }
@@ -2428,7 +2442,7 @@ return (object)$output;
     {
         $status = $this->calculatePaymentStatus($transaction_id, $final_amount);
         Transaction::where('id', $transaction_id)
-        ->update(['payment_status' => $status]);
+            ->update(['payment_status' => $status]);
 
         return $status;
     }
@@ -2443,34 +2457,35 @@ return (object)$output;
     public function purchaseCurrencyDetails($business_id)
     {
         $business = Business::find($business_id);
-        $output = ['purchase_in_diff_currency' => false,
-        'p_exchange_rate' => 1,
-        'decimal_seperator' => '.',
-        'thousand_seperator' => ',',
-        'symbol' => '',
-    ];
+        $output = [
+            'purchase_in_diff_currency' => false,
+            'p_exchange_rate' => 1,
+            'decimal_seperator' => '.',
+            'thousand_seperator' => ',',
+            'symbol' => '',
+        ];
 
         //Check if diff currency is used or not.
-    if ($business->purchase_in_diff_currency == 1) {
-        $output['purchase_in_diff_currency'] = true;
-        $output['p_exchange_rate'] = $business->p_exchange_rate;
+        if ($business->purchase_in_diff_currency == 1) {
+            $output['purchase_in_diff_currency'] = true;
+            $output['p_exchange_rate'] = $business->p_exchange_rate;
 
-        $currency_id = $business->purchase_currency_id;
-    } else {
-        $output['purchase_in_diff_currency'] = false;
-        $output['p_exchange_rate'] = 1;
-        $currency_id = $business->currency_id;
+            $currency_id = $business->purchase_currency_id;
+        } else {
+            $output['purchase_in_diff_currency'] = false;
+            $output['p_exchange_rate'] = 1;
+            $currency_id = $business->currency_id;
+        }
+
+        $currency = Currency::find($currency_id);
+        $output['thousand_separator'] = $currency->thousand_separator;
+        $output['decimal_separator'] = $currency->decimal_separator;
+        $output['symbol'] = $currency->symbol;
+        $output['code'] = $currency->code;
+        $output['name'] = $currency->currency;
+
+        return (object)$output;
     }
-
-    $currency = Currency::find($currency_id);
-    $output['thousand_separator'] = $currency->thousand_separator;
-    $output['decimal_separator'] = $currency->decimal_separator;
-    $output['symbol'] = $currency->symbol;
-    $output['code'] = $currency->code;
-    $output['name'] = $currency->currency;
-
-    return (object)$output;
-}
 
     /**
      * Pay contact due at once
@@ -2484,16 +2499,16 @@ return (object)$output;
 
         //Get all unpaid transaction for the contact
         $types = ['opening_balance', $type];
-        
+
         if ($type == 'purchase_return') {
             $types = [$type];
         }
 
         $due_transactions = Transaction::where('contact_id', $parent_payment->payment_for)
-        ->whereIn('type', $types)
-        ->where('payment_status', '!=', 'paid')
-        ->orderBy('transaction_date', 'asc')
-        ->get();
+            ->whereIn('type', $types)
+            ->where('payment_status', '!=', 'paid')
+            ->orderBy('transaction_date', 'asc')
+            ->get();
         $total_amount = $parent_payment->amount;
 
         $tranaction_payments = [];
@@ -2588,7 +2603,7 @@ return (object)$output;
         }
 
         $allow_overselling = !empty($business['pos_settings']['allow_overselling']) ?
-        true : false;
+            true : false;
 
         //Set flag to check for expired items during SELLING only.
         $stop_selling_expired = false;
@@ -2609,17 +2624,21 @@ return (object)$output;
             }
 
             $qty_sum_query = $this->get_pl_quantity_sum_string('PL');
-            
+
             //Get purchase lines, only for products with enable stock.
             $query = Transaction::join('purchase_lines AS PL', 'transactions.id', '=', 'PL.transaction_id')
-            ->where('transactions.business_id', $business['id'])
-            ->where('transactions.location_id', $business['location_id'])
-            ->whereIn('transactions.type', ['purchase', 'purchase_transfer',
-                'opening_stock', 'production_purchase'])
-            ->where('transactions.status', 'received')
-            ->whereRaw("( $qty_sum_query ) < PL.quantity")
-            ->where('PL.product_id', $line->product_id)
-            ->where('PL.variation_id', $line->variation_id);
+                ->where('transactions.business_id', $business['id'])
+                ->where('transactions.location_id', $business['location_id'])
+                ->whereIn('transactions.type', [
+                    'purchase',
+                    'purchase_transfer',
+                    'opening_stock',
+                    'production_purchase'
+                ])
+                ->where('transactions.status', 'received')
+                ->whereRaw("( $qty_sum_query ) < PL.quantity")
+                ->where('PL.product_id', $line->product_id)
+                ->where('PL.variation_id', $line->variation_id);
 
             //If product expiry is enabled then check for on expiry conditions
             if ($stop_selling_expired && empty($purchase_line_id)) {
@@ -2675,104 +2694,108 @@ return (object)$output;
                 if ($mapping_type == 'stock_adjustment') {
                     //Mapping of stock adjustment
                     $purchase_adjustment_map[] =
-                    ['stock_adjustment_line_id' => $line->id,
-                    'purchase_line_id' => $row->purchase_lines_id,
-                    'quantity' => $qty_allocated,
-                    'created_at' => \Carbon::now(),
-                    'updated_at' => \Carbon::now()
-                ];
+                        [
+                            'stock_adjustment_line_id' => $line->id,
+                            'purchase_line_id' => $row->purchase_lines_id,
+                            'quantity' => $qty_allocated,
+                            'created_at' => \Carbon::now(),
+                            'updated_at' => \Carbon::now()
+                        ];
 
                     //Update purchase line
-                PurchaseLine::where('id', $row->purchase_lines_id)
-                ->update(['quantity_adjusted' => $row->quantity_adjusted + $qty_allocated]);
-            } elseif ($mapping_type == 'purchase') {
+                    PurchaseLine::where('id', $row->purchase_lines_id)
+                        ->update(['quantity_adjusted' => $row->quantity_adjusted + $qty_allocated]);
+                } elseif ($mapping_type == 'purchase') {
                     //Mapping of purchase
-                $purchase_sell_map[] = ['sell_line_id' => $line->id,
-                'purchase_line_id' => $row->purchase_lines_id,
-                'quantity' => $qty_allocated,
-                'created_at' => \Carbon::now(),
-                'updated_at' => \Carbon::now()
-            ];
+                    $purchase_sell_map[] = [
+                        'sell_line_id' => $line->id,
+                        'purchase_line_id' => $row->purchase_lines_id,
+                        'quantity' => $qty_allocated,
+                        'created_at' => \Carbon::now(),
+                        'updated_at' => \Carbon::now()
+                    ];
 
                     //Update purchase line
-            PurchaseLine::where('id', $row->purchase_lines_id)
-            ->update(['quantity_sold' => $row->quantity_sold + $qty_allocated]);
-        } elseif ($mapping_type == 'production_purchase') {
+                    PurchaseLine::where('id', $row->purchase_lines_id)
+                        ->update(['quantity_sold' => $row->quantity_sold + $qty_allocated]);
+                } elseif ($mapping_type == 'production_purchase') {
                     //Mapping of purchase
-            $purchase_sell_map[] = ['sell_line_id' => $line->id,
-            'purchase_line_id' => $row->purchase_lines_id,
-            'quantity' => $qty_allocated,
-            'created_at' => \Carbon::now(),
-            'updated_at' => \Carbon::now()
-        ];
+                    $purchase_sell_map[] = [
+                        'sell_line_id' => $line->id,
+                        'purchase_line_id' => $row->purchase_lines_id,
+                        'quantity' => $qty_allocated,
+                        'created_at' => \Carbon::now(),
+                        'updated_at' => \Carbon::now()
+                    ];
 
                     //Update purchase line
-        PurchaseLine::where('id', $row->purchase_lines_id)
-        ->update(['mfg_quantity_used' => $row->mfg_quantity_used + $qty_allocated]);
-    }
+                    PurchaseLine::where('id', $row->purchase_lines_id)
+                        ->update(['mfg_quantity_used' => $row->mfg_quantity_used + $qty_allocated]);
+                }
 
-    if ($qty_selling == 0) {
-        break;
-    }
-}
-
-if (! ($qty_selling == 0 || is_null($qty_selling))) {
-                //If overselling not allowed through exception else create mapping with blank purchase_line_id
-    if (!$allow_overselling) {
-        $variation = Variation::find($line->variation_id);
-        $mismatch_name = $product->name;
-        if (!empty($variation->sub_sku)) {
-            $mismatch_name .= ' ' . 'SKU: ' . $variation->sub_sku;
-        }
-        if (!empty($qty_selling)) {
-            $mismatch_name .= ' ' . 'Quantity: ' . abs($qty_selling);
-        }
-
-        if ($mapping_type == 'purchase') {
-            $mismatch_error = trans(
-                "messages.purchase_sell_mismatch_exception",
-                ['product' => $mismatch_name]
-            );
-
-            if ($stop_selling_expired) {
-                $mismatch_error .= __('lang_v1.available_stock_expired');
+                if ($qty_selling == 0) {
+                    break;
+                }
             }
-        } elseif ($mapping_type == 'stock_adjustment') {
-            $mismatch_error = trans(
-                "messages.purchase_stock_adjustment_mismatch_exception",
-                ['product' => $mismatch_name]
-            );
-        } else {
-            $mismatch_error = trans(
-                "lang_v1.quantity_mismatch_exception",
-                ['product' => $mismatch_name]
-            );
-        }
 
-        $business_name = optional(Business::find($business['id']))->name;
-        $location_name = optional(BusinessLocation::find($business['location_id']))->name;
-        \Log::emergency($mismatch_error . ' Business: ' . $business_name . ' Location: ' . $location_name);
-        throw new PurchaseSellMismatch($mismatch_error);
-    } else {
+            if (! ($qty_selling == 0 || is_null($qty_selling))) {
+                //If overselling not allowed through exception else create mapping with blank purchase_line_id
+                if (!$allow_overselling) {
+                    $variation = Variation::find($line->variation_id);
+                    $mismatch_name = $product->name;
+                    if (!empty($variation->sub_sku)) {
+                        $mismatch_name .= ' ' . 'SKU: ' . $variation->sub_sku;
+                    }
+                    if (!empty($qty_selling)) {
+                        $mismatch_name .= ' ' . 'Quantity: ' . abs($qty_selling);
+                    }
+
+                    if ($mapping_type == 'purchase') {
+                        $mismatch_error = trans(
+                            "messages.purchase_sell_mismatch_exception",
+                            ['product' => $mismatch_name]
+                        );
+
+                        if ($stop_selling_expired) {
+                            $mismatch_error .= __('lang_v1.available_stock_expired');
+                        }
+                    } elseif ($mapping_type == 'stock_adjustment') {
+                        $mismatch_error = trans(
+                            "messages.purchase_stock_adjustment_mismatch_exception",
+                            ['product' => $mismatch_name]
+                        );
+                    } else {
+                        $mismatch_error = trans(
+                            "lang_v1.quantity_mismatch_exception",
+                            ['product' => $mismatch_name]
+                        );
+                    }
+
+                    $business_name = optional(Business::find($business['id']))->name;
+                    $location_name = optional(BusinessLocation::find($business['location_id']))->name;
+                    \Log::emergency($mismatch_error . ' Business: ' . $business_name . ' Location: ' . $location_name);
+                    throw new PurchaseSellMismatch($mismatch_error);
+                } else {
                     //Mapping with no purchase line
-        $purchase_sell_map[] = ['sell_line_id' => $line->id,
-        'purchase_line_id' => 0,
-        'quantity' => $qty_selling,
-        'created_at' => \Carbon::now(),
-        'updated_at' => \Carbon::now()
-    ];
-}
-}
+                    $purchase_sell_map[] = [
+                        'sell_line_id' => $line->id,
+                        'purchase_line_id' => 0,
+                        'quantity' => $qty_selling,
+                        'created_at' => \Carbon::now(),
+                        'updated_at' => \Carbon::now()
+                    ];
+                }
+            }
 
             //Insert the mapping
-if (!empty($purchase_adjustment_map)) {
-    TransactionSellLinesPurchaseLines::insert($purchase_adjustment_map);
-}
-if (!empty($purchase_sell_map)) {
-    TransactionSellLinesPurchaseLines::insert($purchase_sell_map);
-}
-}
-}
+            if (!empty($purchase_adjustment_map)) {
+                TransactionSellLinesPurchaseLines::insert($purchase_adjustment_map);
+            }
+            if (!empty($purchase_sell_map)) {
+                TransactionSellLinesPurchaseLines::insert($purchase_sell_map);
+            }
+        }
+    }
 
     /**
      * F => D (Delete all mapping lines, decrease the qty sold.)
@@ -2795,18 +2818,18 @@ if (!empty($purchase_sell_map)) {
         if ($status_before == 'final' && $transaction->status == 'draft') {
             //Get sell lines used for the transaction.
             $sell_purchases = Transaction::join('transaction_sell_lines AS SL', 'transactions.id', '=', 'SL.transaction_id')
-            ->join('transaction_sell_lines_purchase_lines as TSP', 'SL.id', '=', 'TSP.sell_line_id')
-            ->where('transactions.id', $transaction->id)
-            ->select('TSP.purchase_line_id', 'TSP.quantity', 'TSP.id')
-            ->get()
-            ->toArray();
+                ->join('transaction_sell_lines_purchase_lines as TSP', 'SL.id', '=', 'TSP.sell_line_id')
+                ->where('transactions.id', $transaction->id)
+                ->select('TSP.purchase_line_id', 'TSP.quantity', 'TSP.id')
+                ->get()
+                ->toArray();
 
             //Included the deleted sell lines
             if (!empty($deleted_line_ids)) {
                 $deleted_sell_purchases = TransactionSellLinesPurchaseLines::whereIn('sell_line_id', $deleted_line_ids)
-                ->select('purchase_line_id', 'quantity', 'id')
-                ->get()
-                ->toArray();
+                    ->select('purchase_line_id', 'quantity', 'id')
+                    ->get()
+                    ->toArray();
 
                 $sell_purchases = $sell_purchases + $deleted_sell_purchases;
             }
@@ -2817,14 +2840,14 @@ if (!empty($purchase_sell_map)) {
                 //Decrease the quantity sold of products
                 foreach ($sell_purchases as $row) {
                     PurchaseLine::where('id', $row['purchase_line_id'])
-                    ->decrement('quantity_sold', $row['quantity']);
+                        ->decrement('quantity_sold', $row['quantity']);
 
                     $sell_purchase_ids[] = $row['id'];
                 }
 
                 //Delete the lines.
                 TransactionSellLinesPurchaseLines::whereIn('id', $sell_purchase_ids)
-                ->delete();
+                    ->delete();
             }
         } elseif ($status_before == 'draft' && $transaction->status == 'final') {
             $this->mapPurchaseSell($business, $transaction->sell_lines, 'purchase');
@@ -2832,8 +2855,8 @@ if (!empty($purchase_sell_map)) {
             //Handle deleted line
             if (!empty($deleted_line_ids)) {
                 $deleted_sell_purchases = TransactionSellLinesPurchaseLines::whereIn('sell_line_id', $deleted_line_ids)
-                ->select('sell_line_id', 'quantity')
-                ->get();
+                    ->select('sell_line_id', 'quantity')
+                    ->get();
                 if (!empty($deleted_sell_purchases)) {
                     foreach ($deleted_sell_purchases as $value) {
                         $this->mapDecrementPurchaseQuantity($value->sell_line_id, $value->quantity);
@@ -2843,15 +2866,15 @@ if (!empty($purchase_sell_map)) {
 
             //Check for update quantity, new added rows, deleted rows.
             $sell_purchases = Transaction::join('transaction_sell_lines AS SL', 'transactions.id', '=', 'SL.transaction_id')
-            ->leftjoin('transaction_sell_lines_purchase_lines as TSP', 'SL.id', '=', 'TSP.sell_line_id')
-            ->where('transactions.id', $transaction->id)
-            ->select(
-                'TSP.purchase_line_id',
-                'TSP.quantity AS tsp_quantity',
-                'TSP.id as tsp_id',
-                'SL.*'
-            )
-            ->get();
+                ->leftjoin('transaction_sell_lines_purchase_lines as TSP', 'SL.id', '=', 'TSP.sell_line_id')
+                ->where('transactions.id', $transaction->id)
+                ->select(
+                    'TSP.purchase_line_id',
+                    'TSP.quantity AS tsp_quantity',
+                    'TSP.id as tsp_id',
+                    'SL.*'
+                )
+                ->get();
 
             $deleted_sell_lines = [];
             $new_sell_lines = [];
@@ -2869,8 +2892,8 @@ if (!empty($purchase_sell_map)) {
                     $processed_sell_lines[] = $line->purchase_line_id;
 
                     $total_sold_entry = TransactionSellLinesPurchaseLines::where('sell_line_id', $line->id)
-                    ->select(DB::raw('SUM(quantity) AS quantity'))
-                    ->first();
+                        ->select(DB::raw('SUM(quantity) AS quantity'))
+                        ->first();
 
                     if ($total_sold_entry->quantity != $line->quantity) {
                         if ($line->quantity > $total_sold_entry->quantity) {
@@ -2905,22 +2928,21 @@ if (!empty($purchase_sell_map)) {
      */
     private function mapDecrementPurchaseQuantity($sell_line_id, $decrement_qty)
     {
-        $sell_purchase_line = TransactionSellLinesPurchaseLines::
-        where('sell_line_id', $sell_line_id)
-        ->orderBy('id', 'desc')
-        ->get();
+        $sell_purchase_line = TransactionSellLinesPurchaseLines::where('sell_line_id', $sell_line_id)
+            ->orderBy('id', 'desc')
+            ->get();
 
         foreach ($sell_purchase_line as $row) {
             if ($row->quantity > $decrement_qty) {
                 PurchaseLine::where('id', $row->purchase_line_id)
-                ->decrement('quantity_sold', $decrement_qty);
+                    ->decrement('quantity_sold', $decrement_qty);
 
                 $row->quantity = $row->quantity - $decrement_qty;
                 $row->save();
                 $decrement_qty = 0;
             } else {
                 PurchaseLine::where('id', $row->purchase_line_id)
-                ->decrement('quantity_sold', $decrement_qty);
+                    ->decrement('quantity_sold', $decrement_qty);
                 $row->delete();
             }
 
@@ -2947,17 +2969,17 @@ if (!empty($purchase_sell_map)) {
         }
 
         $map_line = TransactionSellLinesPurchaseLines::whereIn('stock_adjustment_line_id', $line_ids)
-        ->orderBy('id', 'desc')
-        ->get();
+            ->orderBy('id', 'desc')
+            ->get();
 
         foreach ($map_line as $row) {
             PurchaseLine::where('id', $row->purchase_line_id)
-            ->decrement('quantity_adjusted', $row->quantity);
+                ->decrement('quantity_adjusted', $row->quantity);
         }
 
         //Delete the tslp line.
         TransactionSellLinesPurchaseLines::whereIn('stock_adjustment_line_id', $line_ids)
-        ->delete();
+            ->delete();
 
         return true;
     }
@@ -2984,21 +3006,22 @@ if (!empty($purchase_sell_map)) {
                 '=',
                 'PL.transaction_id'
             )
-            ->join(
-                'transaction_sell_lines_purchase_lines AS TSPL',
-                'PL.id',
-                '=',
-                'TSPL.purchase_line_id'
-            )
-            ->groupBy('TSPL.purchase_line_id')
-            ->where('transactions.id', $transaction->id)
-            ->havingRaw('SUM(TSPL.quantity) > MAX(PL.quantity)')
-            ->select(['TSPL.purchase_line_id AS id',
-                DB::raw('SUM(TSPL.quantity) AS tspl_quantity'),
-                DB::raw('MAX(PL.quantity) AS pl_quantity')
-            ])
-            ->get()
-            ->toArray();
+                ->join(
+                    'transaction_sell_lines_purchase_lines AS TSPL',
+                    'PL.id',
+                    '=',
+                    'TSPL.purchase_line_id'
+                )
+                ->groupBy('TSPL.purchase_line_id')
+                ->where('transactions.id', $transaction->id)
+                ->havingRaw('SUM(TSPL.quantity) > MAX(PL.quantity)')
+                ->select([
+                    'TSPL.purchase_line_id AS id',
+                    DB::raw('SUM(TSPL.quantity) AS tspl_quantity'),
+                    DB::raw('MAX(PL.quantity) AS pl_quantity')
+                ])
+                ->get()
+                ->toArray();
         } elseif ($before_status == 'received' && $transaction->status != 'received') {
             //Delete sell for those & add new sell or throw error.
             $purchase_lines = Transaction::join(
@@ -3007,19 +3030,20 @@ if (!empty($purchase_sell_map)) {
                 '=',
                 'PL.transaction_id'
             )
-            ->join(
-                'transaction_sell_lines_purchase_lines AS TSPL',
-                'PL.id',
-                '=',
-                'TSPL.purchase_line_id'
-            )
-            ->groupBy('TSPL.purchase_line_id')
-            ->where('transactions.id', $transaction->id)
-            ->select(['TSPL.purchase_line_id AS id',
-                DB::raw('MAX(PL.quantity) AS pl_quantity')
-            ])
-            ->get()
-            ->toArray();
+                ->join(
+                    'transaction_sell_lines_purchase_lines AS TSPL',
+                    'PL.id',
+                    '=',
+                    'TSPL.purchase_line_id'
+                )
+                ->groupBy('TSPL.purchase_line_id')
+                ->where('transactions.id', $transaction->id)
+                ->select([
+                    'TSPL.purchase_line_id AS id',
+                    DB::raw('MAX(PL.quantity) AS pl_quantity')
+                ])
+                ->get()
+                ->toArray();
         } else {
             return true;
         }
@@ -3041,99 +3065,106 @@ if (!empty($purchase_sell_map)) {
 
             //Decrease the quantity from transaction_sell_lines_purchase_lines or delete it if zero
             $tspl = TransactionSellLinesPurchaseLines::where('purchase_line_id', $purchase_line['id'])
-            ->leftjoin(
-                'transaction_sell_lines AS SL',
-                'transaction_sell_lines_purchase_lines.sell_line_id',
-                '=',
-                'SL.id'
-            )
-            ->leftjoin(
-                'stock_adjustment_lines AS SAL',
-                'transaction_sell_lines_purchase_lines.stock_adjustment_line_id',
-                '=',
-                'SAL.id'
-            )
-            ->orderBy('transaction_sell_lines_purchase_lines.id', 'desc')
-            ->select(['SL.product_id AS sell_product_id',
-                'SL.variation_id AS sell_variation_id',
-                'SL.id AS sell_line_id',
-                'SAL.product_id AS adjust_product_id',
-                'SAL.variation_id AS adjust_variation_id',
-                'SAL.id AS adjust_line_id',
-                'transaction_sell_lines_purchase_lines.quantity',
-                'transaction_sell_lines_purchase_lines.purchase_line_id', 'transaction_sell_lines_purchase_lines.id as tslpl_id'])
-            ->get();
+                ->leftjoin(
+                    'transaction_sell_lines AS SL',
+                    'transaction_sell_lines_purchase_lines.sell_line_id',
+                    '=',
+                    'SL.id'
+                )
+                ->leftjoin(
+                    'stock_adjustment_lines AS SAL',
+                    'transaction_sell_lines_purchase_lines.stock_adjustment_line_id',
+                    '=',
+                    'SAL.id'
+                )
+                ->orderBy('transaction_sell_lines_purchase_lines.id', 'desc')
+                ->select([
+                    'SL.product_id AS sell_product_id',
+                    'SL.variation_id AS sell_variation_id',
+                    'SL.id AS sell_line_id',
+                    'SAL.product_id AS adjust_product_id',
+                    'SAL.variation_id AS adjust_variation_id',
+                    'SAL.id AS adjust_line_id',
+                    'transaction_sell_lines_purchase_lines.quantity',
+                    'transaction_sell_lines_purchase_lines.purchase_line_id',
+                    'transaction_sell_lines_purchase_lines.id as tslpl_id'
+                ])
+                ->get();
 
             foreach ($tspl as $row) {
                 if ($row->quantity <= $extra_sold) {
                     if (!empty($row->sell_line_id)) {
-                        $sell_lines[] = (object)['id' => $row->sell_line_id,
-                        'quantity' => $row->quantity,
-                        'product_id' => $row->sell_product_id,
-                        'variation_id' => $row->sell_variation_id,
-                    ];
-                    PurchaseLine::where('id', $row->purchase_line_id)
-                    ->decrement('quantity_sold', $row->quantity);
+                        $sell_lines[] = (object)[
+                            'id' => $row->sell_line_id,
+                            'quantity' => $row->quantity,
+                            'product_id' => $row->sell_product_id,
+                            'variation_id' => $row->sell_variation_id,
+                        ];
+                        PurchaseLine::where('id', $row->purchase_line_id)
+                            ->decrement('quantity_sold', $row->quantity);
+                    } else {
+                        $stock_adjustment_lines[] =
+                            (object)[
+                                'id' => $row->adjust_line_id,
+                                'quantity' => $row->quantity,
+                                'product_id' => $row->adjust_product_id,
+                                'variation_id' => $row->adjust_variation_id,
+                            ];
+                        PurchaseLine::where('id', $row->purchase_line_id)
+                            ->decrement('quantity_adjusted', $row->quantity);
+                    }
+
+                    $extra_sold = $extra_sold - $row->quantity;
+                    TransactionSellLinesPurchaseLines::where('id', $row->tslpl_id)->delete();
                 } else {
-                    $stock_adjustment_lines[] =
-                    (object)['id' => $row->adjust_line_id,
-                    'quantity' => $row->quantity,
-                    'product_id' => $row->adjust_product_id,
-                    'variation_id' => $row->adjust_variation_id,
-                ];
-                PurchaseLine::where('id', $row->purchase_line_id)
-                ->decrement('quantity_adjusted', $row->quantity);
+                    if (!empty($row->sell_line_id)) {
+                        $sell_lines[] = (object)[
+                            'id' => $row->sell_line_id,
+                            'quantity' => $extra_sold,
+                            'product_id' => $row->sell_product_id,
+                            'variation_id' => $row->sell_variation_id,
+                        ];
+                        PurchaseLine::where('id', $row->purchase_line_id)
+                            ->decrement('quantity_sold', $extra_sold);
+                    } else {
+                        $stock_adjustment_lines[] =
+                            (object)[
+                                'id' => $row->adjust_line_id,
+                                'quantity' => $extra_sold,
+                                'product_id' => $row->adjust_product_id,
+                                'variation_id' => $row->adjust_variation_id,
+                            ];
+
+                        PurchaseLine::where('id', $row->purchase_line_id)
+                            ->decrement('quantity_adjusted', $extra_sold);
+                    }
+
+                    TransactionSellLinesPurchaseLines::where('id', $row->tslpl_id)->update(['quantity' => $row->quantity - $extra_sold]);
+
+                    $extra_sold = 0;
+                }
+
+                if ($extra_sold == 0) {
+                    break;
+                }
             }
+        }
 
-            $extra_sold = $extra_sold - $row->quantity;
-            TransactionSellLinesPurchaseLines::where('id', $row->tslpl_id)->delete();
-        } else {
-            if (!empty($row->sell_line_id)) {
-                $sell_lines[] = (object)['id' => $row->sell_line_id,
-                'quantity' => $extra_sold,
-                'product_id' => $row->sell_product_id,
-                'variation_id' => $row->sell_variation_id,
-            ];
-            PurchaseLine::where('id', $row->purchase_line_id)
-            ->decrement('quantity_sold', $extra_sold);
-        } else {
-            $stock_adjustment_lines[] =
-            (object)['id' => $row->adjust_line_id,
-            'quantity' => $extra_sold,
-            'product_id' => $row->adjust_product_id,
-            'variation_id' => $row->adjust_variation_id,
-        ];
-
-        PurchaseLine::where('id', $row->purchase_line_id)
-        ->decrement('quantity_adjusted', $extra_sold);
-    }
-
-    TransactionSellLinesPurchaseLines::where('id', $row->tslpl_id)->update(['quantity' => $row->quantity - $extra_sold]);
-
-    $extra_sold = 0;
-}
-
-if ($extra_sold == 0) {
-    break;
-}
-}
-}
-
-$business = Business::find($transaction->business_id)->toArray();
-$business['location_id'] = $transaction->location_id;
+        $business = Business::find($transaction->business_id)->toArray();
+        $business['location_id'] = $transaction->location_id;
 
         //Allocate the sold lines to purchases.
-if (!empty($sell_lines)) {
-    $sell_lines = (object)$sell_lines;
-    $this->mapPurchaseSell($business, $sell_lines, 'purchase');
-}
+        if (!empty($sell_lines)) {
+            $sell_lines = (object)$sell_lines;
+            $this->mapPurchaseSell($business, $sell_lines, 'purchase');
+        }
 
         //Allocate the stock adjustment lines to purchases.
-if (!empty($stock_adjustment_lines)) {
-    $stock_adjustment_lines = (object)$stock_adjustment_lines;
-    $this->mapPurchaseSell($business, $stock_adjustment_lines, 'stock_adjustment');
-}
-}
+        if (!empty($stock_adjustment_lines)) {
+            $stock_adjustment_lines = (object)$stock_adjustment_lines;
+            $this->mapPurchaseSell($business, $stock_adjustment_lines, 'stock_adjustment');
+        }
+    }
 
     /**
      * Check if transaction can be edited based on business     transaction_edit_days
@@ -3153,7 +3184,7 @@ if (!empty($stock_adjustment_lines)) {
         }
 
         $date = \Carbon::parse($transaction->transaction_date)
-        ->addDays($edit_duration);
+            ->addDays($edit_duration);
 
         $today = today();
 
@@ -3182,38 +3213,38 @@ if (!empty($stock_adjustment_lines)) {
             '=',
             'purchase.id'
         )
-        ->where('purchase.business_id', $business_id);
+            ->where('purchase.business_id', $business_id);
 
         $price_query_part = "(purchase_lines.purchase_price + 
         COALESCE(purchase_lines.item_tax, 0))";
 
         if ($by_sale_price) {
             $price_query_part = 'v.sell_price_inc_tax';
-        } 
+        }
 
         $query->leftjoin('variations as v', 'v.id', '=', 'purchase_lines.variation_id')
-        ->leftjoin('products as p', 'p.id', '=', 'purchase_lines.product_id');
+            ->leftjoin('products as p', 'p.id', '=', 'purchase_lines.product_id');
 
         if (!empty($filters['category_id'])) {
-            $query->where('p.category_id',$filters['category_id']);
+            $query->where('p.category_id', $filters['category_id']);
         }
         if (!empty($filters['sub_category_id'])) {
-            $query->where('p.sub_category_id',$filters['sub_category_id']);
+            $query->where('p.sub_category_id', $filters['sub_category_id']);
         }
         if (!empty($filters['brand_id'])) {
-            $query->where('p.brand_id',$filters['brand_id']);
+            $query->where('p.brand_id', $filters['brand_id']);
         }
         if (!empty($filters['unit_id'])) {
-            $query->where('p.unit_id',$filters['unit_id']);
+            $query->where('p.unit_id', $filters['unit_id']);
         }
 
         //If opening
         if ($is_opening) {
             $next_day = \Carbon::createFromFormat('Y-m-d', $date)->addDay()->format('Y-m-d');
-            
+
             $query->where(function ($query) use ($date, $next_day) {
                 $query->whereRaw("date(transaction_date) <= '$date'")
-                ->orWhereRaw("date(transaction_date) = '$next_day' AND purchase.type='opening_stock' ");
+                    ->orWhereRaw("date(transaction_date) = '$next_day' AND purchase.type='opening_stock' ");
             });
         } else {
             $query->whereRaw("date(transaction_date) <= '$date'");
@@ -3261,12 +3292,12 @@ if (!empty($stock_adjustment_lines)) {
     {
         $query = Transaction::leftjoin('transactions as SR', function ($join) {
             $join->on('SR.return_parent_id', '=', 'transactions.id')
-            ->where('SR.type', 'sell_return');
+                ->where('SR.type', 'sell_return');
         })
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', 'final')
-        ->select(DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0) ) as final_total"));
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', 'final')
+            ->select(DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0) ) as final_total"));
 
         //Check for permitted locations of a user
         $permitted_locations = auth()->user()->permitted_locations();
@@ -3387,9 +3418,9 @@ if (!empty($stock_adjustment_lines)) {
             '=',
             'T.id'
         )
-        ->where('T.business_id', $business_id)
-        ->where('T.location_id', $location_id)
-        ->where('purchase_lines.variation_id', $variation_id);
+            ->where('T.business_id', $business_id)
+            ->where('T.location_id', $location_id)
+            ->where('purchase_lines.variation_id', $variation_id);
 
         //If expiry is disabled
         if (request()->session()->get('business.enable_product_expiry') == 0) {
@@ -3439,7 +3470,7 @@ if (!empty($stock_adjustment_lines)) {
         }
 
         $query = Contact::where('contacts.id', $input['contact_id'])
-        ->join('transactions AS t', 'contacts.id', '=', 't.contact_id');
+            ->join('transactions AS t', 'contacts.id', '=', 't.contact_id');
 
         //Exclude transaction id if update transaction
         if (!empty($exclude_transaction_id)) {
@@ -3478,7 +3509,7 @@ if (!empty($stock_adjustment_lines)) {
     public function createOpeningBalanceTransaction($business_id, $contact_id, $amount)
     {
         $business_location = BusinessLocation::where('business_id', $business_id)
-        ->first();
+            ->first();
         $final_amount = $this->num_uf($amount);
         $ob_data = [
             'business_id' => $business_id,
@@ -3516,7 +3547,7 @@ if (!empty($stock_adjustment_lines)) {
         if ($qty_difference != 0) {
             $qty_left_to_update = $qty_difference;
             $sell_line_purchase_lines = TransactionSellLinesPurchaseLines::where('sell_line_id', $sell_line->id)->get();
-            
+
             //Return from each purchase line
             foreach ($sell_line_purchase_lines as $tslpl) {
                 //If differnce is +ve decrease quantity sold
@@ -3578,12 +3609,12 @@ if (!empty($stock_adjustment_lines)) {
     }
 
     /**
-    * Recalculates sell line data according to subunit data
-    *
-    * @param integer $unit_id
-    *
-    * @return array
-    */
+     * Recalculates sell line data according to subunit data
+     *
+     * @param integer $unit_id
+     *
+     * @return array
+     */
     public function recalculateSellLineTotals($business_id, $sell_line)
     {
         $unit_details = $this->getSubUnits($business_id, $sell_line->product->unit->id);
@@ -3741,156 +3772,48 @@ if (!empty($stock_adjustment_lines)) {
         $location_id = null,
         $created_by = null
     ) {
-        $query = Transaction::where('business_id', $business_id);
-        
-        //Check for permitted locations of a user
-        $permitted_locations = auth()->user()->permitted_locations();
-        if ($permitted_locations != 'all') {
-            $query->whereIn('transactions.location_id', $permitted_locations);
-        }
+        $query = Transaction::leftJoin(
+                'transaction_payments AS tp',
+                'transactions.id',
+                '=',
+                'tp.transaction_id'
+            )
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'expense');    
 
         if (!empty($start_date) && !empty($end_date)) {
-            $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
+            $start = $start_date;
+            $end =  $end_date;
+            $query->whereDate('transactions.transaction_date', '>=', $start)
+                ->whereDate('transactions.transaction_date', '<=', $end);
         }
 
-        if (empty($start_date) && !empty($end_date)) {
-            $query->whereDate('transaction_date', '<=', $end_date);
-        }
-
-        //Filter by the location
-        if (!empty($location_id)) {
-            $query->where('transactions.location_id', $location_id);
-        }
-
-        //Filter by created_by
-        if (!empty($created_by)) {
-            $query->where('transactions.created_by', $created_by);
-        }
-
-        if (in_array('purchase_return', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='purchase_return', final_total, 0)) as total_purchase_return_inc_tax"),
-                DB::raw("SUM(IF(transactions.type='purchase_return', total_before_tax, 0)) as total_purchase_return_exc_tax")
-            );
-        }
-
-        if (in_array('sell_return', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='sell_return', final_total, 0)) as total_sell_return_inc_tax"),
-                DB::raw("SUM(IF(transactions.type='sell_return', total_before_tax, 0)) as total_sell_return_exc_tax")
-            );
-        }
-
-        if (in_array('sell_transfer', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='sell_transfer', shipping_charges, 0)) as total_transfer_shipping_charges")
-                
-            );
-        }
-
-        if (in_array('expense', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='expense', final_total, 0)) as total_expense")
-            );
-        }
-
-        if (in_array('payroll', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='payroll', final_total, 0)) as total_payroll")
-            );
-        }
-
-        if (in_array('stock_adjustment', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='stock_adjustment', final_total, 0)) as total_adjustment"),
-                DB::raw("SUM(IF(transactions.type='stock_adjustment', total_amount_recovered, 0)) as total_recovered")
-            );
-        }
-
-        if (in_array('purchase', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='purchase', IF(discount_type = 'percentage', COALESCE(discount_amount, 0)*total_before_tax/100, COALESCE(discount_amount, 0)), 0)) as total_purchase_discount")
-            );
-        }
-
-        if (in_array('sell', $transaction_types)) {
-            $query->addSelect(
-                DB::raw("SUM(IF(transactions.type='sell' AND transactions.status='final', IF(discount_type = 'percentage', COALESCE(discount_amount, 0)*total_before_tax/100, COALESCE(discount_amount, 0)), 0)) as total_sell_discount"),
-                DB::raw("SUM(IF(transactions.type='sell' AND transactions.status='final', rp_redeemed_amount, 0)) as total_reward_amount"),
-                DB::raw("SUM(IF(transactions.type='sell' AND transactions.status='final', round_off_amount, 0)) as total_sell_round_off")
-            );
-        }
-
-        $transaction_totals = $query->first();
+        $query->addSelect(
+            DB::raw("SUM(transactions.final_total) as total_expense"),
+            DB::raw("SUM(tp.amount) as due")
+        );
+        $query->groupBy('transactions.id');
+        $transaction_totals = $query->get();
         $output = [];
 
-        if (in_array('purchase_return', $transaction_types)) {
-            $output['total_purchase_return_inc_tax'] = !empty($transaction_totals->total_purchase_return_inc_tax) ?
-            $transaction_totals->total_purchase_return_inc_tax : 0;
-
-            $output['total_purchase_return_exc_tax'] =
-            !empty($transaction_totals->total_purchase_return_exc_tax) ?
-            $transaction_totals->total_purchase_return_exc_tax : 0;
-        }
-
-        if (in_array('sell_return', $transaction_types)) {
-            $output['total_sell_return_inc_tax'] =
-            !empty($transaction_totals->total_sell_return_inc_tax) ?
-            $transaction_totals->total_sell_return_inc_tax : 0;
-
-            $output['total_sell_return_exc_tax'] =
-            !empty($transaction_totals->total_sell_return_exc_tax) ?
-            $transaction_totals->total_sell_return_exc_tax : 0;
-        }
-
-        if (in_array('sell_transfer', $transaction_types)) {
-            $output['total_transfer_shipping_charges'] =
-            !empty($transaction_totals->total_transfer_shipping_charges) ?
-            $transaction_totals->total_transfer_shipping_charges : 0;
-        }
-
         if (in_array('expense', $transaction_types)) {
-            $output['total_expense'] =
-            !empty($transaction_totals->total_expense) ?
-            $transaction_totals->total_expense : 0;
+            $expense_difference = 0;
+            foreach ($transaction_totals as $transaction) {
+                $total_expense = $transaction->total_expense;
+                $due = $transaction->due;
+                $expense_difference += $total_expense - $due;
+            }
+            $output['total_expense'] = $expense_difference;
         }
-
-        if (in_array('payroll', $transaction_types)) {
-            $output['total_payroll'] =
-            !empty($transaction_totals->total_payroll) ?
-            $transaction_totals->total_payroll : 0;
-        }
-
-        if (in_array('stock_adjustment', $transaction_types)) {
-            $output['total_adjustment'] =
-            !empty($transaction_totals->total_adjustment) ?
-            $transaction_totals->total_adjustment : 0;
-
-            $output['total_recovered'] =
-            !empty($transaction_totals->total_recovered) ?
-            $transaction_totals->total_recovered : 0;
-        }
-
-        if (in_array('purchase', $transaction_types)) {
-            $output['total_purchase_discount'] =
-            !empty($transaction_totals->total_purchase_discount) ?
-            $transaction_totals->total_purchase_discount : 0;
-        }
-
-        if (in_array('sell', $transaction_types)) {
-            $output['total_sell_discount'] =
-            !empty($transaction_totals->total_sell_discount) ?
-            $transaction_totals->total_sell_discount : 0;
-
-            $output['total_reward_amount'] =
-            !empty($transaction_totals->total_reward_amount) ?
-            $transaction_totals->total_reward_amount : 0;
-
-            $output['total_sell_round_off'] =
-            !empty($transaction_totals->total_sell_round_off) ?
-            $transaction_totals->total_sell_round_off : 0;
-        }
+        $sumBill = VehicleBill::where('business_id', $business_id);
+        if (!empty($start_date) && !empty($end_date)) {
+            $sumBill->where('fecha_compra', '>=', $start_date)
+                    ->where('fecha_compra', '<=', $end_date);
+        }        
+        $sum = $sumBill->sum('monto');
         
+        $output['sum_bill'] = $sum;
+
         return $output;
     }
 
@@ -3898,9 +3821,9 @@ if (!empty($stock_adjustment_lines)) {
     {
         $query = TransactionSellLinesPurchaseLines::join('transaction_sell_lines 
             as SL', 'SL.id', '=', 'transaction_sell_lines_purchase_lines.sell_line_id')
-        ->join('transactions as sale', 'SL.transaction_id', '=', 'sale.id')
-        ->join('purchase_lines as PL', 'PL.id', '=', 'transaction_sell_lines_purchase_lines.purchase_line_id')
-        ->where('sale.business_id', $business_id);
+            ->join('transactions as sale', 'SL.transaction_id', '=', 'sale.id')
+            ->join('purchase_lines as PL', 'PL.id', '=', 'transaction_sell_lines_purchase_lines.purchase_line_id')
+            ->where('sale.business_id', $business_id);
 
         if (!empty($start_date) && !empty($end_date) && $start_date != $end_date) {
             $query->whereBetween(DB::raw('sale.transaction_date'), [$start_date, $end_date]);
@@ -3916,10 +3839,10 @@ if (!empty($stock_adjustment_lines)) {
 
         $gross_profit_obj = $query->select(DB::raw('SUM( 
             (transaction_sell_lines_purchase_lines.quantity - transaction_sell_lines_purchase_lines.qty_returned) * (SL.unit_price_inc_tax - PL.purchase_price_inc_tax) ) as gross_profit'))
-        ->first();
+            ->first();
 
         $gross_profit = !empty($gross_profit_obj->gross_profit) ? $gross_profit_obj->gross_profit : 0;
-        
+
         //Deduct the sell transaction discounts.
         $transaction_totals = $this->getTransactionTotals($business_id, ['sell'], $start_date, $end_date, $location_id);
         $sell_discount = !empty($transaction_totals['total_sell_discount']) ? $transaction_totals['total_sell_discount'] : 0;
@@ -4007,7 +3930,7 @@ if (!empty($stock_adjustment_lines)) {
         $details = ['points' => 0, 'amount' => 0];
 
         $customer = Contact::where('business_id', $business_id)
-        ->find($customer_id);
+            ->find($customer_id);
         $customer_reward_points = $customer->total_rp;
 
         //If zero reward point or walk in customer return blank values
@@ -4068,13 +3991,13 @@ if (!empty($stock_adjustment_lines)) {
     }
 
     /**
-    * Function to delete sale
-    *
-    * @param int $business_id
-    * @param int $transaction_id
-    *
-    * @return array
-    */
+     * Function to delete sale
+     *
+     * @param int $business_id
+     * @param int $transaction_id
+     *
+     * @return array
+     */
     public function deleteSale($business_id, $transaction_id)
     {
         //Check if return exist then not allowed
@@ -4087,10 +4010,10 @@ if (!empty($stock_adjustment_lines)) {
         }
 
         $transaction = Transaction::where('id', $transaction_id)
-        ->where('business_id', $business_id)
-        ->where('type', 'sell')
-        ->with(['sell_lines'])
-        ->first();
+            ->where('business_id', $business_id)
+            ->where('type', 'sell')
+            ->with(['sell_lines'])
+            ->first();
 
         if (!empty($transaction)) {
             //If status is draft direct delete transaction
@@ -4107,165 +4030,166 @@ if (!empty($stock_adjustment_lines)) {
                 $this->updateCustomerRewardPoints($transaction->contact_id, 0, $transaction->rp_earned, 0, $transaction->rp_redeemed);
 
                 $transaction->status = 'draft';
-                $business = ['id' => $business_id,
-                'accounting_method' => request()->session()->get('business.accounting_method'),
-                'location_id' => $transaction->location_id
-            ];
+                $business = [
+                    'id' => $business_id,
+                    'accounting_method' => request()->session()->get('business.accounting_method'),
+                    'location_id' => $transaction->location_id
+                ];
 
-            $this->adjustMappingPurchaseSell('final', $transaction, $business, $deleted_sell_lines_ids);
+                $this->adjustMappingPurchaseSell('final', $transaction, $business, $deleted_sell_lines_ids);
 
                 //Delete Cash register transactions
-            $transaction->cash_register_payments()->delete();
+                $transaction->cash_register_payments()->delete();
 
-            $transaction->delete();
+                $transaction->delete();
+            }
         }
-    }
 
         //Delete account transactions
-    AccountTransaction::where('transaction_id', $transaction->id)->delete();
+        AccountTransaction::where('transaction_id', $transaction->id)->delete();
 
-    $output = [
-        'success' => true,
-        'msg' => __('lang_v1.sale_delete_success')
-    ];
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.sale_delete_success')
+        ];
 
-    return $output;
-}
+        return $output;
+    }
 
     /**
-    * common function to get
-    * list purchase
-    * @param int $business_id
-    *
-    * @return object
-    */
+     * common function to get
+     * list purchase
+     * @param int $business_id
+     *
+     * @return object
+     */
     public function getListPurchases($business_id)
     {
         $purchases = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
-        ->join(
-            'business_locations AS BS',
-            'transactions.location_id',
-            '=',
-            'BS.id'
-        )
-        ->leftJoin(
-            'transaction_payments AS TP',
-            'transactions.id',
-            '=',
-            'TP.transaction_id'
-        )
-        ->leftJoin(
-            'transactions AS PR',
-            'transactions.id',
-            '=',
-            'PR.return_parent_id'
-        )
-        ->leftJoin('users as u', 'transactions.created_by', '=', 'u.id')
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'purchase')
-        ->select(
-            'transactions.id',
-            'transactions.document',
-            'transactions.transaction_date',
-            'transactions.ref_no',
-            'contacts.name',
-            'transactions.status',
-            'transactions.payment_status',
-            'transactions.final_total',
-            'BS.name as location_name',
-            'transactions.pay_term_number',
-            'transactions.pay_term_type',
-            'PR.id as return_transaction_id',
-            DB::raw('SUM(TP.amount) as amount_paid'),
-            DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
+            ->join(
+                'business_locations AS BS',
+                'transactions.location_id',
+                '=',
+                'BS.id'
+            )
+            ->leftJoin(
+                'transaction_payments AS TP',
+                'transactions.id',
+                '=',
+                'TP.transaction_id'
+            )
+            ->leftJoin(
+                'transactions AS PR',
+                'transactions.id',
+                '=',
+                'PR.return_parent_id'
+            )
+            ->leftJoin('users as u', 'transactions.created_by', '=', 'u.id')
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'purchase')
+            ->select(
+                'transactions.id',
+                'transactions.document',
+                'transactions.transaction_date',
+                'transactions.ref_no',
+                'contacts.name',
+                'transactions.status',
+                'transactions.payment_status',
+                'transactions.final_total',
+                'BS.name as location_name',
+                'transactions.pay_term_number',
+                'transactions.pay_term_type',
+                'PR.id as return_transaction_id',
+                DB::raw('SUM(TP.amount) as amount_paid'),
+                DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                 TP2.transaction_id=PR.id ) as return_paid'),
-            DB::raw('COUNT(PR.id) as return_exists'),
-            DB::raw('COALESCE(PR.final_total, 0) as amount_return'),
-            DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by")
-        )
-        ->groupBy('transactions.id');
+                DB::raw('COUNT(PR.id) as return_exists'),
+                DB::raw('COALESCE(PR.final_total, 0) as amount_return'),
+                DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by")
+            )
+            ->groupBy('transactions.id');
 
         return $purchases;
     }
 
     /**
-    * common function to get
-    * list sell
-    * @param int $business_id
-    *
-    * @return object
-    */
+     * common function to get
+     * list sell
+     * @param int $business_id
+     *
+     * @return object
+     */
     public function getListSells($business_id)
     {
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
-                // ->leftJoin('transaction_payments as tp', 'transactions.id', '=', 'tp.transaction_id')
-        ->leftJoin('transaction_sell_lines as tsl', 'transactions.id', '=', 'tsl.transaction_id')
-        ->leftJoin('users as u', 'transactions.created_by', '=', 'u.id')
-        ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
-        ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
-        ->join(
-            'business_locations AS bl',
-            'transactions.location_id',
-            '=',
-            'bl.id'
-        )
-        ->leftJoin(
-            'transactions AS SR',
-            'transactions.id',
-            '=',
-            'SR.return_parent_id'
-        )
-        ->leftJoin(
-            'types_of_services AS tos',
-            'transactions.types_of_service_id',
-            '=',
-            'tos.id'
-        )
-        ->where('transactions.business_id', $business_id)
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', 'final')
-        ->select(
-            'transactions.id',
-            'transactions.pedido_ecommerce_id',
-            'transactions.transaction_date',
-            'transactions.is_direct_sale',
-            'transactions.invoice_no',
-            'transactions.invoice_no as invoice_no_text',
-            'contacts.name',
-            'contacts.mobile',
-            'contacts.contact_id',
-            'transactions.payment_status',
-            'transactions.final_total',
-            'transactions.tax_amount',
-            'transactions.discount_amount',
-            'transactions.discount_type',
-            'transactions.total_before_tax',
-            'transactions.rp_redeemed',
-            'transactions.rp_redeemed_amount',
-            'transactions.rp_earned',
-            'transactions.types_of_service_id',
-            'transactions.shipping_status',
-            'transactions.pay_term_number',
-            'transactions.pay_term_type',
-            'transactions.additional_notes',
-            'transactions.staff_note',
-            'transactions.shipping_details',
-            DB::raw('DATE_FORMAT(transactions.transaction_date, "%Y/%m/%d") as sale_date'),
-            DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
-            DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
+            // ->leftJoin('transaction_payments as tp', 'transactions.id', '=', 'tp.transaction_id')
+            ->leftJoin('transaction_sell_lines as tsl', 'transactions.id', '=', 'tsl.transaction_id')
+            ->leftJoin('users as u', 'transactions.created_by', '=', 'u.id')
+            ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
+            ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
+            ->join(
+                'business_locations AS bl',
+                'transactions.location_id',
+                '=',
+                'bl.id'
+            )
+            ->leftJoin(
+                'transactions AS SR',
+                'transactions.id',
+                '=',
+                'SR.return_parent_id'
+            )
+            ->leftJoin(
+                'types_of_services AS tos',
+                'transactions.types_of_service_id',
+                '=',
+                'tos.id'
+            )
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', 'final')
+            ->select(
+                'transactions.id',
+                'transactions.pedido_ecommerce_id',
+                'transactions.transaction_date',
+                'transactions.is_direct_sale',
+                'transactions.invoice_no',
+                'transactions.invoice_no as invoice_no_text',
+                'contacts.name',
+                'contacts.mobile',
+                'contacts.contact_id',
+                'transactions.payment_status',
+                'transactions.final_total',
+                'transactions.tax_amount',
+                'transactions.discount_amount',
+                'transactions.discount_type',
+                'transactions.total_before_tax',
+                'transactions.rp_redeemed',
+                'transactions.rp_redeemed_amount',
+                'transactions.rp_earned',
+                'transactions.types_of_service_id',
+                'transactions.shipping_status',
+                'transactions.pay_term_number',
+                'transactions.pay_term_type',
+                'transactions.additional_notes',
+                'transactions.staff_note',
+                'transactions.shipping_details',
+                DB::raw('DATE_FORMAT(transactions.transaction_date, "%Y/%m/%d") as sale_date'),
+                DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
                 TP.transaction_id=transactions.id) as total_paid'),
-            'bl.name as business_location',
-            DB::raw('COUNT(SR.id) as return_exists'),
-            DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
+                'bl.name as business_location',
+                DB::raw('COUNT(SR.id) as return_exists'),
+                DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                 TP2.transaction_id=SR.id ) as return_paid'),
-            DB::raw('COALESCE(SR.final_total, 0) as amount_return'),
-            'SR.id as return_transaction_id',
-            'tos.name as types_of_service_name',
-            'transactions.service_custom_field_1',
-            DB::raw('COUNT( DISTINCT tsl.id) as total_items'),
-            DB::raw("CONCAT(COALESCE(ss.surname, ''),' ',COALESCE(ss.first_name, ''),' ',COALESCE(ss.last_name,'')) as waiter"),
-            'tables.name as table_name'
-        );
+                DB::raw('COALESCE(SR.final_total, 0) as amount_return'),
+                'SR.id as return_transaction_id',
+                'tos.name as types_of_service_name',
+                'transactions.service_custom_field_1',
+                DB::raw('COUNT( DISTINCT tsl.id) as total_items'),
+                DB::raw("CONCAT(COALESCE(ss.surname, ''),' ',COALESCE(ss.first_name, ''),' ',COALESCE(ss.last_name,'')) as waiter"),
+                'tables.name as table_name'
+            );
 
         return $sells;
     }
@@ -4278,21 +4202,21 @@ if (!empty($stock_adjustment_lines)) {
     {
         //Get transaction totals between dates
         $transactions = $this->__transactionQuery($contact_id, $start, $end)
-        ->with(['location'])->get();
+            ->with(['location'])->get();
 
         $transaction_types = Transaction::transactionTypes();
 
         //Get sum of totals before start date
         $previous_transaction_sums = $this->__transactionQuery($contact_id, $start)
-        ->select(
-            DB::raw("SUM(IF(type = 'purchase', final_total, 0)) as total_purchase"),
-            DB::raw("SUM(IF(type = 'sell' AND status = 'final', final_total, 0)) as total_invoice"),
-            DB::raw("SUM(IF(type = 'sell_return', final_total, 0)) as total_sell_return"),
-            DB::raw("SUM(IF(type = 'purchase_return', final_total, 0)) as total_purchase_return")
-        )->first();
+            ->select(
+                DB::raw("SUM(IF(type = 'purchase', final_total, 0)) as total_purchase"),
+                DB::raw("SUM(IF(type = 'sell' AND status = 'final', final_total, 0)) as total_invoice"),
+                DB::raw("SUM(IF(type = 'sell_return', final_total, 0)) as total_sell_return"),
+                DB::raw("SUM(IF(type = 'purchase_return', final_total, 0)) as total_purchase_return")
+            )->first();
 
         $ledger = [];
-        
+
         foreach ($transactions as $transaction) {
             $ledger[] = [
                 'date' => $transaction->transaction_date,
@@ -4315,14 +4239,14 @@ if (!empty($stock_adjustment_lines)) {
 
         //Get payment totals between dates
         $payments = $this->__paymentQuery($contact_id, $start, $end)
-        ->select('transaction_payments.*', 'bl.name as location_name', 't.type as transaction_type', 't.ref_no', 't.invoice_no')
-        ->get();
+            ->select('transaction_payments.*', 'bl.name as location_name', 't.type as transaction_type', 't.ref_no', 't.invoice_no')
+            ->get();
         $paymentTypes = $this->payment_types();
 
         //Get payment totals before start date
         $prev_payments_sum = $this->__paymentQuery($contact_id, $start)
-        ->select(DB::raw("SUM(transaction_payments.amount) as total_paid"))
-        ->first();
+            ->select(DB::raw("SUM(transaction_payments.amount) as total_paid"))
+            ->first();
 
         foreach ($payments as $payment) {
             $ref_no = in_array($payment->transaction_type, ['sell', 'sell_return']) ?  $payment->invoice_no :  $payment->ref_no;
@@ -4381,7 +4305,7 @@ if (!empty($stock_adjustment_lines)) {
             'debit' => '',
             'credit' => '',
             'others' => ''
-        ]], $ledger) ;
+        ]], $ledger);
 
         $output = [
             'ledger' => $ledger,
@@ -4407,9 +4331,9 @@ if (!empty($stock_adjustment_lines)) {
         $transaction_type_keys = array_keys(Transaction::transactionTypes());
 
         $query = Transaction::where('transactions.contact_id', $contact_id)
-        ->where('transactions.business_id', $business_id)
-        ->where('status', '!=', 'draft')
-        ->whereIn('type', $transaction_type_keys);
+            ->where('transactions.business_id', $business_id)
+            ->where('status', '!=', 'draft')
+            ->whereIn('type', $transaction_type_keys);
 
         if (!empty($start)  && !empty($end)) {
             $query->whereDate(
@@ -4417,7 +4341,7 @@ if (!empty($stock_adjustment_lines)) {
                 '>=',
                 $start
             )
-            ->whereDate('transactions.transaction_date', '<=', $end)->get();
+                ->whereDate('transactions.transaction_date', '<=', $end)->get();
         }
 
         if (!empty($start)  && empty($end)) {
@@ -4441,14 +4365,14 @@ if (!empty($stock_adjustment_lines)) {
             '=',
             't.id'
         )
-        ->leftJoin('business_locations as bl', 't.location_id', '=', 'bl.id')
-        ->where('t.contact_id', $contact_id)
-        ->where('t.business_id', $business_id)
-        ->where('t.status', '!=', 'draft');
+            ->leftJoin('business_locations as bl', 't.location_id', '=', 'bl.id')
+            ->where('t.contact_id', $contact_id)
+            ->where('t.business_id', $business_id)
+            ->where('t.status', '!=', 'draft');
 
         if (!empty($start)  && !empty($end)) {
             $query->whereDate('paid_on', '>=', $start)
-            ->whereDate('paid_on', '<=', $end);
+                ->whereDate('paid_on', '<=', $end);
         }
 
         if (!empty($start)  && empty($end)) {

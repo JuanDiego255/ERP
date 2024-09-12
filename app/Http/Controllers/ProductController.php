@@ -398,11 +398,14 @@ class ProductController extends Controller
             $request->merge(['color' => $request->color ?? '']);
             $request->merge(['bin' => $request->bin ?? '']);
             $request->merge(['placa' => $request->placa ?? '']);
+            $request->merge(['kilometraje' => $request->kilometraje ?? '']);
+            $request->merge(['combustible' => $request->combustible ?? '']);
+            $request->merge(['traccion' => $request->traccion ?? '']);
 
             $business_id = $request->session()->get('user.business_id');
             $request->merge(['sell_price_inc_tax' => $request->single_dsp]);
 
-            $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
+            $form_fields = ['name','is_show','kilometraje','combustible','traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
@@ -457,6 +460,16 @@ class ProductController extends Controller
 
             if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
                 $product_details['enable_sr_no'] = 1;
+            }
+            if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
+                $product_details['is_show'] = 1;
+            } else {
+                $product_details['is_show'] = 0;
+            }
+            if (!empty($request->input('is_mant')) &&  $request->input('is_mant') == 1) {
+                $product_details['is_mant'] = 1;
+            } else {
+                $product_details['is_mant'] = 0;
             }
 
             //upload document
@@ -756,7 +769,7 @@ class ProductController extends Controller
             $product->category_id = $product_details['category_id'];
            /*  $product->tax = $product_details['tax']; */
             /* $product->barcode_type = $product_details['barcode_type']; */
-            $product->sku = $product_details['sku'];
+            //$product->sku = $product_details['sku'];
            /*  $product->alert_quantity = $product_details['alert_quantity'];
             $product->tax_type = $product_details['tax_type']; */
             //$product->weight = isset($product_details['weight']) ? str_replace(",", ".", $product_details['weight']) : 0;
@@ -829,13 +842,21 @@ class ProductController extends Controller
             $product->model = $request->model;
             $product->dua = $request->dua;
             $product->color = $request->color;
+            $product->kilometraje = $request->kilometraje;
+            $product->combustible = $request->combustible;
+            $product->traccion = $request->traccion;
             $product->bin = $request->bin;
             $product->placa = $request->placa;
-            /* if (!empty($request->input('enable_stock')) &&  $request->input('enable_stock') == 1) {
-                $product->enable_stock = 1;
+            if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
+                $product->is_show = 1;
             } else {
-                $product->enable_stock = 0;
-            } */
+                $product->is_show = 0;
+            }
+            if (!empty($request->input('is_mant')) &&  $request->input('is_mant') == 1) {
+                $product->is_mant = 1;
+            } else {
+                $product->is_mant = 0;
+            }
 
             //$product->not_for_selling = (!empty($request->input('not_for_selling')) &&  $request->input('not_for_selling') == 1) ? 1 : 0;
 

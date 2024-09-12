@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('vehiculos.add_new_product')</h1>
         <!-- <ol class="breadcrumb">
-                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                    <li class="active">Here</li>
-                                  </ol> -->
+                                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                        <li class="active">Here</li>
+                                                      </ol> -->
     </section>
 
     <!-- Main content -->
@@ -78,11 +78,11 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
-                        {!! Form::label('bin', __('Bin') . ':*') !!}
+                        {!! Form::label('bin', __('VIN') . ':*') !!}
                         {!! Form::text('bin', !empty($duplicate_product->bin) ? $duplicate_product->bin : null, [
                             'class' => 'form-control',
                             'required',
-                            'placeholder' => __('Bin'),
+                            'placeholder' => __('VIN'),
                         ]) !!}
                     </div>
                 </div>
@@ -115,7 +115,33 @@
                         ]) !!}
                     </div>
                 </div>
-
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('kilometraje', __('Kilometraje') . ':') !!}
+                        {!! Form::text('kilometraje', !empty($duplicate_product->kilometraje) ? $duplicate_product->kilometraje : null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Kilometraje'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('traccion', __('Tracción') . ':') !!}
+                        {!! Form::text('traccion', !empty($duplicate_product->traccion) ? $duplicate_product->traccion : null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Tracción'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('combustible', __('Tipo de combustible') . ':') !!}
+                        {!! Form::text('combustible', !empty($duplicate_product->combustible) ? $duplicate_product->combustible : null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Tipo de combustible'),
+                        ]) !!}
+                    </div>
+                </div>
 
 
                 {{--  <div class="col-sm-4">
@@ -139,12 +165,12 @@
 
 
                 <div class="clearfix"></div>
-                <div class="col-sm-4">
+                {{-- <div class="col-sm-4">
                     <div class="form-group">
                         {!! Form::label('sku', __('vehiculos.sku') . ' o código:') !!} @show_tooltip(__('tooltip.sku'))
                         {!! Form::text('sku', null, ['class' => 'form-control', 'placeholder' => __('vehiculos.sku')]) !!}
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="col-sm-4 @if (!session('business.enable_category')) hide @endif">
                     <div class="form-group">
@@ -188,19 +214,33 @@
                 </div>
 
 
+
                 <div class="clearfix"></div>
 
-                {{-- <div class="col-sm-4">
+                <div class="col-sm-4">
                     <div class="form-group">
                         <br>
                         <label>
-                            {!! Form::checkbox('enable_stock', 1, !empty($duplicate_product) ? $duplicate_product->enable_stock : true, [
+                            {!! Form::checkbox('is_show', 1, false, [
                                 'class' => 'input-icheck',
-                                'id' => 'enable_stock',
-                            ]) !!} <strong>@lang('product.manage_stock')</strong>
-                        </label>@show_tooltip(__('tooltip.enable_stock')) <p class="help-block"><i>@lang('product.enable_stock_help')</i></p>
+                                'id' => 'is_show',
+                            ]) !!} <strong>@lang('Se muestra en piso?')</strong>
+                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
+                        mantenimiento')) <p class="help-block"><i>@lang('Este check indica si el vehículo se está mostrando en la venta')</i></p>
                     </div>
-                </div> --}}
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <br>
+                        <label>
+                            {!! Form::checkbox('is_mant', 1, false, [
+                                'class' => 'input-icheck',
+                                'id' => 'is_mant',
+                            ]) !!} <strong>@lang('Se encuentra en mantenimiento?')</strong>
+                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
+                        exhibición')) <p class="help-block"><i>@lang('Este check indica si el vehículo se encuentra en mantenimiento')</i></p>
+                    </div>
+                </div>
                 {{-- <div class="col-sm-4 @if (!empty($duplicate_product) && $duplicate_product->enable_stock == 0) hide @endif" id="alert_quantity_div">
                     <div class="form-group">
                         {!! Form::label('alert_quantity', __('product.alert_quantity') . ':') !!} @show_tooltip(__('tooltip.alert_quantity'))
