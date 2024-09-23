@@ -125,8 +125,8 @@ class ProductController extends Controller
             $brand_id = request()->get('brand_id', null);
             if (!empty($brand_id)) {
                 $products->where('products.brand_id', $brand_id);
-            }     
-            $products->orderBy('created_at','desc');
+            }
+            $products->orderBy('created_at', 'desc');
 
             return Datatables::of($products)
                 ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
@@ -251,7 +251,7 @@ class ProductController extends Controller
                 'pos_module_data'
             ));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -405,7 +405,7 @@ class ProductController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $request->merge(['sell_price_inc_tax' => $request->single_dsp]);
 
-            $form_fields = ['name','is_show','kilometraje','combustible','traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
+            $form_fields = ['name', 'is_show', 'kilometraje', 'combustible', 'traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
@@ -538,7 +538,9 @@ class ProductController extends Controller
             DB::commit();
             $output = [
                 'success' => 1,
-                'msg' => __('product.product_added_success')
+                'msg' => __('product.product_added_success'),
+                'product_id' => $product->id,
+                'name' => $product->name . '(' . $product->bin . ')'
             ];
         } catch (\Exception $e) {
             // print_r($e->getMessage());
@@ -568,7 +570,9 @@ class ProductController extends Controller
                 'ProductController@create'
             )->with('status', $output);
         }
-
+        if ($request->ajax()) {
+            return response()->json($output);
+        }
         return redirect('products')->with('status', $output);
     }
 
@@ -606,7 +610,7 @@ class ProductController extends Controller
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::where('business_id', $business_id)
             ->pluck('name', 'id');
-            
+
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
         $taxes = $tax_dropdown['tax_rates'];
@@ -767,10 +771,10 @@ class ProductController extends Controller
             $product->brand_id = $product_details['brand_id'];/* 
             $product->unit_id = $product_details['unit_id']; */
             $product->category_id = $product_details['category_id'];
-           /*  $product->tax = $product_details['tax']; */
+            /*  $product->tax = $product_details['tax']; */
             /* $product->barcode_type = $product_details['barcode_type']; */
             //$product->sku = $product_details['sku'];
-           /*  $product->alert_quantity = $product_details['alert_quantity'];
+            /*  $product->alert_quantity = $product_details['alert_quantity'];
             $product->tax_type = $product_details['tax_type']; */
             //$product->weight = isset($product_details['weight']) ? str_replace(",", ".", $product_details['weight']) : 0;
             /* $product->product_custom_field1 = $product_details['product_custom_field1'];
@@ -836,7 +840,7 @@ class ProductController extends Controller
             //$product->novo = $product_details['novo'] ?? 0;
             //$product->altura = isset($product_details['altura']) ? str_replace(",", ".", $product_details['altura']) : 0;
             //$product->largura = isset($product_details['largura']) ? str_replace(",", ".", $product_details['largura']) : 0;
-           /*  $product->comprimento = isset($product_details['comprimento']) ? str_replace(",", ".", $product_details['comprimento']) : 0;
+            /*  $product->comprimento = isset($product_details['comprimento']) ? str_replace(",", ".", $product_details['comprimento']) : 0;
             $product->valor_ecommerce = isset($product_details['valor_ecommerce']) ? str_replace(",", ".", $product_details['valor_ecommerce']) : 0; */
             $product->comprado_a = $request->comprado_a;
             $product->model = $request->model;
@@ -877,7 +881,7 @@ class ProductController extends Controller
                 }
             }
 
-           /*  if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
+            /*  if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
                 $product->enable_sr_no = 1;
             } else {
                 $product->enable_sr_no = 0;
@@ -2478,5 +2482,39 @@ class ProductController extends Controller
         }
 
         return redirect()->back()->with('status', $output);
+    }
+
+    public function getVehicles()
+    {
+        if (request()->ajax()) {
+            $term = request()->input('q', '');
+
+            $business_id = request()->session()->get('user.business_id');
+
+            $vehicles = Product::where('products.business_id', $business_id)
+                ->where('products.is_inactive', 0)
+                ->join('brands', 'products.brand_id', '=', 'brands.id')
+                ->leftJoin('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
+                ->when(!empty($term), function ($query) use ($term) {
+                    $query->where('products.name', 'like', '%' . $term . '%');
+                })
+                ->select(
+                    'products.id',
+                    'products.created_at as fecha_ingreso',
+                    'products.bin',
+                    'products.dua',
+                    'products.placa',
+                    'products.combustible',
+                    'products.model',
+                    'products.color',
+                    'brands.name as marca',
+                    DB::raw("CONCAT(products.name, ' (', products.bin, ')') AS text"),
+                    DB::raw("SUM(vehicle_bills.monto) AS gastos")
+                )
+                ->groupBy('products.id') // Agrupar por el ID del vehículo
+                ->get();
+
+            return json_encode($vehicles);
+        }
     }
 }

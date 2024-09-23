@@ -35,8 +35,23 @@ class EmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $employees = Employees::where('business_id', $business_id)
                 ->select([
-                    'id','hora_extra', 'name', 'email', 'telephone', 'celular', 'status', 'salario_base', 'asociacion',
-                    'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora', 'puesto', 'comision_ventas', 'business_id', 'created_at'
+                    'id',
+                    'hora_extra',
+                    'name',
+                    'email',
+                    'telephone',
+                    'celular',
+                    'status',
+                    'salario_base',
+                    'asociacion',
+                    'ccss',
+                    'tipo_pago',
+                    'moneda_pago',
+                    'salario_hora',
+                    'puesto',
+                    'comision_ventas',
+                    'business_id',
+                    'created_at'
                 ]);
 
             return Datatables::of($employees)
@@ -95,9 +110,20 @@ class EmployeeController extends Controller
 
         try {
             $employee_details = $request->only([
-                'name', 'telephone', 'celular', 'email', 'salario_base',
-                'asociacion', 'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora',
-                'puesto', 'comision_ventas','hora_extra','fecha_ingreso'
+                'name',
+                'telephone',
+                'celular',
+                'email',
+                'salario_base',
+                'asociacion',
+                'ccss',
+                'tipo_pago',
+                'moneda_pago',
+                'salario_hora',
+                'puesto',
+                'comision_ventas',
+                'hora_extra',
+                'fecha_ingreso'
             ]);
 
             $employee_details['status'] = 1;
@@ -150,7 +176,11 @@ class EmployeeController extends Controller
         }
         try {
             $employee_rubro = $request->only([
-                'tipo', 'rubro_id', 'valor', 'status', 'employee_id'
+                'tipo',
+                'rubro_id',
+                'valor',
+                'status',
+                'employee_id'
             ]);
             $business_id = $request->session()->get('user.business_id');
             $employee_rubro['business_id'] = $business_id;
@@ -223,9 +253,19 @@ class EmployeeController extends Controller
         }
         try {
             $employee_details = $request->only([
-                'name', 'telephone', 'celular', 'email', 'salario_base',
-                'asociacion', 'ccss', 'tipo_pago', 'moneda_pago', 'salario_hora',
-                'puesto', 'comision_ventas','hora_extra'
+                'name',
+                'telephone',
+                'celular',
+                'email',
+                'salario_base',
+                'asociacion',
+                'ccss',
+                'tipo_pago',
+                'moneda_pago',
+                'salario_hora',
+                'puesto',
+                'comision_ventas',
+                'hora_extra'
             ]);
 
             $employee_details['status'] = 1;
@@ -269,7 +309,12 @@ class EmployeeController extends Controller
         }
         try {
             $employee_rubro = $request->only([
-                'tipo', 'rubro_id', 'valor', 'status', 'employee_id', 'id'
+                'tipo',
+                'rubro_id',
+                'valor',
+                'status',
+                'employee_id',
+                'id'
             ]);
             $id = $employee_rubro['id'];
 
@@ -423,7 +468,11 @@ class EmployeeController extends Controller
         }
         try {
             $employee_action = $request->only([
-                'fecha_desde', 'fecha_hasta', 'estado', 'employee_id', 'observacion'
+                'fecha_desde',
+                'fecha_hasta',
+                'estado',
+                'employee_id',
+                'observacion'
             ]);
             $fecha_desde = $request->input('fecha_desde');
             $fecha_hasta = $request->input('fecha_hasta');
@@ -459,5 +508,28 @@ class EmployeeController extends Controller
         }
 
         return redirect()->back()->with('status', $output);
+    }
+    public function getVendedores()
+    {
+        if (request()->ajax()) {
+            $term = request()->input('q', '');
+
+            $business_id = request()->session()->get('user.business_id');
+
+            $employees = Employees::where('business_id', $business_id);
+
+            if (!empty($term)) {
+                $employees->where(function ($query) use ($term) {
+                    $query->where('name', 'like', '%' . $term . '%');
+                });
+            }
+
+            $employees->select(
+                'employees.id',
+                'employees.name AS text',
+            )->where('employees.puesto','vendedor');
+            $employees = $employees->get();
+            return json_encode($employees);
+        }
     }
 }

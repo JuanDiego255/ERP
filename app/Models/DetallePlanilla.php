@@ -12,6 +12,6 @@ class DetallePlanilla extends Model
     protected $fillable = [
         'planilla_id', 'salario_base','bonificacion', 'comisiones', 'cant_hora_extra', 'monto_hora_extra',
         'adelantos', 'prestamos', 'asociacion', 'total', 'observaciones',
-        'deudas', 'rebajados','total_ccss','vacaciones','hora_extra','employee_id'
+        'deudas', 'rebajados','total_ccss','vacaciones','hora_extra','employee_id','aguinaldo'
     ];
 }

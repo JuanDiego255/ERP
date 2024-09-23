@@ -691,7 +691,7 @@ class ContactController extends Controller
 
 
             $input = $request->only([
-                'type', 'supplier_business_name', 'cpf_cnpj', 'ie_rg', 'contribuinte',
+                'type', 'supplier_business_name', 'cpf_cnpj', 'ie_rg', 'contribuinte','identificacion','tipo_identificacion',
                 'consumidor_final', 'city_id', 'rua', 'numero', 'bairro', 'cep',
                 'name', 'tax_number', 'pay_term_number', 'pay_term_type', 'mobile', 'landline',
                 'alternate_number', 'city', 'state', 'country', 'landmark', 'customer_group_id',
@@ -849,7 +849,7 @@ class ContactController extends Controller
             try {
                 $input = $request->only([
                     'type', 'supplier_business_name', 'cpf_cnpj', 'ie_rg', 'contribuinte', 'consumidor_final', 'name', 'tax_number', 'pay_term_number', 'pay_term_type', 'mobile', 'landline', 'alternate_number', 'city', 'state', 'country', 'landmark',
-                    'customer_group_id', 'contact_id', 'custom_field1', 'custom_field2', 'custom_field3',
+                    'customer_group_id', 'contact_id', 'custom_field1', 'custom_field2', 'custom_field3','identificacion','tipo_identificacion',
                     'custom_field4', 'email', 'shipping_address', 'position', 'rua', 'numero', 'bairro',
                     'cep', 'city_id', 'cod_pais', 'id_estrangeiro', 'rua_entrega', 'numero_entrega',
                     'bairro_entrega', 'cep_entrega', 'city_id_entrega'
@@ -995,12 +995,52 @@ class ContactController extends Controller
                 'mobile',
                 'landmark',
                 'city',
-                'state',
-                'pay_term_number',
-                'pay_term_type',
-                'cpf_cnpj'
+                'state'
             )
                 ->onlyCustomers();
+
+            if (request()->session()->get('business.enable_rp') == 1) {
+                $contacts->addSelect('total_rp');
+            }
+            $contacts = $contacts->get();
+            return json_encode($contacts);
+        }
+    }
+    public function getGuarantor()
+    {
+        if (request()->ajax()) {
+            $term = request()->input('q', '');
+
+            $business_id = request()->session()->get('user.business_id');
+            $user_id = request()->session()->get('user.id');
+
+            $contacts = Contact::where('business_id', $business_id)
+                ->active();
+
+            $selected_contacts = User::isSelectedContacts($user_id);
+            if ($selected_contacts) {
+                $contacts->join('user_contact_access AS uca', 'contacts.id', 'uca.contact_id')
+                    ->where('uca.user_id', $user_id);
+            }
+
+            if (!empty($term)) {
+                $contacts->where(function ($query) use ($term) {
+                    $query->where('name', 'like', '%' . $term . '%')
+                        ->orWhere('supplier_business_name', 'like', '%' . $term . '%')
+                        ->orWhere('mobile', 'like', '%' . $term . '%')
+                        ->orWhere('contacts.contact_id', 'like', '%' . $term . '%');
+                });
+            }
+
+            $contacts->select(
+                'contacts.id',
+                DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' (', contacts.contact_id, ')')) AS text"),
+                'mobile',
+                'landmark',
+                'city',
+                'state'
+            )
+                ->onlyGuarantor();
 
             if (request()->session()->get('business.enable_rp') == 1) {
                 $contacts->addSelect('total_rp');

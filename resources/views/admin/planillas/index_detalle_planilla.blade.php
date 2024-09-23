@@ -401,6 +401,7 @@
                 url: $(this).attr('href'),
                 dataType: 'html',
                 success: function(result) {
+                    console.log(result)
                     $('#view_product_modal')
                         .html(result)
                         .modal('show');

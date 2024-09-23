@@ -326,12 +326,13 @@ class AdminSidebarMenu
             if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.access') || auth()->user()->can('revenues'))) {
                 $menu
                     ->dropdown(
-                        'Cuentas por cobrar',
+                        'Gestión de ventas',
                         function ($sub) {
+                            $sub->url(action('PlanVentaController@index'), 'Plan de ventas', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'plan-ventas-index' && request()->segment(2) == null]);
                             $sub->url(action('RevenueController@index'), 'Lista de Cuentas por cobrar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == null]);
-                            $sub->url(action('RevenueController@create'), 'Agregar cuenta por cobrar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == 'create']);
-                            $sub->url(action('ExpenseCategoryController@index'), 'Categorias', ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']);
-                            $sub->url(action('BankController@index'), 'Cuentas bancarias', ['icon' => 'fa fas fa-university', 'active' => request()->segment(1) == 'bank']);
+                            //$sub->url(action('RevenueController@create'), 'Agregar cuenta por cobrar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == 'create']);
+                            //$sub->url(action('ExpenseCategoryController@index'), 'Categorias', ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']);
+                            //$sub->url(action('BankController@index'), 'Cuentas bancarias', ['icon' => 'fa fas fa-university', 'active' => request()->segment(1) == 'bank']);
                         },
                         ['icon' => 'fa fas fa-plus-circle'],
                     )

@@ -9,9 +9,9 @@
             <small>@lang('vehiculos.manage_vehiculos')</small>
         </h1>
         <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -264,6 +264,44 @@
                 fnDrawCallback: function(oSettings) {
                     __currency_convert_recursively($('#product_table'));
                 },
+                initComplete: function() {
+                    var api = this.api();
+
+                    // Indices de las columnas donde quieres aplicar los filtros
+                    var filterableColumns = [3,4,5,6,7,8,9,10,11]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+
+                    // Agregar una fila en el encabezado para los filtros de búsqueda
+                    $('#product_table thead').append('<tr class="filter-row"></tr>');
+
+                    // Para cada columna, verifica si debe tener un filtro y agrégalo
+                    api.columns().every(function(index) {
+                        var column = this;
+                        var headerCell = $(column.header());
+                        var th = $('<th></th>').appendTo('.filter-row');
+
+                        // Verifica si el índice de la columna está en el arreglo de columnas filtrables
+                        if (filterableColumns.includes(index)) {
+                            // Crear el input de búsqueda
+                            var input = $(
+                                '<input type="text" class="form-control" placeholder="Buscar ' +
+                                headerCell.text() + '" style="width: 100%;" />');
+
+                            // Verificar si la columna tiene data: 'contact'
+                            if (column.dataSrc() === 'contact') {
+                                input.attr('name', 'contact_search');
+                                input.attr('id', 'contact_search');
+                            }
+
+                            input.appendTo(th)
+                                .on('keyup change', function() {
+                                    if (column.search() !== this.value) {
+                                        console.log(this.value);
+                                        column.search(this.value).draw();
+                                    }
+                                });
+                        }
+                    });
+                }
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];
@@ -566,7 +604,7 @@
                             var total_stock_value_by_sale_price = sum_table_col($(
                                 '#stock_report_table'), 'stock_value_by_sale_price');
                             $('#footer_stock_value_by_sale_price').text(
-                            total_stock_value_by_sale_price);
+                                total_stock_value_by_sale_price);
 
                             var total_potential_profit = sum_table_col($('#stock_report_table'),
                                 'potential_profit');

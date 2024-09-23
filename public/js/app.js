@@ -410,6 +410,42 @@ $(document).ready(function () {
             $('#footer_contact_return_due').text(total_return_due);
             __currency_convert_recursively($('#contact_table'));
         },
+        initComplete: function () {
+            var api = this.api();
+
+            // Indices de las columnas donde quieres aplicar los filtros
+            var filterableColumns = [1,2, 3, 4]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+
+            // Agregar una fila en el encabezado para los filtros de búsqueda
+            $('#contact_table thead').append('<tr class="filter-row"></tr>');
+
+            // Para cada columna, verifica si debe tener un filtro y agrégalo
+            api.columns().every(function (index) {
+                var column = this;
+                var headerCell = $(column.header());
+                var th = $('<th></th>').appendTo('.filter-row');
+
+                // Verifica si el índice de la columna está en el arreglo de columnas filtrables
+                if (filterableColumns.includes(index)) {
+                    // Crear el input de búsqueda
+                    var input = $('<input type="text" class="form-control" placeholder="Buscar ' + headerCell.text() + '" style="width: 100%;" />');
+
+                    // Verificar si la columna tiene data: 'contact'
+                    if (column.dataSrc() === 'contact') {
+                        input.attr('name', 'contact_search');
+                        input.attr('id', 'contact_search');
+                    }
+
+                    input.appendTo(th)
+                        .on('keyup change', function () {
+                            if (column.search() !== this.value) {
+                                console.log(this.value);
+                                column.search(this.value).draw();
+                            }
+                        });
+                }
+            });
+        }
     });
 
     //On display of add contact modal
@@ -1370,6 +1406,7 @@ $(document).ready(function () {
                 d.end_vence_date = $('input#expense_date_vence')
                     .data('daterangepicker')
                     .endDate.format('YYYY-MM-DD');
+                d.contact = $('input#contact_search').val();
             },
         },
         columns: [{
@@ -1383,7 +1420,7 @@ $(document).ready(function () {
             },
             {
                 data: 'contact',
-                name: 'contact'
+                name: 'ct.name'
             },
 
             {
@@ -1652,7 +1689,43 @@ $(document).ready(function () {
                 extend: 'colvis',
                 text: 'Visibilidad de columna'
             }
-        ]
+        ],
+        initComplete: function () {
+            var api = this.api();
+
+            // Indices de las columnas donde quieres aplicar los filtros
+            var filterableColumns = [2, 3, 10]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+
+            // Agregar una fila en el encabezado para los filtros de búsqueda
+            $('#expense_table thead').append('<tr class="filter-row"></tr>');
+
+            // Para cada columna, verifica si debe tener un filtro y agrégalo
+            api.columns().every(function (index) {
+                var column = this;
+                var headerCell = $(column.header());
+                var th = $('<th></th>').appendTo('.filter-row');
+
+                // Verifica si el índice de la columna está en el arreglo de columnas filtrables
+                if (filterableColumns.includes(index)) {
+                    // Crear el input de búsqueda
+                    var input = $('<input type="text" class="form-control" placeholder="Buscar ' + headerCell.text() + '" style="width: 100%;" />');
+
+                    // Verificar si la columna tiene data: 'contact'
+                    if (column.dataSrc() === 'contact') {
+                        input.attr('name', 'contact_search');
+                        input.attr('id', 'contact_search');
+                    }
+
+                    input.appendTo(th)
+                        .on('keyup change', function () {
+                            if (column.search() !== this.value) {
+                                console.log(this.value);
+                                column.search(this.value).draw();
+                            }
+                        });
+                }
+            });
+        }
     });
 
     function getSelectedRowsCuepag() {
@@ -1679,7 +1752,7 @@ $(document).ready(function () {
     function getSelectedRows() {
         var selected_rows = [];
         var i = 0;
-    
+
         $('.row-select:checked').each(function () {
             // Obtener la fila del checkbox seleccionado
             var row = $(this).closest('tr');
@@ -1689,7 +1762,7 @@ $(document).ready(function () {
             var saldo = parseFloat(row.find('td:eq(8)').text().replace(/[^\d.-]/g, '')); // Asumiendo que saldo es igual al monto
             var fechaVence = row.find('td:eq(5)').text();
             var detalle = row.find('td:eq(9)').text();
-    
+
             selected_rows[i++] = {
                 provider: provider.trim(),
                 invoice: invoice.trim(),
@@ -1700,10 +1773,10 @@ $(document).ready(function () {
                 detalle: detalle.trim()
             };
         });
-    
+
         return selected_rows;
     }
-    
+
 
     $('select#location_id, select#expense_for, select#expense_category_id, select#expense_payment_status').on(
         'change',
@@ -1711,6 +1784,10 @@ $(document).ready(function () {
             expense_table.ajax.reload();
         }
     );
+
+    $(document).on('keyup change', 'input#contact_search', function () {
+        //expense_table.ajax.reload();
+    });
 
 
     //Date picker

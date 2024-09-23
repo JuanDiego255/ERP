@@ -10,8 +10,8 @@ class Revenue extends Model
     use HasFactory;
 
     protected $fillable = [
-        'referencia', 'observacao', 'vencimento', 'recebimento', 'business_id', 'valor_total', 'valor_recebido',
-        'status', 'created_by', 'expense_category_id', 'tipo_pagamento', 'location_id', 'contact_id', 'document'
+        'referencia', 'detalle', 'business_id', 'valor_total',
+        'status', 'created_by', 'expense_category_id', 'location_id', 'contact_id','tasa','cuota','tipo_prestamo','moneda','plan_venta_id','plazo'
     ];
 
     public function location(){

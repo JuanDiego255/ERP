@@ -501,6 +501,7 @@ class PlanillaController extends Controller
                 'detalle_planillas.monto_hora_extra as monto_hora_extra',
                 'detalle_planillas.adelantos as adelantos',
                 'detalle_planillas.prestamos as prestamos',
+                'detalle_planillas.aguinaldo as aguinaldo',
                 'detalle_planillas.asociacion as asociacion',
                 'detalle_planillas.total as total',
                 'detalle_planillas.observaciones as observaciones',
@@ -615,7 +616,15 @@ class PlanillaController extends Controller
                     'total',
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$total}}">{{$total}}</span>'
                 )
-                ->rawColumns(['action', 'salario_base', 'total_ccss', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
+                ->editColumn(
+                    'aguinaldo',
+                    '@can("planilla.update")
+        {!! Form::number("aguinaldo", $aguinaldo, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        @else
+        {!! Form::number("aguinaldo", $aguinaldo, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        @endcan'
+                )
+                ->rawColumns(['action', 'salario_base', 'total_ccss','aguinaldo', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
                 ->make(true);
         }
 
@@ -854,5 +863,16 @@ class PlanillaController extends Controller
         }
 
         return $output;
+    }
+
+    public function getAguinaldo($id){
+        if (request()->ajax()) {
+            $aguinaldo = "";
+            $output = [
+                'aguinaldo' => $aguinaldo,
+                'msg' => __("Se calculó el aguinaldo con éxito")
+            ];
+            return json_encode($output);
+        }
     }
 }

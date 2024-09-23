@@ -31,10 +31,10 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('tipo', 'Tipo Identificación' . ':') !!}
+                        {!! Form::label('tipo_identificacion', 'Tipo Identificación' . ':') !!}
                         <div class="input-group" style="width: 100%;">
 
-                            {!! Form::select('tipo', ['j' => 'Juridica', 'f' => 'Fisica'], '', ['class' => 'form-control']) !!}
+                            {!! Form::select('tipo_identificacion', ['j' => 'Juridica', 'f' => 'Fisica'], '', ['class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
@@ -44,8 +44,8 @@
 
                         <label for="product_custom_field2">Identificación:</label>
 
-                        <input class="form-control featured-field" required placeholder="Identificación" name="cpf_cnpj"
-                            type="text" id="cpf_cnpj">
+                        <input class="form-control" required placeholder="Identificación" name="identificacion"
+                            type="text" id="identificacion">
                     </div>
                 </div>
 

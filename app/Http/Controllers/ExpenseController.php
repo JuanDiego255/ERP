@@ -98,6 +98,7 @@ class ExpenseController extends Controller
                     'transaction_date',
                     'transactions.fecha_vence',
                     'ref_no',
+                    'ct.name as contact_name',
                     'ec.name as category',
                     'payment_status',
                     'transactions.additional_notes',

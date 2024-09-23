@@ -369,7 +369,11 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/contacts/import', 'ContactController@postImportContacts');
     Route::post('/contacts/check-contact-id', 'ContactController@checkContactId');
     Route::post('/expense/check-ref_no', 'ExpenseController@checkFacId');
+    Route::post('/modal-car/', 'ProductController@store');
     Route::get('/contacts/customers', 'ContactController@getCustomers');
+    Route::get('/contacts/guarantor', 'ContactController@getGuarantor');
+    Route::get('/employees/vendedor', 'EmployeeController@getVendedores');
+    Route::get('/get/vehicles', 'ProductController@getVehicles');
     Route::resource('contacts', 'ContactController');
 
     Route::get('taxonomies-ajax-index-page', 'TaxonomyController@getTaxonomyIndexPage');
@@ -481,11 +485,27 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     //Rutas para los tipo de planillas
     //Rutas para los detalles de planillas
     Route::get('/planilla-detalle-index/{id}', 'PlanillaController@indexDetallePlanilla');
+    Route::get('/get/aguinaldo/{id}', 'PlanillaController@getAguinaldo');
     Route::get('/planilla-detalle-view/{id}', 'PlanillaController@viewPayment');
     Route::get('/planilla-send-payments/{id}', 'PlanillaController@sendPaymentsEmail');
     Route::get('/planilla-send-payments-id/{id}', 'PlanillaController@sendPaymentsEmailDetallado');
     Route::post('/planilla-detalle-update/{id}', 'PlanillaController@updatePlanillaDetalle');
     //Rutas para los detalles de planillas
+    //Rutas para los planes de ventas
+    Route::get('/plan-ventas-index', 'PlanVentaController@index');
+    Route::get('/plan-ventas-create', 'PlanVentaController@create');
+    Route::get('/plan-ventas-edit/{id}', 'PlanVentaController@edit');
+    Route::post('/plan-ventas-store', 'PlanVentaController@store');
+    Route::put('/plan-ventas-update/{id}', 'PlanVentaController@update');
+    Route::delete('/plan-ventas-delete/{id}', 'PlanVentaController@destroy');
+    Route::get('/payments/revenues/{id}', 'RevenueController@receive');
+    Route::post('/payment-revenue-update/{id}/{revenue_id}', 'RevenueController@updatePayment');
+    Route::post('/payment-calc-update/{id}/', 'RevenueController@updateCalc');
+    Route::post('/payment-add-row/{id}', 'RevenueController@storeRow');
+    Route::delete('/payment-row-delete/{id}', 'RevenueController@destroyRow');
+    Route::get('/payment-row-view/{id}/{revenue_id}', 'RevenueController@viewPayment');
+    Route::get('/payment-send-whats-id/{id}/{revenue_id}', 'RevenueController@sendPaymentsWhatsDetallado');
+    //Rutas para los planes de ventas
 
     Route::resource('group-taxes', 'GroupTaxController');
 
