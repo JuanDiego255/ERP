@@ -20,10 +20,9 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-sm-4 invoice-col">
-                    <b>Recibí de:</b> {{ $item->name }}<br>
-                    <b>Interés pagado al:</b> {{ $item->created_at }}<br>
-                    <b>Fecha de pago:</b> {{ $item->fecha_pago }}
-                    <b>Fecha de interés:</b> {{ $item->fecha_interes }}
+                    <b>Recibí de:</b> {{ $item->name }}<br>                    
+                    <b>Fecha de pago:</b> {{ $item->fecha_pago }}<br>
+                    <b>Interés pagado al:</b> {{ $item->fecha_interes }}
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Cantidad recibida:</b> ₡{{ number_format($item->paga) }}<br>
@@ -45,7 +44,7 @@
                     <br>
                     <b class="mb-2">Intereses pagados:</b> ₡{{ number_format($item->interes_c) }}<br>
                     <b class="mb-2">Monto que amortiza:</b> ₡{{ number_format($item->amortiza) }}<br>
-                    <b class="mb-2">Saldo actual:</b> ₡{{ number_format($item->monto_general) }}
+                    <b class="mb-2">Saldo a la fecha de interés:</b> ₡{{ number_format($item->monto_general) }}
                 </div>
             </div>
             <div class="row">

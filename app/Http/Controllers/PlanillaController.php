@@ -864,7 +864,6 @@ class PlanillaController extends Controller
 
         return $output;
     }
-
     public function getAguinaldo($id){
         if (request()->ajax()) {
             $aguinaldo = "";

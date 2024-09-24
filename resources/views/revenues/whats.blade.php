@@ -118,7 +118,7 @@
     <div class="col-sm-4 invoice-col">
         <b>Recibí de:</b> {{ $item->name }}<br>
         <b>Interés pagado al:</b> {{ $item->created_at }}<br>
-        <b>Fecha de pago:</b> {{ $item->fecha_pago }}
+        <b>Fecha de pago:</b> {{ $item->fecha_pago }}<br>
         <b>Fecha de interés:</b> {{ $item->fecha_interes }}
     </div>
     <div class="col-sm-4 invoice-col">
