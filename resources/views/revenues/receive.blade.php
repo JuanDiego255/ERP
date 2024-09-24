@@ -11,6 +11,7 @@
     <!-- Main content -->
     <section class="content">
         <input type="hidden" id="revenue_id" value="{{ $id }}">
+        <input type="hidden" id="can_update" value="{{ $canUpdate }}">
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', [
@@ -249,7 +250,8 @@
                     </div>
                 </div>
                 @component('components.widget', [
-                    'title' => __('Gestión de pagos en esta cuenta'),
+                    'title' => __(
+                        'Gestión de pagos en esta cuenta (Al realizar cambios en los rubros no es necesario agregar los separador de miles, el sistema los detecta automaticamente, al usar comas o puntos no se actualiza el campo)'),
                 ])
                     @slot('tool')
                         <div class="box-tools">
@@ -295,6 +297,7 @@
             var vehiculo = $('#vehiculo').val();
             var placa = $('#placa').val();
             var modelo = $('#modelo').val();
+            var can_update = $('#can_update').val();
             var payment_table = $('#payments').DataTable({
                 processing: true,
                 serverSide: true,
@@ -381,7 +384,7 @@
 
                             // Llama a la función que agrupa los datos de la planilla
                             var groupedData =
-                        groupPaymentData(); // Ajusta la función si es necesario
+                                groupPaymentData(); // Ajusta la función si es necesario
                             var grandTotalPaga = 0;
                             var grandTotalAmortiza = 0;
                             var grandTotalInteres = 0;
@@ -420,12 +423,9 @@
                             });
 
                             // Formatear los totales
-                            var formattedGrandTotalPaga = __currency_trans_from_en(grandTotalPaga
-                                .toFixed(2), true, true);
-                            var formattedGrandTotalAmortiza = __currency_trans_from_en(
-                                grandTotalAmortiza.toFixed(2), true, true);
-                            var formattedGrandTotalInteres = __currency_trans_from_en(
-                                grandTotalInteres.toFixed(2), true, true);
+                            var formattedGrandTotalPaga = formatCurrency(grandTotalPaga);
+                            var formattedGrandTotalAmortiza = formatCurrency(grandTotalAmortiza);
+                            var formattedGrandTotalInteres = formatCurrency(grandTotalInteres);
 
                             // Agregar la fila final con los totales
                             body.append(
@@ -499,7 +499,6 @@
                     payment_table.ajax.reload();
                 });
             }
-
             function groupPaymentData() {
                 var selected_rows = [];
                 var i = 0;
@@ -509,10 +508,10 @@
                     var fecha_interes = row.find('td:eq(3) input[type="text"]').val() || '';
                     var referencia = row.find('td:eq(4) input[type="text"]').val() || '';
                     var detalle = row.find('td:eq(5) input[type="text"]').val() || '';
-                    var paga = parseFloat(row.find('td:eq(6) input[type="number"]').val()) || 0;
-                    var amortiza = parseFloat(row.find('td:eq(7) input[type="number"]').val()) || 0;
-                    var interes_c = parseFloat(row.find('td:eq(8) input[type="number"]').val()) || 0;
-                    var saldo = parseFloat(row.find('td:eq(10) input[type="number"]').val()) || 0;
+                    var paga = row.find('td:eq(6) input[type="text"]').val() || '0';
+                    var amortiza = row.find('td:eq(7) input[type="text"]').val() || '0';
+                    var interes_c = row.find('td:eq(8) input[type="text"]').val() || '0';
+                    var saldo = row.find('td:eq(10) input[type="text"]').val() || '0';
 
                     selected_rows[i++] = {
                         fecha_pago: fecha_pago.trim(),
@@ -530,11 +529,15 @@
             }
             $('#payments').on('focus', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
-                input.data('initialValue', input.val());
+                var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
+                    '');
+                input.data('initialValue', valorSinFormato);
             });
             $('#payments').on('blur', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
                 var value = input.val();
+                var value = value.replace(/,/g, '').replace(/\.\d+$/,
+                    '');
                 var initialValue = input.data('initialValue'); // Recupera el valor inicial
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
@@ -599,6 +602,13 @@
                         if (response.success) {
                             payment_table.ajax.reload();
                             toggleInputs();
+                        } else {
+                            swal({
+                                title: response.msg,
+                                icon: "warning",
+                                buttons: true,
+                                dangerMode: false,
+                            });
                         }
                     }
                 });
@@ -641,9 +651,9 @@
                 var penultimaFila = allRows.eq(allRows.length - 2);
 
                 // Obtén los valores de las celdas de la fila actual y de la penúltima fila
-                var saldo = penultimaFila.find('td').eq(9).find('input').val();
-                var amortiza = currentRow.find('td').eq(6).find('input').val();
-                var interes = currentRow.find('td').eq(7).find('input').val();
+                var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val();
+                var amortiza = currentRow.find('td').eq(7).find('input[type="text"]').val();
+                var interes = currentRow.find('td').eq(8).find('input[type="text"]').val();
 
                 swal({
                     title: LANG.sure,
@@ -696,7 +706,6 @@
                     },
                 });
             });
-
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
                 var allRows = payment_table.rows({
@@ -713,14 +722,17 @@
                 // Iterar sobre las filas visibles
                 $(allRows).each(function(index, row) {
                     var inputs = $(row).find(
-                        'input[type="number"]'); // Encuentra los inputs en cada fila
+                        'input[type="text"]').not(
+                        '[name="fecha_interes"], [name="referencia"], [name="detalle"], [name="created_at"]'
+                        );
+                    // Encuentra los inputs en cada fila
 
                     // Si solo hay una fila, los inputs quedan habilitados (sin readonly)
                     if (totalRows === 1) {
                         inputs.prop('readonly', false); // Elimina readonly si solo hay una fila
                     } else {
                         // Si es la última fila, habilita los inputs (sin readonly), de lo contrario, agrégales readonly
-                        if (index === totalRows - 1) {
+                        if (index === totalRows - 1 && can_update == true) {
                             inputs.prop('readonly', false); // Última fila editable
                         } else {
                             inputs.prop('readonly', true); // Otras filas solo de lectura

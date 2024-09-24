@@ -459,6 +459,94 @@
                 </div>
             </div>
             <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Cuentas Por Cobrar')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.view', false, ['class' => 'input-icheck']) !!} {{ __('Ver cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.create', false, ['class' => 'input-icheck']) !!} {{ __('Agregar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.update', false, ['class' => 'input-icheck']) !!} {{ __('Editar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.delete', false, ['class' => 'input-icheck']) !!} {{ __('Eliminar cuentas') }}
+                            </label>
+                        </div>
+                    </div>   
+                                    
+                </div>
+            </div>
+            <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Planes de venta')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.view', false, ['class' => 'input-icheck']) !!} {{ __('Ver planes de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.create', false, ['class' => 'input-icheck']) !!} {{ __('Agregar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.update', false, ['class' => 'input-icheck']) !!} {{ __('Editar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.delete', false, ['class' => 'input-icheck']) !!} {{ __('Eliminar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>   
+                                    
+                </div>
+            </div>
+            <hr>
             {{-- @if (in_array('purchases', $enabled_modules) || in_array('stock_adjustment', $enabled_modules))
                 <div class="row check_group">
                     <div class="col-md-3">

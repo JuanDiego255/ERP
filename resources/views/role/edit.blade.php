@@ -367,28 +367,36 @@
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'guarantor.view', in_array('guarantor.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver fiador') }}
+                                {!! Form::checkbox('permissions[]', 'guarantor.view', in_array('guarantor.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver fiador') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'guarantor.create', in_array('guarantor.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Crear fiador') }}
+                                {!! Form::checkbox('permissions[]', 'guarantor.create', in_array('guarantor.create', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Crear fiador') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'guarantor.update', in_array('guarantor.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar fiador') }}
+                                {!! Form::checkbox('permissions[]', 'guarantor.update', in_array('guarantor.update', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Editar fiador') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'guarantor.delete', in_array('guarantor.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar fiador') }}
+                                {!! Form::checkbox('permissions[]', 'guarantor.delete', in_array('guarantor.delete', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Eliminar fiador') }}
                             </label>
                         </div>
                     </div>
@@ -466,6 +474,171 @@
                             @show_tooltip(__('lang_v1.view_purchase_price_tooltip'))
                         </div>
                     </div> --}}
+                </div>
+            </div>
+            <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Cuentas Por Pagar')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.view', in_array('cxp.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.create', in_array('cxp.create', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Agregar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.update', in_array('cxp.update', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Editar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxp.delete', in_array('cxp.delete', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Eliminar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.payments', in_array('purchase.payments', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Agregar pagos') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'purchase.view', in_array('purchase.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver pagos') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Cuentas Por Cobrar')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.view', in_array('cxc.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.create', in_array('cxc.create', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Agregar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.update', in_array('cxc.update', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Editar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'cxc.delete', in_array('cxc.delete', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Eliminar cuentas') }}
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row check_group">
+                <div class="col-md-3">
+                    <h4>@lang('Planes de venta')</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.view', in_array('plan_venta.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver planes de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.create', in_array('plan_venta.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Agregar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.update', in_array('plan_venta.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'plan_venta.delete', in_array('plan_venta.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar plan de venta') }}
+                            </label>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <hr>
@@ -557,7 +730,7 @@
                 </div>
                 <hr>
             @endif --}}
-           {{--  <div class="row check_group">
+            {{--  <div class="row check_group">
                 <div class="col-md-3">
                     <h4>Ventas</h4>
                 </div>
@@ -760,45 +933,57 @@
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'cxp.view', in_array('cxp.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver cuentas') }}
+                                {!! Form::checkbox('permissions[]', 'cxp.view', in_array('cxp.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver cuentas') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'cxp.create', in_array('cxp.create', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Agregar cuentas') }}
+                                {!! Form::checkbox('permissions[]', 'cxp.create', in_array('cxp.create', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Agregar cuentas') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'cxp.update', in_array('cxp.update', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Editar cuentas') }}
+                                {!! Form::checkbox('permissions[]', 'cxp.update', in_array('cxp.update', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Editar cuentas') }}
                             </label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'cxp.delete', in_array('cxp.delete', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Eliminar cuentas') }}
+                                {!! Form::checkbox('permissions[]', 'cxp.delete', in_array('cxp.delete', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Eliminar cuentas') }}
                             </label>
                         </div>
-                    </div>        
+                    </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'purchase.payments', in_array('purchase.payments', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Agregar pagos') }}
+                                {!! Form::checkbox('permissions[]', 'purchase.payments', in_array('purchase.payments', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Agregar pagos') }}
                             </label>
                         </div>
-                    </div>       
+                    </div>
                     <div class="col-md-12">
                         <div class="checkbox">
                             <label>
-                                {!! Form::checkbox('permissions[]', 'purchase.view', in_array('purchase.view', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Ver pagos') }}
+                                {!! Form::checkbox('permissions[]', 'purchase.view', in_array('purchase.view', $role_permissions), [
+                                    'class' => 'input-icheck',
+                                ]) !!} {{ __('Ver pagos') }}
                             </label>
                         </div>
-                    </div>            
+                    </div>
                 </div>
             </div>
             <hr>

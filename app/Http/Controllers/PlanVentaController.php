@@ -38,13 +38,13 @@ class PlanVentaController extends Controller
             return DataTables::of($planillas)
                 ->addColumn(
                     'action',
-                    '@can("employee.update")
+                    '
                     <a href="{{ action(\'PlanVentaController@edit\', [$id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                     &nbsp;
-                @endcan
-                @can("employee.delete")
-                    <button data-href="{{ action(\'PlanVentaController@destroy\', [$id]) }}" class="btn btn-xs btn-danger delete_plan_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                @endcan'
+                
+                    @can("plan_venta.delete")
+                        <button data-href="{{ action(\'PlanVentaController@destroy\', [$id]) }}" class="btn btn-xs btn-danger delete_plan_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                    @endcan'
                 )
                 ->editColumn('fecha_plan', '{{ @format_date($fecha_plan) }}')
                 ->rawColumns(['action', 'name'])

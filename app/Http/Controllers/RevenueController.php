@@ -56,7 +56,7 @@ class RevenueController extends Controller
 
     public function index()
     {
-        if (!auth()->user()->can('revenues.access')) {
+        if (!auth()->user()->can('cxc.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -192,165 +192,11 @@ class RevenueController extends Controller
         return view('revenues.index')
             ->with(compact('categories', 'business_locations', 'users'));
     }
-
-    public function create()
-    {
-        if (!auth()->user()->can('revenues.access')) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $business_id = request()->session()->get('user.business_id');
-
-        //Check if subscribed or not
-        if (!$this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse(action('RevenueController@index'));
-        }
-
-        $business_locations = BusinessLocation::forDropdown($business_id);
-
-        $expense_categories = ExpenseCategory::where('business_id', $business_id)
-            ->pluck('name', 'id');
-        $users = User::forDropdown($business_id, true, true);
-
-        $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
-
-        $payment_line = $this->dummyPaymentLine;
-
-        $payment_types = $this->transactionUtil->payment_types();
-
-        //Accounts
-        $accounts = [];
-        if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false, true);
-        }
-
-        $walk_in_customer = $this->contactUtil->getWalkInCustomer($business_id);
-
-        $types = [];
-        if (auth()->user()->can('supplier.create')) {
-            $types['supplier'] = __('report.supplier');
-        }
-        if (auth()->user()->can('customer.create')) {
-            $types['customer'] = __('report.customer');
-        }
-        if (auth()->user()->can('guarantor.create')) {
-            $types['guarantor'] = __('report.guarantor');
-        }
-        if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
-            $types['both'] = __('lang_v1.both_supplier_customer');
-        }
-
-        return view('revenues.create')
-            ->with('tipo', 'customer')
-            ->with('estados', $this->prepareUFs())
-            ->with('cities', $this->prepareCities())
-
-            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'walk_in_customer', 'types'));
-    }
-
-    private function prepareCities()
-    {
-        $cities = City::all();
-        $temp = [];
-        foreach ($cities as $c) {
-            // array_push($temp, $c->id => $c->nome);
-            $temp[$c->id] = $c->nome . " ($c->uf)";
-        }
-        return $temp;
-    }
-    private function prepareUFs()
-    {
-        return [
-            "AC" => "AC",
-            "AL" => "AL",
-            "AM" => "AM",
-            "AP" => "AP",
-            "BA" => "BA",
-            "CE" => "CE",
-            "DF" => "DF",
-            "ES" => "ES",
-            "GO" => "GO",
-            "MA" => "MA",
-            "MG" => "MG",
-            "MS" => "MS",
-            "MT" => "MT",
-            "PA" => "PA",
-            "PB" => "PB",
-            "PE" => "PE",
-            "PI" => "PI",
-            "PR" => "PR",
-            "RJ" => "RJ",
-            "RN" => "RN",
-            "RS" => "RS",
-            "RO" => "RO",
-            "RR" => "RR",
-            "SC" => "SC",
-            "SE" => "SE",
-            "SP" => "SP",
-            "TO" => "TO"
-
-        ];
-    }
-    public function store(Request $request)
-    {
-        if (!auth()->user()->can('revenues.access')) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        try {
-            $business_id = $request->session()->get('user.business_id');
-
-            $request->validate([
-                'document' => 'file|max:' . (config('constants.document_size_limit') / 1000)
-            ]);
-
-            $data = $request->vencimento;
-            $data = $this->transactionUtil->uf_date($data);
-
-            $inputs = $request->only(['referencia', 'vencimento', 'location_id', 'final_total', 'expense_for', 'observacao', 'expense_category_id', 'contact_id', 'tipo_pagamento', 'valor_recebido']);
-
-
-            $user_id = $request->session()->get('user.id');
-            $inputs['business_id'] = $business_id;
-            $inputs['created_by'] = $user_id;
-
-
-            $inputs['valor_total'] = str_replace(",", ".", $inputs['final_total']);
-
-            $inputs['valor_recebido'] = str_replace(",", ".", $inputs['valor_recebido']);
-
-            $inputs['vencimento'] = $data;
-            $inputs['recebimento'] = $data;
-
-            $inputs['status'] =  $inputs['valor_recebido'] > 0;
-
-            $document_name = $this->transactionUtil->uploadFile($request, 'document', 'documents');
-            if (!empty($document_name)) {
-                $inputs['document'] = $document_name;
-            }
-            Revenue::create($inputs);
-
-            $output = [
-                'success' => 1,
-                'msg' => 'cuenta por cobrar salva'
-            ];
-        } catch (\Exception $e) {
-            // DB::rollBack();
-
-            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
-
-            // echo $e->getMessage();
-            // die;
-            $output = [
-                'success' => 0,
-                'msg' => __('messages.something_went_wrong')
-            ];
-        }
-
-        return redirect('revenues')->with('status', $output);
-    }
     public function storeRow($id)
     {
+        if (!auth()->user()->can('cxc.create')) {
+            return response()->json(['success' => false, 'msg' => 'No cuentas con permisos para realizar modificaciones, o insertar nuevas lineas']);
+        }
         try {
             $record = PaymentRevenue::where('payment_revenues.revenue_id', $id)
                 ->join('revenues', 'payment_revenues.revenue_id', '=', 'revenues.id')
@@ -374,13 +220,17 @@ class RevenueController extends Controller
             PaymentRevenue::create($cxc_pay);
             return response()->json(['success' => true]);
         } catch (Exception $th) {
-            return response()->json(['success' => $th->getMessage()]);
+            return response()->json(['success' => false, 'msg' => 'Ocurrió un error al insertar la linea']);
         }
     }
     public function destroy($id)
     {
-        if (!auth()->user()->can('revenues.access')) {
-            abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('cxc.delete')) {
+            $output = [
+                'success' => false,
+                'msg' => __("No cuentas con permisos para eliminar cuentas")
+            ];
+            return $output;
         }
 
         if (request()->ajax()) {
@@ -408,115 +258,6 @@ class RevenueController extends Controller
 
             return $output;
         }
-    }
-    public function edit($id)
-    {
-        if (!auth()->user()->can('revenues.access')) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $business_id = request()->session()->get('user.business_id');
-
-        //Check if subscribed or not
-        if (!$this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse(action('RevenueController@index'));
-        }
-
-        $business_locations = BusinessLocation::forDropdown($business_id);
-
-        $expense_categories = ExpenseCategory::where('business_id', $business_id)
-            ->pluck('name', 'id');
-        $users = User::forDropdown($business_id, true, true);
-
-        $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
-
-        $payment_line = $this->dummyPaymentLine;
-
-        $payment_types = $this->transactionUtil->payment_types();
-
-        //Accounts
-        $accounts = [];
-        if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false, true);
-        }
-
-        $walk_in_customer = $this->contactUtil->getWalkInCustomer($business_id);
-
-        $types = [];
-        if (auth()->user()->can('supplier.create')) {
-            $types['supplier'] = __('report.supplier');
-        }
-        if (auth()->user()->can('customer.create')) {
-            $types['customer'] = __('report.customer');
-        }
-        if (auth()->user()->can('guarantor.create')) {
-            $types['guarantor'] = __('report.guarantor');
-        }
-        if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
-            $types['both'] = __('lang_v1.both_supplier_customer');
-        }
-
-        $item = Revenue::findorfail($id);
-
-        return view('revenues.edit')
-            ->with('tipo', 'customer')
-            ->with('estados', $this->prepareUFs())
-            ->with('cities', $this->prepareCities())
-            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'walk_in_customer', 'types', 'item'));
-    }
-    public function update(Request $request, $id)
-    {
-        if (!auth()->user()->can('revenues.access')) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        try {
-            $business_id = $request->session()->get('user.business_id');
-
-            $request->validate([
-                'document' => 'file|max:' . (config('constants.document_size_limit') / 1000)
-            ]);
-
-            $item = Revenue::findorfail($id);
-
-            $data = $request->vencimento;
-            $data = $this->transactionUtil->uf_date($data);
-
-            $user_id = $request->session()->get('user.id');
-
-
-            $request->merge([
-                'valor_total' => str_replace(",", ".", $request->final_total),
-                'vencimento' => $data,
-                'created_by' => $user_id,
-                'status' => $request->valor_recebido > 0,
-                'valor_recebido' => str_replace(",", ".", $request->valor_recebido)
-            ]);
-
-            $document_name = $this->transactionUtil->uploadFile($request, 'document', 'documents');
-            if (!empty($document_name)) {
-                $inputs['document'] = $document_name;
-            }
-
-            $item->fill($request->all())->save();
-
-            $output = [
-                'success' => 1,
-                'msg' => 'cuenta por cobrar atualizada'
-            ];
-        } catch (\Exception $e) {
-            // DB::rollBack();
-
-            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
-
-
-            $output = [
-                'success' => 0,
-                'msg' => __('messages.something_went_wrong')
-            ];
-        }
-
-        return redirect('revenues')->with('status', $output);
     }
     public function receive($id)
     {
@@ -548,7 +289,12 @@ class RevenueController extends Controller
             ->where('rev.id', $id)
             ->first();
 
-        //$payment_types = $this->transactionUtil->payment_types();        
+        //$payment_types = $this->transactionUtil->payment_types(); 
+        
+        $canUpdate = true;
+        if(!auth()->user()->can('cxc.update')){
+            $canUpdate = false;
+        }
 
         if (request()->ajax()) {
             $payment_revenues = PaymentRevenue::where('payment_revenues.revenue_id', $id)
@@ -575,7 +321,7 @@ class RevenueController extends Controller
                 ->addColumn(
                     'action',
                     '<a href="{{ action(\'RevenueController@viewPayment\', [$id,$rev_id]) }}" class="btn btn-xs btn-info view-payment"><i class="glyphicon glyphicon-print"></i></a>
-                     @can("planilla.delete")
+                     @can("cxc.delete")
                         <button data-href="{{ action(\'RevenueController@destroyRow\', [$id]) }}" class="btn btn-xs btn-danger delete_row_button"><i class="glyphicon glyphicon-trash"></i></button>
                     @endcan
                     '
@@ -583,14 +329,14 @@ class RevenueController extends Controller
                 ->addColumn(
                     'calcular',
                     '
-                     @can("planilla.delete")
+                     @can("cxc.update")
                         <button data-href="{{ action(\'RevenueController@updateCalc\', [$id]) }}" class="btn btn-xs btn-success update_row_button text-center"><i class="fas fa-calculator"></i></button>
                     @endcan
                     '
                 )
                 ->editColumn(
                     'created_at',
-                    '@can("planilla.update")
+                    '@can("cxc.update")
                     {!! Form::text("created_at", @format_date($created_at), array_merge(["class" => "form-control"])) !!}
                     @else
                     {!! Form::text("created_at", @format_date($created_at), array_merge(["class" => "form-control"], ["readonly"])) !!}
@@ -598,7 +344,7 @@ class RevenueController extends Controller
                 )
                 ->editColumn(
                     'fecha_interes',
-                    '@can("planilla.update")
+                    '@can("cxc.update")
                     {!! Form::text("fecha_interes", @format_date($fecha_interes), array_merge(["class" => "form-control"])) !!}
                     @else
                     {!! Form::text("fecha_interes", @format_date($fecha_interes), array_merge(["class" => "form-control"], ["readonly"])) !!}
@@ -607,7 +353,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'referencia',
                     '
-                    @can("planilla.update")
+                    @can("cxc.update")
                     {!! Form::text("referencia", $referencia, array_merge(["class" => "form-control"])) !!}
                     @else
                     {!! Form::text("referencia", $referencia, array_merge(["class" => "form-control"],  ["readonly"])) !!}
@@ -618,7 +364,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'detalle',
                     '
-                    @can("planilla.update")
+                    @can("cxc.update")
                     {!! Form::text("detalle", $detalle, array_merge(["class" => "form-control"])) !!}
                     @else
                     {!! Form::text("detalle", $detalle, array_merge(["class" => "form-control"],  ["readonly"])) !!}
@@ -627,67 +373,41 @@ class RevenueController extends Controller
                 )
                 ->editColumn(
                     'paga',
-                    '@can("planilla.update")
-                    {!! Form::number("paga", $paga, array_merge(["class" => "form-control"])) !!}
+                    '@can("cxc.update")
+                    {!! Form::text("paga", number_format($paga, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
                     @else
-                    {!! Form::number("paga", $paga, array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    {!! Form::text("paga", number_format($paga, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
                 )
                 ->editColumn(
                     'amortiza',
-                    '@can("planilla.update")
-                    {!! Form::number("amortiza", $amortiza, array_merge(["class" => "form-control"])) !!}
+                    '@can("cxc.update")
+                    {!! Form::text("amortiza", number_format($amortiza, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
                     @else
-                    {!! Form::number("amortiza", $amortiza, array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    {!! Form::text("amortiza", number_format($amortiza, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
                 )
                 ->editColumn(
                     'interes_c',
-                    '@can("planilla.update")
-                    {!! Form::number("interes_c", $interes_c, array_merge(["class" => "form-control"])) !!}
+                    '@can("cxc.update")
+                    {!! Form::text("interes_c", number_format($interes_c, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
                     @else
-                    {!! Form::number("interes_c", $interes_c, array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    {!! Form::text("interes_c", number_format($interes_c, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
                 )
                 ->editColumn(
                     'monto_general',
-                    '@can("planilla.update")
-                    {!! Form::number("monto_general", $monto_general, array_merge(["class" => "form-control"])) !!}
+                    '@can("cxc.update")
+                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
                     @else
-                    {!! Form::number("monto_general", $monto_general, array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
                 )
                 ->rawColumns(['action', 'calcular', 'fecha_interes', 'created_at', 'referencia', 'detalle',  'monto_general', 'amortiza', 'paga', 'interes_c', 'monto_general'])
                 ->make(true);
         }
 
-        return view('revenues.receive', compact('item', 'id'));
-    }
-    public function receivePut(Request $request, $id)
-    {
-        $item = Revenue::findorfail($id);
-        try {
-
-            $data = $request->recebimento;
-            $data = $this->transactionUtil->uf_date($data);
-            $item->status = 1;
-            $item->recebimento = $data;
-            $item->valor_recebido = str_replace(",", ".", $request->valor_recebido);
-
-            $item->save();
-            $output = [
-                'success' => 1,
-                'msg' => 'Conta recebida'
-            ];
-        } catch (\Exception $e) {
-            // echo $e->getMessage();
-            // die;
-            $output = [
-                'success' => 0,
-                'msg' => __('messages.something_went_wrong')
-            ];
-        }
-        return redirect('revenues')->with('status', $output);
+        return view('revenues.receive', compact('item', 'id','canUpdate'));
     }
     public function updatePayment(Request $request, $id, $revenue_id)
     {
@@ -733,10 +453,12 @@ class RevenueController extends Controller
     public function updateCalc(Request $request, $id)
     {
         $detalle_planilla = PaymentRevenue::findOrFail($id);
-        $detalle["monto_general"] = $request->saldo - $request->amortiza;
+        $saldo = isset($request->saldo) ? floatval(str_replace(',', '', $request->saldo)) : 0;
+        $amortiza = isset($request['amortiza']) ? floatval(str_replace(',', '', $request['amortiza'])) : 0;
+        $detalle["monto_general"] = $saldo - $amortiza;
         $detalle_planilla->update($detalle);
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true,'request' => $saldo]);
     }
     public function destroyRow($id)
     {

@@ -21,7 +21,7 @@ LANG = {
 "this_financial_year": "Ejercicio actual",
 "clear": "Claro",
 "no_products_added": "No se agregaron productos, agregue algunos productos primero",
-"some_error_in_input_field": "Invalid inputs, Check & try again !!",
+"some_error_in_input_field": "Información invalida, intente nuevamente",
 "confirm_delete_expense_category": "Esta categoría junto con todos los gastos en esta categoría se eliminarán",
 "confirm_delete_expense": "Este gasto se eliminará",
 "confirm_delete_payment": "Este pago se eliminará",

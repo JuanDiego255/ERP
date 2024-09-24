@@ -70,7 +70,7 @@ class AdminSidebarMenu
                             ); */
                             }
                             if (auth()->user()->can('supplier.create') || auth()->user()->can('customer.create') || auth()->user()->can('guarantor.create')) {
-                                $sub->url(action('ContactController@getImportContacts'), __('lang_v1.import_contacts'), ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'contacts' && request()->segment(2) == 'import']);
+                                //$sub->url(action('ContactController@getImportContacts'), __('lang_v1.import_contacts'), ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'contacts' && request()->segment(2) == 'import']);
                             }
 
                             if (!empty(env('GOOGLE_MAP_API_KEY'))) {
@@ -132,7 +132,7 @@ class AdminSidebarMenu
                                 __('product.variations'),
                                 ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'variation-templates']
                             ); */
-                                $sub->url(action('ImportProductsController@index'), __('vehiculos.import_product'), ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-products']);
+                                //$sub->url(action('ImportProductsController@index'), __('vehiculos.import_product'), ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-products']);
                             }
                             /* if (auth()->user()->can('product.opening_stock')) {
                             $sub->url(
@@ -322,22 +322,21 @@ class AdminSidebarMenu
                         ->order(45);
                 }
             }
-
-            if (in_array('revenues', $enabled_modules) && (auth()->user()->can('revenues.access') || auth()->user()->can('revenues'))) {
-                $menu
-                    ->dropdown(
-                        'Gestión de ventas',
-                        function ($sub) {
+            $menu
+                ->dropdown(
+                    'Gestión de ventas',
+                    function ($sub) {
+                        if (auth()->user()->can('plan_venta.view')) {
                             $sub->url(action('PlanVentaController@index'), 'Plan de ventas', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'plan-ventas-index' && request()->segment(2) == null]);
+                        }
+                        if (auth()->user()->can('cxc.view')) {
                             $sub->url(action('RevenueController@index'), 'Lista de Cuentas por cobrar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == null]);
-                            //$sub->url(action('RevenueController@create'), 'Agregar cuenta por cobrar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == 'create']);
-                            //$sub->url(action('ExpenseCategoryController@index'), 'Categorias', ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']);
-                            //$sub->url(action('BankController@index'), 'Cuentas bancarias', ['icon' => 'fa fas fa-university', 'active' => request()->segment(1) == 'bank']);
-                        },
-                        ['icon' => 'fa fas fa-plus-circle'],
-                    )
-                    ->order(45);
-            }
+                        }                        
+                    },
+                    ['icon' => 'fa fas fa-plus-circle'],
+                )
+                ->order(45);
+
             //Accounts dropdown
             if (auth()->user()->can('account.access') && in_array('account', $enabled_modules)) {
                 $menu
@@ -493,7 +492,7 @@ class AdminSidebarMenu
                                 $sub->url(action('PrinterController@index'), 'Impresoras', ['icon' => 'fa fas fa-share-alt', 'active' => request()->segment(1) == 'printers']);
                             }
 
-                           /*  if (auth()->user()->can('tax_rate.view') || auth()->user()->can('tax_rate.create')) {
+                            /*  if (auth()->user()->can('tax_rate.view') || auth()->user()->can('tax_rate.create')) {
                                 $sub->url(action('TaxRateController@index'), __('tax_rate.tax_rates'), ['icon' => 'fa fas fa-bolt', 'active' => request()->segment(1) == 'tax-rates']);
                             } */
 

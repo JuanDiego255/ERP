@@ -175,7 +175,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('monto_efectivo', __('Total efectivo')) !!}
-                            {!! Form::text('monto_efectivo',  number_format($plan->monto_efectivo, 2, '.', ','), [
+                            {!! Form::text('monto_efectivo', number_format($plan->monto_efectivo, 2, '.', ','), [
                                 'class' => 'form-control',
                                 'id' => 'monto_efectivo',
                                 'required',
@@ -186,7 +186,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('total_recibido', __('Total recibido')) !!}
-                            {!! Form::text('total_recibido',  number_format($plan->total_recibido, 2, '.', ','), [
+                            {!! Form::text('total_recibido', number_format($plan->total_recibido, 2, '.', ','), [
                                 'class' => 'form-control',
                                 'id' => 'total_recibido',
                                 'required',
@@ -197,7 +197,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('total_financiado', __('Total financiado')) !!}
-                            {!! Form::text('total_financiado',  number_format($plan->total_financiado, 2, '.', ','), [
+                            {!! Form::text('total_financiado', number_format($plan->total_financiado, 2, '.', ','), [
                                 'class' => 'form-control display_currency',
                                 'id' => 'total_financiado',
                                 'required',
@@ -242,14 +242,14 @@
                             {!! Form::number('tasa', $plan->tasa, [
                                 'class' => 'form-control',
                                 'required',
-                                'step' => '0.01'
+                                'step' => '0.01',
                             ]) !!}
                         </div>
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('cuota', __('Cuota mensual') . ':*') !!}
-                            {!! Form::text('cuota',  number_format($plan->cuota, 2, '.', ','), [
+                            {!! Form::text('cuota', number_format($plan->cuota, 2, '.', ','), [
                                 'class' => 'form-control',
                                 'required',
                             ]) !!}
@@ -276,11 +276,13 @@
                 @endcomponent
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">@lang('messages.save')</button>
+        @can('plan_venta.update')
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">@lang('messages.save')</button>
+                </div>
             </div>
-        </div>
+        @endcan
         {!! Form::close() !!}
         <div class="modal fade car_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             @include('admin.plan_ventas.modal-car')

@@ -112,23 +112,23 @@
                 </div>
                 <div class="col-md-4 ">
                     <div class="form-group">
-                        <label for="product_custom_field2">Cantón*:</label>
-                        <input class="form-control" value="{{ $contact->city }}" required placeholder="Cantón"
+                        <label for="product_custom_field2">Cantón:</label>
+                        <input class="form-control" value="{{ $contact->city }}" placeholder="Cantón"
                             name="city" type="text" id="city">
                     </div>
                 </div>
                 <div class="col-md-4 ">
                     <div class="form-group">
-                        <label for="product_custom_field2">Distrito*:</label>
-                        <input class="form-control" value="{{ $contact->bairro }}" required placeholder="Distrito"
+                        <label for="product_custom_field2">Distrito:</label>
+                        <input class="form-control" value="{{ $contact->bairro }}" placeholder="Distrito"
                             name="bairro" type="text" id="bairro">
                     </div>
                 </div>
 
                 <div class="col-md-4 ">
                     <div class="form-group">
-                        <label for="product_custom_field2">Barrio*:</label>
-                        <input class="form-control" value="{{ $contact->rua }}" required placeholder="Barrio"
+                        <label for="product_custom_field2">Barrio:</label>
+                        <input class="form-control" value="{{ $contact->rua }}" placeholder="Barrio"
                             name="rua" type="text" id="rua">
                     </div>
                 </div>

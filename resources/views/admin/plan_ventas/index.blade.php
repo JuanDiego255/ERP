@@ -9,20 +9,22 @@
             <small>@lang('Administrar planes de ventas')</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                    <li class="active">Here</li>
-                                </ol> -->
+                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                        <li class="active">Here</li>
+                                    </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
         @component('components.widget', ['class' => 'box-primary', 'title' => __('Todos los planes de ventas')])
-            @slot('tool')
-                <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href="{{ action('PlanVentaController@create') }}">
-                        <i class="fa fa-plus"></i> @lang('messages.add')</a>
-                </div>
-            @endslot
+            @can('plan_venta.create')
+                @slot('tool')
+                    <div class="box-tools">
+                        <a class="btn btn-block btn-primary" href="{{ action('PlanVentaController@create') }}">
+                            <i class="fa fa-plus"></i> @lang('messages.add')</a>
+                    </div>
+                @endslot
+            @endcan
             @can('user.view')
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="plan_ventas">
@@ -80,8 +82,8 @@
                     var api = this.api();
 
                     // Indices de las columnas donde quieres aplicar los filtros
-                    var filterableColumns = [0,1,2,3
-                    ]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+                    var filterableColumns = [0, 1, 2,
+                    3]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
                     // Agregar una fila en el encabezado para los filtros de búsqueda
                     $('#plan_ventas thead').append('<tr class="filter-row"></tr>');

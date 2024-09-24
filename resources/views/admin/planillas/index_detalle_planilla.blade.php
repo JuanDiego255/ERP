@@ -14,14 +14,18 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                    <li class="active">Here</li>
-                                                                                                                                                                </ol> -->
+                                                                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                            <li class="active">Here</li>
+                                                                                                                                                                        </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
-        @component('components.widget', ['class' => 'box-primary', 'title' => __('Todos los empleados')])
+        @component('components.widget', [
+            'class' => 'box-primary',
+            'title' => __(
+                'Todos los empleados (Al realizar cambios en los rubros no es necesario agregar los separador de miles, el sistema los detecta automaticamente, al usar comas o puntos no se actualiza el campo)'),
+        ])
             @can('user.view')
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="planillas">
@@ -327,12 +331,14 @@
             }
 
 
-            $('#planillas').on('focus', 'input[type="number"]', function() {
+            $('#planillas').on('focus', 'input[type="text"]', function() {
                 var input = $(this);
-                input.data('initialValue', input.val()); // Guarda el valor inicial
+                var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
+                ''); // Elimina todo lo que sigue al punto
+                input.data('initialValue', valorSinFormato);
             });
 
-            $('#planillas').on('blur', 'input[type="number"]', function() {
+            $('#planillas').on('blur', 'input[type="text"]', function() {
                 var input = $(this);
                 var value = input.val();
                 var initialValue = input.data('initialValue'); // Recupera el valor inicial
@@ -343,7 +349,7 @@
                 // Solo procede si el valor cambió
                 if (value != initialValue && value >= 0 && canUpdate && aprobada != 1) {
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud
-                    $('input[type="number"]').prop('disabled', true);
+                    $('input[type="text"]').prop('disabled', true);
 
                     $.ajax({
                         url: '/planilla-detalle-update/' + row_id,

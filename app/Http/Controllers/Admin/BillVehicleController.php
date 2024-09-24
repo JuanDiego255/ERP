@@ -251,6 +251,8 @@ class BillVehicleController extends Controller
 
             $business_id = $request->session()->get('user.business_id');
             $bill_details['business_id'] = $business_id;
+            $monto = isset($request['monto']) ? floatval(str_replace(',', '', $request['monto'])) : 0;
+            $bill_details['monto'] = $monto;
             $bill = VehicleBill::where('business_id', $business_id)
                 ->findOrFail($id);
             $is_cxp = $bill->is_cxp;
@@ -258,14 +260,14 @@ class BillVehicleController extends Controller
                 $factura = Transaction::where('business_id', $business_id)
                     ->where('ref_no', $bill->factura)
                     ->firstOrFail();
-                    $data = [
-                        'ref_no' => $request->factura,
-                        'contact_id' => $request->proveedor_id,
-                        'total_before_tax' => $request->monto,
-                        'final_total' => $request->monto,
-                        'additional_notes' => $request->descripcion,
-                        'transaction_date' => $request->fecha_compra
-                    ];
+                $data = [
+                    'ref_no' => $request->factura,
+                    'contact_id' => $request->proveedor_id,
+                    'total_before_tax' => $monto,
+                    'final_total' => $monto,
+                    'additional_notes' => $request->descripcion,
+                    'transaction_date' => $request->fecha_compra
+                ];
                 $factura->update($data);
             }
 

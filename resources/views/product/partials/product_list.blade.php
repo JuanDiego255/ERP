@@ -9,7 +9,7 @@
                 <th>@lang('messages.action')</th>
                 <th><input type="checkbox" id="select-all-row"></th>
                 <th>&nbsp;</th>
-                <th>@lang('sale.product')</th>
+                <th>@lang('Vehículo')</th>
                 <th>@lang('product.category')</th>
                 <th>@lang('product.brand')</th>
                 <th>@lang('vehiculos.model')</th>

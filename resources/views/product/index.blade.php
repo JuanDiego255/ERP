@@ -115,7 +115,7 @@
                         <ul class="nav nav-tabs">
                             <li class="active">
                                 <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes"
-                                        aria-hidden="true"></i> @lang('lang_v1.all_products')</a>
+                                        aria-hidden="true"></i> @lang('Todos los vehículos')</a>
                             </li>
 
                             {{-- <li>

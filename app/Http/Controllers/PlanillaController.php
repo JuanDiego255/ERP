@@ -523,9 +523,9 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'total_ccss',
                     '@can("planilla.update")
-        {!! Form::number("total_ccss", $total_ccss, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("total_ccss", number_format($total_ccss, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("total_ccss", $total_ccss, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("total_ccss", number_format($total_ccss, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )
                 ->editColumn(
@@ -537,7 +537,7 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'monto_hora_extra',
                     '
-        {!! Form::number("monto_hora_extra", $monto_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("monto_hora_extra", number_format($monto_hora_extra, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
        '
                 )/* 
                 ->editColumn(
@@ -567,17 +567,17 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'salario_base',
                     '@can("planilla.update")
-        {!! Form::number("salario_base", $salario_base, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("salario_base", number_format($salario_base, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("salario_base", $salario_base, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("salario_base", number_format($salario_base, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )
                 ->editColumn(
                     'bonificacion',
                     '@can("planilla.update")
-        {!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("bonificacion", number_format($bonificacion, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("bonificacion", $bonificacion, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("bonificacion", number_format($bonificacion, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )/* 
                 ->editColumn(
@@ -599,9 +599,9 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'prestamos',
                     '@can("planilla.update")
-        {!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("prestamos", number_format($prestamos, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("prestamos", $prestamos, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("prestamos", number_format($prestamos, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )/* 
                 ->editColumn(
@@ -619,9 +619,9 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'aguinaldo',
                     '@can("planilla.update")
-        {!! Form::number("aguinaldo", $aguinaldo, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("aguinaldo", $aguinaldo, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )
                 ->rawColumns(['action', 'salario_base', 'total_ccss','aguinaldo', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])

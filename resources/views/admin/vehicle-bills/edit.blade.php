@@ -30,7 +30,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('monto', __('Monto') . ':*') !!}
-                            {!! Form::text('monto', $bill->monto, ['class' => 'form-control', 'required', 'placeholder' => __('Monto')]) !!}
+                            {!! Form::text('monto',  number_format($bill->monto, 2, '.', ','), ['class' => 'form-control', 'required', 'placeholder' => __('Monto')]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
