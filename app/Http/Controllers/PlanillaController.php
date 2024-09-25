@@ -591,9 +591,9 @@ class PlanillaController extends Controller
                 ->editColumn(
                     'cant_hora_extra',
                     '@can("planilla.update")
-        {!! Form::number("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
+        {!! Form::text("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
         @else
-        {!! Form::number("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
+        {!! Form::text("cant_hora_extra", $cant_hora_extra, array_merge(["class" => "form-control"], ["readonly"])) !!}
         @endcan'
                 )
                 ->editColumn(
@@ -616,15 +616,20 @@ class PlanillaController extends Controller
                     'total',
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$total}}">{{$total}}</span>'
                 )
+                ->addColumn(
+                    'calc_aguinaldo',
+                    '
+                     @can("planilla.update")
+                        <button data-href="{{ action(\'PlanillaController@aguinaldoCalc\', [$id]) }}" class="btn btn-xs btn-success calc_aguinaldo_button text-center"><i class="fas fa-calculator"></i></button>
+                    @endcan
+                    '
+                )
                 ->editColumn(
                     'aguinaldo',
-                    '@can("planilla.update")
-        {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], $aprobada == 1 ? ["readonly"] : [])) !!}
-        @else
-        {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
-        @endcan'
+                    '
+                    {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}'
                 )
-                ->rawColumns(['action', 'salario_base', 'total_ccss','aguinaldo', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
+                ->rawColumns(['action', 'salario_base', 'calc_aguinaldo', 'total_ccss', 'aguinaldo', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
                 ->make(true);
         }
 
@@ -664,7 +669,6 @@ class PlanillaController extends Controller
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
         }
     }
-
     public function updatePlanillaDetalle(Request $request, $id)
     {
         $total_monto_he = 0;
@@ -687,7 +691,6 @@ class PlanillaController extends Controller
 
         return response()->json(['success' => true, 'total' => $total]);
     }
-
     public function updateApprove($id)
     {
         try {
@@ -864,11 +867,13 @@ class PlanillaController extends Controller
 
         return $output;
     }
-    public function getAguinaldo($id){
+    public function aguinaldoCalc($id)
+    {
         if (request()->ajax()) {
             $aguinaldo = "";
             $output = [
                 'aguinaldo' => $aguinaldo,
+                'success' => true,
                 'msg' => __("Se calculó el aguinaldo con éxito")
             ];
             return json_encode($output);

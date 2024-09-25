@@ -36,7 +36,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('expense_payment_status',  __('purchase.payment_status') . ':') !!}
-                        {!! Form::select('expense_payment_status', ['1' => 'Cobrado', '0' => 'Pendiente'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('expense_payment_status', ['1' => 'Cobrado', '2' => 'Pendiente'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                     </div>
                 </div>
             @endcomponent

@@ -53,7 +53,6 @@ class RevenueController extends Controller
 
         $this->contactUtil = $contactUtil;
     }
-
     public function index()
     {
         if (!auth()->user()->can('cxc.view')) {
@@ -88,19 +87,20 @@ class RevenueController extends Controller
                     'revenues.created_by',
                     'ct.contact_id',
                     'ct.name',
-                    DB::raw('COALESCE(SUM(pr.amortiza), 0) as amount_paid')
+                    DB::raw('COALESCE(SUM(pr.amortiza), 0) as amount_paid'),
+                    DB::raw('COALESCE(MIN(pr.monto_general),-1) as min_general_amount')
                 ])
                 ->groupBy('revenues.id', 'ct.contact_id', 'ct.name')
                 ->orderBy('rev_id', 'desc');
 
             if (request()->has('status')) {
                 $status = request()->get('status');
-                if ($status == 0) {
-                    $revenues->where('revenues.status', 0);
-                }
-
                 if ($status == 1) {
                     $revenues->where('revenues.status', 1);
+                }
+
+                if ($status == 2) {
+                    $revenues->where('revenues.status', 0);
                 }
             }
 
@@ -155,8 +155,8 @@ class RevenueController extends Controller
                 ->editColumn(
                     'status',
                     function ($row) {
-                        if (($row->valor_total - $row->amount_paid) == 0) {
-                            return '<span class="label bg-success">Pagado</span>';
+                        if ($row->min_general_amount == 0) {
+                            return '<span class="label bg-green">Cancelado</span>';
                         } else {
                             return '<span class="label bg-yellow">Pendiente</span>';
                         }

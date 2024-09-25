@@ -14,9 +14,9 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                            <li class="active">Here</li>
-                                                                                                                                                                        </ol> -->
+                                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                                <li class="active">Here</li>
+                                                                                                                                                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -46,12 +46,14 @@
                                 {{-- <th>@lang('Deudas')</th>
                                 <th>@lang('Rebajados')</th> --}}
                                 <th>@lang('C.C.S.S')</th>
+                                <th>@lang('Calcular Aguinaldo')</th>
+                                <th>@lang('Aguinaldo')</th>
                                 <th>@lang('Total')</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr class="bg-gray font-17 text-center footer-total">
-                                <td colspan="10"><strong>@lang('sale.total'):</strong></td>
+                                <td colspan="12"><strong>@lang('sale.total'):</strong></td>
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="total" data-currency_symbol ="true"></span></td>
                             </tr>
@@ -142,6 +144,12 @@
                     // { "data": "rebajados" },
                     {
                         "data": "total_ccss"
+                    },
+                    {
+                        "data": "calc_aguinaldo"
+                    },
+                    {
+                        "data": "aguinaldo"
                     },
                     {
                         "data": "total"
@@ -288,7 +296,6 @@
             function groupPlanillaData() {
                 var selected_rows = [];
                 var i = 0;
-
                 // Recorre cada fila de la tabla de planillas
                 $('#planillas tbody tr').each(function() {
                     var row = $(this);
@@ -296,21 +303,16 @@
                     // Extrae los valores desde los inputs dentro de cada columna correspondiente
                     var employee_id = row.find('td:eq(2)').text(); // ID del empleado (texto)
                     var name = row.find('td:eq(3)').text(); // Nombre del empleado (texto)
-                    var salario_base = parseFloat(row.find('td:eq(4) input[type="number"]').val()) ||
-                        0; // Salario base
-                    var bonificacion = parseFloat(row.find('td:eq(5) input').val()) ||
-                        0; // Bonificación (input)
+                    var salario_base = row.find('td:eq(4) input[type="text"]').val() || '0';
+                    var bonificacion = row.find('td:eq(5) input[type="text"]').val() || '0';
                     var hora_extra = parseFloat(row.find('td:eq(6) input').val()) ||
                         0; // Hora extra (input)
                     var cant_hora_extra = parseInt(row.find('td:eq(7) input').val()) ||
                         0; // Cantidad de horas extra (input)
-                    var monto_hora_extra = parseFloat(row.find('td:eq(8) input').val()) ||
-                        0; // Monto por hora extra (input)
-                    var prestamos = parseFloat(row.find('td:eq(9) input').val()) ||
-                        0; // Préstamos (input)
-                    var total_ccss = parseFloat(row.find('td:eq(10) input').val()) ||
-                        0; // Total CCSS (input)
-                    var total = parseFloat(row.find('td:eq(11)').text().replace(/[^\d.-]/g, ''));
+                    var monto_hora_extra = row.find('td:eq(8) input[type="text"]').val() || '0';
+                    var prestamos = row.find('td:eq(9) input[type="text"]').val() || '0';
+                    var total_ccss = row.find('td:eq(10) input[type="text"]').val() || '0';
+                    var total = parseFloat(row.find('td:eq(13)').text().replace(/[^\d.-]/g, ''));
 
                     // Agrega la fila seleccionada con los datos relevantes al array de filas seleccionadas
                     selected_rows[i++] = {
@@ -329,15 +331,12 @@
 
                 return selected_rows;
             }
-
-
             $('#planillas').on('focus', 'input[type="text"]', function() {
                 var input = $(this);
                 var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
-                ''); // Elimina todo lo que sigue al punto
+                    ''); // Elimina todo lo que sigue al punto
                 input.data('initialValue', valorSinFormato);
             });
-
             $('#planillas').on('blur', 'input[type="text"]', function() {
                 var input = $(this);
                 var value = input.val();
@@ -381,7 +380,6 @@
                 __currency_convert_recursively($('#planillas')); // Conversión de moneda si aplica
             }
         });
-
         $(document).on('click', 'button.sendPaymentDetail', function() {
             var data = $(this).serialize();
             var detalle_id = $('#detalle_id').val();
@@ -400,7 +398,6 @@
                 },
             });
         });
-
         $(document).on('click', 'a.view-planilla', function(e) {
             e.preventDefault();
             $.ajax({
@@ -413,6 +410,33 @@
                         .modal('show');
                     __currency_convert_recursively($('#view_product_modal'));
                 },
+            });
+        });
+        $(document).on('click', 'button.calc_aguinaldo_button', function() {
+            swal({
+                title: LANG.sure,
+                text: 'Se calculará el aguinaldo, desea continuar?',
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    var data = $(this).serialize();
+                    $.ajax({
+                        method: "POST",
+                        url: href,
+                        dataType: "json",
+                        data: data,
+                        success: function(result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
             });
         });
     </script>

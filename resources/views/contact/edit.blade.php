@@ -89,7 +89,7 @@
                         {!! Form::label('tipo', 'Tipo' . ':') !!}
                         <div class="input-group" style="width: 100%;">
 
-                            {!! Form::select('tipo', ['j' => 'Juridica', 'f' => 'Fisica'], $type, ['class' => 'form-control']) !!}
+                            {!! Form::select('tipo_identificacion', ['j' => 'Juridica', 'f' => 'Fisica'], $contact->tipo_identificacion, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
