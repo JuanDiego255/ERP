@@ -14,9 +14,9 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                                <li class="active">Here</li>
-                                                                                                                                                                            </ol> -->
+                                                                                                                                                                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                                        <li class="active">Here</li>
+                                                                                                                                                                                    </ol> -->
     </section>
 
     <!-- Main content -->
@@ -379,6 +379,34 @@
                 $('#total').text(total);
                 __currency_convert_recursively($('#planillas')); // Conversión de moneda si aplica
             }
+            $(document).on('click', 'button.calc_aguinaldo_button', function() {
+                swal({
+                    title: LANG.sure,
+                    text: 'Se calculará el aguinaldo, desea continuar?',
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).data('href');
+                        var data = $(this).serialize();
+                        $.ajax({
+                            method: "POST",
+                            url: href,
+                            dataType: "json",
+                            data: data,
+                            success: function(result) {
+                                if (result.success == true) {
+                                    toastr.success(result.msg);
+                                    users_table.ajax.reload();
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
         });
         $(document).on('click', 'button.sendPaymentDetail', function() {
             var data = $(this).serialize();
@@ -410,33 +438,6 @@
                         .modal('show');
                     __currency_convert_recursively($('#view_product_modal'));
                 },
-            });
-        });
-        $(document).on('click', 'button.calc_aguinaldo_button', function() {
-            swal({
-                title: LANG.sure,
-                text: 'Se calculará el aguinaldo, desea continuar?',
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).data('href');
-                    var data = $(this).serialize();
-                    $.ajax({
-                        method: "POST",
-                        url: href,
-                        dataType: "json",
-                        data: data,
-                        success: function(result) {
-                            if (result.success == true) {
-                                toastr.success(result.msg);
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        }
-                    });
-                }
             });
         });
     </script>

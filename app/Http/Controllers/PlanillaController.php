@@ -8,6 +8,7 @@ use App\Models\Employees;
 use App\Models\Planilla;
 use App\Models\TipoPlanilla;
 use App\Notifications\CustomerNotification;
+use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -620,14 +621,19 @@ class PlanillaController extends Controller
                     'calc_aguinaldo',
                     '
                      @can("planilla.update")
-                        <button data-href="{{ action(\'PlanillaController@aguinaldoCalc\', [$id]) }}" class="btn btn-xs btn-success calc_aguinaldo_button text-center"><i class="fas fa-calculator"></i></button>
+                        <button  {{$aprobada == 1 ? "disabled" : "" }} data-href="{{ action(\'PlanillaController@aguinaldoCalc\', [$id,$employee_id]) }}" class="btn btn-xs btn-success calc_aguinaldo_button text-center"><i class="fas fa-calculator"></i></button>
                     @endcan
                     '
                 )
                 ->editColumn(
                     'aguinaldo',
                     '
-                    {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}'
+                    @can("planilla.update")
+                    {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"],  $aprobada == 1 ? ["readonly"] : [])) !!}
+                    @else
+                    {!! Form::text("aguinaldo", number_format($aguinaldo, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    @endcan
+                    '
                 )
                 ->rawColumns(['action', 'salario_base', 'calc_aguinaldo', 'total_ccss', 'aguinaldo', 'hora_extra',  'monto_hora_extra', 'bonificacion', 'cant_hora_extra', 'prestamos', 'total'])
                 ->make(true);
@@ -681,6 +687,7 @@ class PlanillaController extends Controller
         $total = $detalle_planilla->salario_base +
             $detalle_planilla->bonificacion +
             $detalle_planilla->comisiones +
+            $detalle_planilla->aguinaldo +
             $total_monto_he -
             ($detalle_planilla->adelantos +
                 $detalle_planilla->prestamos +
@@ -867,16 +874,64 @@ class PlanillaController extends Controller
 
         return $output;
     }
-    public function aguinaldoCalc($id)
+    public function aguinaldoCalc($id, $employee_id)
     {
-        if (request()->ajax()) {
-            $aguinaldo = "";
+        try {
+            DB::beginTransaction();
+            if (request()->ajax()) {
+                $currentYear = Carbon::now()->year;
+                $currentMonth = Carbon::now()->month;
+                //Se reversa el antiguo aguinaldo
+                $detalle_planilla = DetallePlanilla::findOrFail($id);
+                if ($detalle_planilla->aguinaldo > 0) {
+                    $detalle_planilla->update(['total' => $detalle_planilla->total - $detalle_planilla->aguinaldo, 'aguinaldo' => 0]);
+                    DB::commit();
+                }
+
+                $sumaTotal = DetallePlanilla::whereYear('planillas.fecha_hasta', $currentYear)
+                    ->whereMonth('planillas.fecha_hasta', '<=', $currentMonth)
+                    ->where('detalle_planillas.employee_id', $employee_id)
+                    ->join('employees', 'detalle_planillas.employee_id', 'employees.id')
+                    ->join('planillas', 'detalle_planillas.planilla_id', 'planillas.id')
+                    ->selectRaw('
+                    SUM(detalle_planillas.salario_base) + 
+                    SUM(detalle_planillas.bonificacion) +
+                    SUM(detalle_planillas.comisiones) +
+                    SUM(detalle_planillas.monto_hora_extra)
+                    as suma_total')
+                    ->first()
+                    ->suma_total;
+                $sumaTotal = $sumaTotal / 12;
+                //Actualiza el total
+                $total_monto_he = 0;
+
+                $total_monto_he = $detalle_planilla->cant_hora_extra * $detalle_planilla->hora_extra;
+                $total = $detalle_planilla->salario_base +
+                    $detalle_planilla->bonificacion +
+                    $detalle_planilla->comisiones +
+                    $sumaTotal +
+                    $total_monto_he -
+                    ($detalle_planilla->adelantos +
+                        $detalle_planilla->prestamos +
+                        $detalle_planilla->deudas +
+                        $detalle_planilla->rebajados +
+                        $detalle_planilla->total_ccss);
+
+                //Se calcula el nuevo
+                $detalle_planilla->update(['total' => $total, 'monto_hora_extra' => $total_monto_he, 'aguinaldo' => $sumaTotal]);
+                $output = [
+                    'success' => true,
+                    'msg' => __("Se calculó el aguinaldo con éxito ")
+                ];
+                DB::commit();
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
             $output = [
-                'aguinaldo' => $aguinaldo,
-                'success' => true,
-                'msg' => __("Se calculó el aguinaldo con éxito")
+                'success' => false,
+                'msg' => $th->getMessage()
             ];
-            return json_encode($output);
         }
+        return json_encode($output);
     }
 }
