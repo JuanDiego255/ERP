@@ -32,6 +32,7 @@
                                 <th>@lang('No. Plan')</th>
                                 <th>@lang('Cliente')</th>
                                 <th>@lang('Vehículo vendido')</th>
+                                <th>@lang('Modelo')</th>
                                 <th>@lang('Fecha plan (yyyy-MM-dd)')</th>
                                 <th>@lang('messages.action')</th>
                             </tr>
@@ -72,6 +73,10 @@
                         name: 'products.name'
                     },
                     {
+                        data: 'model',
+                        name: 'products.model'
+                    },
+                    {
                         "data": "fecha_plan"
                     },
                     {
@@ -82,7 +87,7 @@
                     $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();
                     var filterableColumns = [0, 1, 2,
-                    3];
+                    3,4];
                     $('#plan_ventas thead').append('<tr class="filter-row"></tr>');
                     api.columns().every(function(index) {
                         var column = this;

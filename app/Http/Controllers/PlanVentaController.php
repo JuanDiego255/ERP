@@ -30,6 +30,7 @@ class PlanVentaController extends Controller
                 'plan_ventas.id as id',
                 'plan_ventas.numero as numero',
                 'products.name as vehiculo',
+                'products.model as model',
                 'plan_ventas.fecha_plan as fecha_plan'
             ])
             ->orderBy('plan_ventas.fecha_plan', 'desc');
