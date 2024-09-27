@@ -251,6 +251,58 @@ class ProductController extends Controller
                 'pos_module_data'
             ));
     }
+    public function showByItem($type)
+    {
+        return view('product.view-modal-type')->with(compact(
+            'type'
+        ));
+    }
+    public function getCartsByItem($type)
+    {
+        if (request()->ajax()) {
+            $filter = $type == 0 ? "products.is_show" : "products.is_mant";
+            $business_id = request()->session()->get('user.business_id');
+            $query = Product::leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+                ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
+                ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
+                ->where('products.business_id', $business_id)
+                ->where($filter, 1);
+
+            $products = $query->select(
+                'products.id',
+                'products.name as product',
+                'products.type',
+                'c1.name as category',
+                'c2.name as sub_category',
+                'brands.name as brand',
+                'products.sku',
+                'products.model',
+                'products.color',
+                'products.dua',
+                'products.comprado_a',
+                'products.placa',
+                'products.bin',
+                'products.created_at',
+                'products.is_inactive'
+
+            )->groupBy('products.id');
+            $products->orderBy('created_at', 'desc');
+            return Datatables::of($products)
+                ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
+
+                ->editColumn('product', function ($row) {
+                    $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->product;
+
+
+                    return $product;
+                })
+                ->editColumn('created_at', function ($row) {
+                    return $this->commonUtil->format_date($row->created_at, true);
+                })
+                ->rawColumns(['image', 'product', 'category'])
+                ->make(true);
+        }
+    }
 
     /**
      * Show the form for creating a new resource.

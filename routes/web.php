@@ -384,6 +384,8 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/delete-media/{media_id}', 'ProductController@deleteMedia');
     Route::post('/products/mass-deactivate', 'ProductController@massDeactivate');
     Route::get('/products/activate/{id}', 'ProductController@activate');
+    Route::get('/products/show-by-item/{type}', 'ProductController@showByItem');
+    Route::get('/products/get-by-item/{type}', 'ProductController@getCartsByItem');
     Route::get('/products/galery/{id}', 'ProductController@galery');
 
     Route::post('/products/galerySave', 'ProductController@galerySave');

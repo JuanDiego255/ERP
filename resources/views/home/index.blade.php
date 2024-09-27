@@ -6,7 +6,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header content-header-custom">
         <!-- <h1>{{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
-            </h1> -->
+                                                    </h1> -->
     </section>
     @if (auth()->user()->can('dashboard.data'))
         <!-- Main content -->
@@ -47,8 +47,9 @@
             <div class="row row-custom">
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
-                        <span class="info-box-icon bg-green"><i class="fa fa-car"></i></span>
-
+                        <a href="{{ action('ProductController@showByItem', ['type' => 0]) }}" class="view-cars">
+                            <span class="info-box-icon bg-green"><i class="fa fa-car"></i></span>
+                        </a>
                         <div class="info-box-content">
                             <span class="info-box-text">{{ __('Autos en exhibición') }}</span>
                             <span class="info-box-number vehicle_count"><i
@@ -61,9 +62,11 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
-                        <span class="info-box-icon bg-green">
-                            <i class="fa fa-wrench"></i>
-                        </span>
+                        <a href="{{ action('ProductController@showByItem', ['type' => 1]) }}" class="view-cars">
+                            <span class="info-box-icon bg-green">
+                                <i class="fa fa-wrench"></i>
+                            </span>
+                        </a>
 
                         <div class="info-box-content">
                             <span class="info-box-text">{{ __('Vehículo en mantenimiento') }}</span>
@@ -95,7 +98,7 @@
 
                 <!-- fix for small devices only -->
                 <!-- <div class="clearfix visible-sm-block"></div> -->
-               
+
 
                 <!-- expense -->
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
@@ -155,7 +158,7 @@
                 @endforeach
             @endif
             <!-- products less than alert quntity -->
-           {{--  <div class="row">
+            {{--  <div class="row">
 
                 <div class="col-sm-6">
                     @component('components.widget', ['class' => 'box-warning'])
@@ -257,6 +260,9 @@
             @endif
         </section>
         <!-- /.content -->
+        <div class="modal fade" id="view_product_modal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+        </div>
     @stop
     @section('javascript')
         <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
@@ -264,5 +270,23 @@
             {!! $sells_chart_1->script() !!}
             {!! $sells_chart_2->script() !!}
         @endif
+        <script>
+            $(document).on('click', 'a.view-cars', function(e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                var type = href.split('/').pop();
+                $.ajax({
+                    url: href,
+                    dataType: 'html',
+                    success: function(result) {
+                        $('#view_product_modal')
+                            .html(result);                      
+
+                        $('#view_product_modal').modal('show');
+                        __currency_convert_recursively($('#view_product_modal_container'));
+                    },
+                });
+            });
+        </script>
     @endif
 @endsection

@@ -21,7 +21,7 @@ $(document).ready(function() {
         },
         {
             element: '#tour_step2',
-            title: LANG.tour_step2_title,
+            title: LANG.tour_step1_title,
             content: LANG.tour_step2_content,
             onShow: function(tour) {
                 if (
@@ -71,46 +71,7 @@ $(document).ready(function() {
                     $('#tour_step5 a:first').trigger('click');
                 }
             },
-        },
-        {
-            element: '#tour_step6',
-            title: LANG.tour_step6_title,
-            content: LANG.tour_step6_content,
-            onShow: function(tour) {
-                if (
-                    !$('#tour_step6')
-                        .hasClass('active')
-                ) {
-                    $('#tour_step6 a:first').trigger('click');
-                }
-            },
-        },
-        {
-            element: '#tour_step7',
-            title: LANG.tour_step7_title,
-            content: LANG.tour_step7_content,
-            onShow: function(tour) {
-                if (
-                    !$('#tour_step7')
-                        .hasClass('active')
-                ) {
-                    $('#tour_step7 :first').trigger('click');
-                }
-            },
-        },
-        {
-            element: '#tour_step8',
-            title: LANG.tour_step8_title,
-            content: LANG.tour_step8_content,
-            onShow: function(tour) {
-                if (
-                    !$('#tour_step8')
-                        .hasClass('active')
-                ) {
-                    $('#tour_step8 a:first').trigger('click');
-                }
-            },
-        },
+        }
     ]);
     $('#start_tour').click(function() {
         tour.init();
