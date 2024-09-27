@@ -267,12 +267,12 @@
                                     <th>@lang('messages.action')</th>
                                     <th>@lang('ID')</th>
                                     <th>@lang('Fecha pago')</th>
-                                    <th>@lang('Fecha interés')</th>
-                                    <th>@lang('Referencia')</th>
+                                    <th>@lang('Fecha Int')</th>
+                                    <th>@lang('No. Ref')</th>
                                     <th>@lang('Detalle')</th>
                                     <th>@lang('Monto Pagado')</th>
                                     <th>@lang('Amortiza')</th>
-                                    <th>@lang('Interés Corriente')</th>
+                                    <th>@lang('Interés C')</th>
                                     <th>@lang('Calcular')</th>
                                     <th>@lang('Saldo')</th>
                                 </tr>
@@ -313,10 +313,31 @@
                     },
                 },
                 columnDefs: [{
-                    "targets": [4],
-                    "orderable": false,
-                    "searchable": false
-                }],
+                        targets: [0],
+                        width: "80px"
+                    }, // Ancho de la columna 'action'
+                    {
+                        targets: [1],
+                        width: "50px"
+                    }, // Ancho de la columna 'id'
+                    {
+                        targets: [2],
+                        width: "10px"
+                    }, // Ajusta más columnas si es necesario
+                    // Otros ajustes de columnas...
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    $(row).find('td').css({
+                        'padding': '5px',
+                        'font-size': '15px'
+                    });
+
+                    $(row).find('input').css({
+                        'width': '120px',
+                        'height': '30px',
+                        'padding': '5px'
+                    });
+                },
                 columns: [{
                         "data": "action"
                     },
@@ -355,7 +376,7 @@
                     toggleInputs();
                 },
                 initComplete: function() {
-                    $('.dataTables_paginate').css('margin-top', '15px');                   
+                    $('.dataTables_paginate').css('margin-top', '15px');
                 },
                 dom: '<"text-center"B><"top"p>frtip',
                 buttons: [{
@@ -502,6 +523,7 @@
                     payment_table.ajax.reload();
                 });
             }
+
             function groupPaymentData() {
                 var selected_rows = [];
                 var i = 0;
@@ -709,6 +731,7 @@
                     },
                 });
             });
+
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
                 var allRows = payment_table.rows({
@@ -727,7 +750,7 @@
                     var inputs = $(row).find(
                         'input[type="text"]').not(
                         '[name="fecha_interes"], [name="referencia"], [name="detalle"], [name="created_at"]'
-                        );
+                    );
                     // Encuentra los inputs en cada fila
 
                     // Si solo hay una fila, los inputs quedan habilitados (sin readonly)
