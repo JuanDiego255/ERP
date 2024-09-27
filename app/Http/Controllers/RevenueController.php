@@ -229,7 +229,7 @@ class RevenueController extends Controller
             $cxc_pay['revenue_id'] = $id;
             $cxc_pay['monto_general'] = round($monto_general - ($record->cuota - $interes), 2);
             $cxc_pay['interes_c'] = round($interes, 2);
-            $cxc_pay['paga'] = round($record->cuota, 2);
+            $cxc_pay['paga'] = 0;
             $cxc_pay['amortiza'] = round($record->cuota - $interes, 2);
             PaymentRevenue::create($cxc_pay);
             return response()->json(['success' => true]);

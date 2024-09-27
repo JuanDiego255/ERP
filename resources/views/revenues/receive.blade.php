@@ -251,7 +251,7 @@
                 </div>
                 @component('components.widget', [
                     'title' => __(
-                        'Gestión de pagos en esta cuenta (Al realizar cambios en los rubros no es necesario agregar los separador de miles, el sistema los detecta automaticamente, al usar comas o puntos no se actualiza el campo)'),
+                        'Gestión de pagos en esta cuenta (Al realizar cambios en los rubros no es necesario agregar los separador de miles, el sistema los detecta automaticamente, al usar comas o puntos no se actualiza el campo. El monto pagado se agrega en 0, por lo cual lo ideal es ingresar el monto antes de crear una nueva línea, ya que las lineas anteriores se bloquean por seguridad de los cálculos)'),
                 ])
                     @slot('tool')
                         <div class="box-tools">

@@ -12,7 +12,7 @@ $(document).ready(function () {
 
     // });
 
-    if ($('#expense_date_range').length == 1) {
+    /* if ($('#expense_date_range').length == 1) {
         $('#expense_date_range').daterangepicker(
             dateRangeSettings,
             function (start, end) {
@@ -27,7 +27,7 @@ $(document).ready(function () {
             $('#product_sr_date_filter').val('');
             revenues_table.ajax.reload();
         });
-    }
+    } */
 
     $('#location_id').change(function (ev, picker) {
         revenues_table.ajax.reload();
@@ -49,12 +49,6 @@ $(document).ready(function () {
                 console.log(d)
                 d.location_id = $('select#location_id').val();
                 d.status = $('select#expense_payment_status').val();
-                d.start_date = $('input#expense_date_range')
-                    .data('daterangepicker')
-                    .startDate.format('YYYY-MM-DD');
-                d.end_date = $('input#expense_date_range')
-                    .data('daterangepicker')
-                    .endDate.format('YYYY-MM-DD');
             },
         },
         columns: [{

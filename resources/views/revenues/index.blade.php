@@ -26,13 +26,13 @@
                         {!! Form::select('expense_category_id', $categories, null, ['placeholder' =>
                         __('report.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'expense_category_id']); !!}
                     </div>
-                </div> --}}
+                </div> --}}{{-- 
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
                         {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'expense_date_range', 'readonly']); !!}
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('expense_payment_status',  __('purchase.payment_status') . ':') !!}
