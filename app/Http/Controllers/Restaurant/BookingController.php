@@ -69,8 +69,8 @@ class BookingController extends Controller
                 $customer_name = $booking->customer->name;
                 $table_name = optional($booking->table)->name;
 
-                $backgroundColor = '#3c8dbc';
-                $borderColor = '#3c8dbc';
+                $backgroundColor = '#023b9d';
+                $borderColor = '#023b9d';
                 if ($booking->booking_status == 'completed') {
                     $backgroundColor = '#00a65a';
                     $borderColor = '#00a65a';

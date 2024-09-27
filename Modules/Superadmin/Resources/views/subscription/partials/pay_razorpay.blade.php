@@ -9,7 +9,7 @@
 		    data-buttontext="Pay with Razorpay"
 		    data-name="{{env('APP_NAME')}}"
 		    data-description="{{$package->name}}"
-		    data-theme.color="#3c8dbc"
+		    data-theme.color="#023b9d"
 		></script>
 		{{ csrf_field() }}
 		<input type="hidden" name="gateway" value="{{$k}}">

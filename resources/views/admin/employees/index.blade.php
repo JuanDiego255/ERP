@@ -6,7 +6,6 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('Empleados')
-            <small>@lang('Administrar empleados')</small>
         </h1>
         <!-- <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -81,7 +80,9 @@
                         "data": "action"
                     }
                 ],
+                dom: '<"text-center"B><"top"p>frtip',
                 initComplete: function() {
+                    $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();
 
                     // Indices de las columnas donde quieres aplicar los filtros

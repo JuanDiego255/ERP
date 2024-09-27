@@ -159,7 +159,10 @@
                     var total = sum_table_col($('#planillas'), 'final-total');
                     updatePlanillaTotal();
                 },
-                dom: '<"text-center"B>frtip',
+                dom: '<"text-center"B><"top"p>frtip',
+                initComplete: function() {
+                    $('.dataTables_paginate').css('margin-top', '15px');
+                },
                 buttons: [{
                         extend: 'pageLength',
                         text: 'Mostrando 25',

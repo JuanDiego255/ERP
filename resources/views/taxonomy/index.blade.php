@@ -9,9 +9,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>{{$heading }}
-        <small>
-            {{ $module_category_data['sub_heading'] ?? __( 'category.manage_your_categories' ) }}
-        </small>
+        
         @if(isset($module_category_data['heading_tooltip']))
             @show_tooltip($module_category_data['heading_tooltip'])
         @endif

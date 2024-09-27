@@ -76,6 +76,18 @@ class RevenueController extends Controller
                     '=',
                     'pr.revenue_id'
                 )
+                ->leftJoin(
+                    'plan_ventas AS pv',
+                    'revenues.plan_venta_id',
+                    '=',
+                    'pv.id'
+                )
+                ->leftJoin(
+                    'products AS v',
+                    'pv.vehiculo_venta_id',
+                    '=',
+                    'v.id'
+                )
                 ->select([
                     'revenues.id as rev_id',
                     'revenues.referencia',
@@ -86,6 +98,8 @@ class RevenueController extends Controller
                     'revenues.detalle',
                     'revenues.created_by',
                     'ct.contact_id',
+                    'v.name as vehiculo',
+                    'v.model as model',
                     'ct.name',
                     DB::raw('COALESCE(SUM(pr.amortiza), 0) as amount_paid'),
                     DB::raw('COALESCE(MIN(pr.monto_general),-1) as min_general_amount')

@@ -6,7 +6,6 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('vehiculos.vehiculos')
-            <small>@lang('vehiculos.manage_vehiculos')</small>
         </h1>
         <!-- <ol class="breadcrumb">
                 <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -261,11 +260,13 @@
                     $(row).find('td:eq(0)').attr('class', 'selectable_td');
                     $(row).find('td:eq(1)').attr('class', 'selectable_td');
                 },
+                dom: '<"text-center"B><"top"p>frtip',
                 fnDrawCallback: function(oSettings) {
                     __currency_convert_recursively($('#product_table'));
                 },
                 initComplete: function() {
                     var api = this.api();
+                    $('.dataTables_paginate').css('margin-top', '15px');
 
                     // Indices de las columnas donde quieres aplicar los filtros
                     var filterableColumns = [3,4,5,6,7,8,9,10,11]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.

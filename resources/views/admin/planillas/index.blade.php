@@ -5,8 +5,7 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('Planilla')
-            <small>@lang('Administrar planillas')</small>
+        <h1>@lang('Administrar planillas')
         </h1>
         <!-- <ol class="breadcrumb">
                                 <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -91,11 +90,13 @@
                         "data": "action"
                     }
                 ],
+                dom: '<"text-center"B><"top"p>frtip',
                 initComplete: function() {
+                    $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();
 
                     // Indices de las columnas donde quieres aplicar los filtros
-                    var filterableColumns = [0,1]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+                    var filterableColumns = [0,1,2,3]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
                     // Agregar una fila en el encabezado para los filtros de búsqueda
                     $('#planillas thead').append('<tr class="filter-row"></tr>');
@@ -114,9 +115,8 @@
                                 headerCell.text() + '" style="width: 100%;" />');
 
                             // Verificar si la columna tiene data: 'contact'
-                            if (column.dataSrc() === 'contact') {
-                                input.attr('name', 'contact_search');
-                                input.attr('id', 'contact_search');
+                            if (column.dataSrc() === 'fecha_desde' || column.dataSrc() === 'fecha_hasta') {
+                                input.attr('placeholder', 'yyyy-MM-dd');
                             }
 
                             input.appendTo(th)

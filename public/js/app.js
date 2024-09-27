@@ -77,11 +77,39 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: '/brands',
+        dom: '<"text-center"B><"top"p>frtip',
         columnDefs: [{
             targets: 2,
             orderable: false,
             searchable: false,
         }, ],
+        initComplete: function () {
+            $('.dataTables_paginate').css('margin-top', '15px');
+            var api = this.api();
+            var filterableColumns = [0,1];
+            $('#brands_table thead').append('<tr class="filter-row"></tr>');
+            api.columns().every(function (index) {
+                var column = this;
+                var headerCell = $(column.header());
+                var th = $('<th></th>').appendTo('.filter-row');
+
+                // Verifica si el índice de la columna está en el arreglo de columnas filtrables
+                if (filterableColumns.includes(index)) {
+                    // Crear el input de búsqueda
+                    var input = $(
+                        '<input type="text" class="form-control" placeholder="Buscar ' +
+                        headerCell.text() + '" style="width: 100%;" />');
+
+                    input.appendTo(th)
+                        .on('keyup change', function () {
+                            if (column.search() !== this.value) {
+                                console.log(this.value);
+                                column.search(this.value).draw();
+                            }
+                        });
+                }
+            });
+        }
     });
 
     $(document).on('click', 'button.edit_brand_button', function () {
@@ -402,6 +430,7 @@ $(document).ready(function () {
             [1, 'desc']
         ],
         columns: columns,
+        dom: '<"text-center"B><"top"p>frtip',
         fnDrawCallback: function (oSettings) {
             var total_due = sum_table_col($('#contact_table'), 'contact_due');
             $('#footer_contact_due').text(total_due);
@@ -411,10 +440,11 @@ $(document).ready(function () {
             __currency_convert_recursively($('#contact_table'));
         },
         initComplete: function () {
+            $('.dataTables_paginate').css('margin-top', '15px');
             var api = this.api();
 
             // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [1,2, 3, 4]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+            var filterableColumns = [1, 2, 3, 4]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
             // Agregar una fila en el encabezado para los filtros de búsqueda
             $('#contact_table thead').append('<tr class="filter-row"></tr>');
@@ -1474,7 +1504,7 @@ $(document).ready(function () {
                 .find('td:eq(6)')
                 .attr('class', 'clickable_td');
         },
-        dom: '<"text-center"B>frtip', // Esto habilita el contenedor para los botones
+        dom: '<"text-center"B><"top"p>frtip',
         buttons: [{
                 extend: 'pageLength',
                 text: 'Mostrando 25',
@@ -1690,34 +1720,22 @@ $(document).ready(function () {
                 text: 'Visibilidad de columna'
             }
         ],
-        initComplete: function () {
+        initComplete: function() {
+            $('.dataTables_paginate').css('margin-top', '15px');
             var api = this.api();
-
-            // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [2, 3, 10]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
-
-            // Agregar una fila en el encabezado para los filtros de búsqueda
+            var filterableColumns = [ 2, 3];
             $('#expense_table thead').append('<tr class="filter-row"></tr>');
-
-            // Para cada columna, verifica si debe tener un filtro y agrégalo
-            api.columns().every(function (index) {
+            api.columns().every(function(index) {
                 var column = this;
                 var headerCell = $(column.header());
                 var th = $('<th></th>').appendTo('.filter-row');
-
-                // Verifica si el índice de la columna está en el arreglo de columnas filtrables
                 if (filterableColumns.includes(index)) {
-                    // Crear el input de búsqueda
-                    var input = $('<input type="text" class="form-control" placeholder="Buscar ' + headerCell.text() + '" style="width: 100%;" />');
-
-                    // Verificar si la columna tiene data: 'contact'
-                    if (column.dataSrc() === 'contact') {
-                        input.attr('name', 'contact_search');
-                        input.attr('id', 'contact_search');
-                    }
+                    var input = $(
+                        '<input type="text" class="form-control" placeholder="Buscar ' +
+                        headerCell.text() + '" style="width: 100%;" />');
 
                     input.appendTo(th)
-                        .on('keyup change', function () {
+                        .on('keyup change', function() {
                             if (column.search() !== this.value) {
                                 console.log(this.value);
                                 column.search(this.value).draw();

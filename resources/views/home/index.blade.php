@@ -47,7 +47,7 @@
             <div class="row row-custom">
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
-                        <span class="info-box-icon bg-aqua"><i class="fa fa-car"></i></span>
+                        <span class="info-box-icon bg-green"><i class="fa fa-car"></i></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">{{ __('Autos en exhibición') }}</span>
@@ -77,7 +77,7 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
-                        <span class="info-box-icon bg-yellow">
+                        <span class="info-box-icon bg-green">
                             <i class="fa fa-dollar"></i>
                             <i class="fa fa-car-crash"></i>
                         </span>
@@ -100,7 +100,7 @@
                 <!-- expense -->
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
-                        <span class="info-box-icon bg-red">
+                        <span class="info-box-icon bg-green">
                             <i class="fas fa-minus-circle"></i>
                         </span>
 

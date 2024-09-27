@@ -51,20 +51,21 @@
                             <tr>
                                 <th>@lang('messages.action')</th>
                                 <th>Cliente</th>
-                                <th>Referencia</th>
-                                <th>Estado</th>
-                                <th>Valor total</th>
+                                <th>Plan de venta</th>                                
+                                <th>Valor Inicial</th>
                                 <th>Total a cobrar</th>
-                                <th>Detalle</th>
+                                <th>Vehículo</th>
+                                <th>Modelo</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr class="bg-gray font-17 text-center footer-total">
-                                <td colspan="3"><strong>@lang('sale.total'):</strong></td>
+                                <td colspan="2"><strong>@lang('sale.total'):</strong></td>
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="footer_revenue_total" data-currency_symbol ="true"></span></td>
                                 <td><span class="display_currency" id="footer_total_due" data-currency_symbol ="true"></span></td>
-                                <td colspan="1"></td>
+                                <td colspan="3"></td>
                             </tr>
                         </tfoot>
                     </table>

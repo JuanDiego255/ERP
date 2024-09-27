@@ -312,7 +312,7 @@ class AdminSidebarMenu
                             'Cuentas por pagar',
                             function ($sub) {
 
-                                $sub->url(action('ExpenseController@index'), 'Lista de cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
+                                $sub->url(action('ExpenseController@index'), 'Cuentas por pagar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]);
                                 if (auth()->user()->can('cxp.create')) {
                                     $sub->url(action('ExpenseController@create'), 'Agregar cuenta por pagar', ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']);
                                 }
@@ -330,7 +330,7 @@ class AdminSidebarMenu
                             $sub->url(action('PlanVentaController@index'), 'Plan de ventas', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'plan-ventas-index' && request()->segment(2) == null]);
                         }
                         if (auth()->user()->can('cxc.view')) {
-                            $sub->url(action('RevenueController@index'), 'Lista de Cuentas por cobrar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == null]);
+                            $sub->url(action('RevenueController@index'), 'Cuentas por cobrar', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'revenues' && request()->segment(2) == null]);
                         }                        
                     },
                     ['icon' => 'fa fas fa-plus-circle'],
@@ -355,7 +355,7 @@ class AdminSidebarMenu
             }
 
             //Reports dropdown
-            if (auth()->user()->can('purchase_n_sell_report.view') || auth()->user()->can('contacts_report.view') || auth()->user()->can('stock_report.view') || auth()->user()->can('tax_report.view') || auth()->user()->can('trending_product_report.view') || auth()->user()->can('sales_representative.view') || auth()->user()->can('register_report.view') || auth()->user()->can('expense_report.view')) {
+            /* if (auth()->user()->can('purchase_n_sell_report.view') || auth()->user()->can('contacts_report.view') || auth()->user()->can('stock_report.view') || auth()->user()->can('tax_report.view') || auth()->user()->can('trending_product_report.view') || auth()->user()->can('sales_representative.view') || auth()->user()->can('register_report.view') || auth()->user()->can('expense_report.view')) {
                 $menu
                     ->dropdown(
                         __('report.reports'),
@@ -382,16 +382,10 @@ class AdminSidebarMenu
                             }
                             if (auth()->user()->can('stock_report.view')) {
                                 $sub->url(action('ReportController@getStockReport'), 'Informe de stock', ['icon' => 'fa fas fa-hourglass-half', 'active' => request()->segment(2) == 'stock-report']);
-                                /* if (session('business.enable_product_expiry') == 1) {
-                                    $sub->url(action('ReportController@getStockExpiryReport'), 'Relatório de ajuste de ações', ['icon' => 'fa fas fa-calendar-times', 'active' => request()->segment(2) == 'stock-expiry']);
-                                } */
+                              
                                 if (session('business.enable_lot_number') == 1) {
                                     $sub->url(action('ReportController@getLotReport'), __('lang_v1.lot_report'), ['icon' => 'fa fas fa-hourglass-half', 'active' => request()->segment(2) == 'lot-report']);
                                 }
-
-                                /* if (in_array('stock_adjustment', $enabled_modules)) {
-                                    $sub->url(action('ReportController@getStockAdjustmentReport'), 'Relatório de ajuste de ações', ['icon' => 'fa fas fa-sliders-h', 'active' => request()->segment(2) == 'stock-adjustment-report']);
-                                } */
                             }
 
                             if (auth()->user()->can('trending_product_report.view')) {
@@ -429,7 +423,7 @@ class AdminSidebarMenu
                         ['icon' => 'fa fas fa-chart-bar', 'id' => 'tour_step8'],
                     )
                     ->order(55);
-            }
+            } */
 
             //Backup menu
             // if (auth()->user()->can('backup')) {

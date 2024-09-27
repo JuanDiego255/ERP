@@ -70,12 +70,7 @@ $(document).ready(function () {
             {
                 data: 'referencia',
                 name: 'referencia'
-            },
-            {
-                data: 'status',
-                name: 'status',
-                orderable: false
-            },
+            },            
             {
                 data: 'valor_total',
                 name: 'valor_total'
@@ -85,8 +80,17 @@ $(document).ready(function () {
                 name: 'amount_paid'
             },
             {
-                data: 'detalle',
-                name: 'detalle'
+                data: 'vehiculo',
+                name: 'v.name'
+            },
+            {
+                data: 'model',
+                name: 'v.model'
+            },
+            {
+                data: 'status',
+                name: 'status',
+                orderable: false
             },
         ],
         fnDrawCallback: function (oSettings) {
@@ -104,9 +108,10 @@ $(document).ready(function () {
         },
         initComplete: function () {
             var api = this.api();
+            $('.dataTables_paginate').css('margin-top', '15px');
 
             // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [1, 2]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+            var filterableColumns = [1, 2,5,6]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
             // Agregar una fila en el encabezado para los filtros de búsqueda
             $('#revenue_table thead').append('<tr class="filter-row"></tr>');
@@ -137,7 +142,9 @@ $(document).ready(function () {
                         });
                 }
             });
-        }
+        },
+        dom: '<"text-center"B><"top"p>frtip'
+
     });
 
 

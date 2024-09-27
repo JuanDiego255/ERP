@@ -6,7 +6,6 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('Plan de ventas')
-            <small>@lang('Administrar planes de ventas')</small>
         </h1>
         <!-- <ol class="breadcrumb">
                                         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -61,6 +60,7 @@
                     "orderable": false,
                     "searchable": false
                 }],
+                dom: '<"text-center"B><"top"p>frtip',
                 columns: [{
                         "data": "numero"
                     },
@@ -79,16 +79,11 @@
                     }
                 ],
                 initComplete: function() {
+                    $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();
-
-                    // Indices de las columnas donde quieres aplicar los filtros
                     var filterableColumns = [0, 1, 2,
-                    3]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
-
-                    // Agregar una fila en el encabezado para los filtros de búsqueda
+                    3];
                     $('#plan_ventas thead').append('<tr class="filter-row"></tr>');
-
-                    // Para cada columna, verifica si debe tener un filtro y agrégalo
                     api.columns().every(function(index) {
                         var column = this;
                         var headerCell = $(column.header());

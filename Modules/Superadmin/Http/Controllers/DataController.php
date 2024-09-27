@@ -156,7 +156,7 @@ class DataController extends Controller
                         //     ['icon' => 'fa fas fa-clone', 'active' => request()->segment(1) == 'superadmin' && request()->segment(2) == 'frontend-pages']
                         // );
                 },
-                ['icon' => 'fa fas fa-users-cog', 'style' => 'background-color: #2B80EC !important;']
+                ['icon' => 'fa fas fa-users-cog', 'style' => 'background-color: #023b9d !important;']
             )->order(1);
         }
 

@@ -449,9 +449,9 @@ div.pos-tab-menu div.list-group>a:last-child{
 div.pos-tab-menu div.list-group>a.active,
 div.pos-tab-menu div.list-group>a.active .glyphicon,
 div.pos-tab-menu div.list-group>a.active .fa{
-  background-color: #3c8dbc;
+  background-color: #023b9d;
   color: #ffffff;
-    border-color: #3c8dbc;
+    border-color: #023b9d;
 }
 div.pos-tab-menu div.list-group>a.active:after{
   content: '';
@@ -462,7 +462,7 @@ div.pos-tab-menu div.list-group>a.active:after{
   border-left: 0;
   border-bottom: 13px solid transparent;
   border-top: 13px solid transparent;
-  border-left: 10px solid #3c8dbc;
+  border-left: 10px solid #023b9d;
 }
 
 div.pos-tab-content{
@@ -481,7 +481,7 @@ div.pos-tab div.pos-tab-content:not(.active){
     color: white;
 }
 .blue-header th {
-	background-color: #3c8dbc;
+	background-color: #023b9d;
     color: white;
 }
 .table-th-green th{
@@ -497,7 +497,7 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0; 
 }
 .active-cell {
-    border: 2px dotted #3c8dbc !important;
+    border: 2px dotted #023b9d !important;
 }
 .cursor-pointer{
     cursor: pointer !important;
@@ -948,7 +948,7 @@ table.table-text-center td, table.table-text-center th{
 
 
 .bg-light-green{
-    background-color: #1ecab8 !important;
+    background-color: #023b9d !important;
 }
 
 
@@ -1022,12 +1022,12 @@ table.table-text-center td, table.table-text-center th{
 div.pos-tab-menu div.list-group>a.active,
 div.pos-tab-menu div.list-group>a.active .glyphicon,
 div.pos-tab-menu div.list-group>a.active .fa{
-  background-color: #1b82ec!important;
-  border-color: #1b82ec;
+  background-color: #023b9d!important;
+  border-color: #023b9d;
 }
 
 div.pos-tab-menu div.list-group>a.active:after{
-  border-left: 10px solid #1b82ec;
+  border-left: 10px solid #023b9d;
 }
 
 .product_box{
@@ -1053,5 +1053,5 @@ div.pos-tab-menu div.list-group>a.active:after{
 }
 
 .blue-heading {
-  background-color: #2b80ec;
+  background-color: #023b9d;
 }

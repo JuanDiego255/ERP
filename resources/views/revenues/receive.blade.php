@@ -354,7 +354,10 @@
                 fnDrawCallback: function(oSettings) {
                     toggleInputs();
                 },
-                dom: '<"text-center"B>frtip',
+                initComplete: function() {
+                    $('.dataTables_paginate').css('margin-top', '15px');                   
+                },
+                dom: '<"text-center"B><"top"p>frtip',
                 buttons: [{
                         extend: 'pageLength',
                         text: 'Mostrando 25',

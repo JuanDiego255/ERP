@@ -12,7 +12,6 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1> @lang('lang_v1.' . $type . 's')
-            <small>@lang('contact.manage_your_contact', ['contacts' => __('lang_v1.' . $type . 's')])</small>
         </h1>
         <!-- <ol class="breadcrumb">
                     <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
