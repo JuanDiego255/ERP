@@ -304,9 +304,9 @@ class RevenueController extends Controller
             ->first();
 
         //$payment_types = $this->transactionUtil->payment_types(); 
-        
+
         $canUpdate = true;
-        if(!auth()->user()->can('cxc.update')){
+        if (!auth()->user()->can('cxc.update')) {
             $canUpdate = false;
         }
 
@@ -421,7 +421,7 @@ class RevenueController extends Controller
                 ->make(true);
         }
 
-        return view('revenues.receive', compact('item', 'id','canUpdate'));
+        return view('revenues.receive', compact('item', 'id', 'canUpdate'));
     }
     public function updatePayment(Request $request, $id, $revenue_id)
     {
@@ -472,7 +472,7 @@ class RevenueController extends Controller
         $detalle["monto_general"] = $saldo - $amortiza;
         $detalle_planilla->update($detalle);
 
-        return response()->json(['success' => true,'request' => $saldo]);
+        return response()->json(['success' => true, 'request' => $saldo]);
     }
     public function destroyRow($id)
     {
@@ -529,14 +529,15 @@ class RevenueController extends Controller
                     'pr.paga as paga',
                     'pr.interes_c as interes_c',
                     'pr.amortiza as amortiza',
-                    'pr.fecha_interes as fecha_interes',
-                    'pr.created_at as fecha_pago',
+                    DB::raw("DATE_FORMAT(pr.fecha_interes, '%d/%m/%Y') as fecha_interes"),
+                    DB::raw("DATE_FORMAT(pr.created_at, '%d/%m/%Y') as fecha_pago"),
                     'pr.referencia as referencia',
                     'pr.monto_general as monto_general'
                 )
                 ->where('rev.id', $revenue_id)
                 ->where('pr.id', $id)
                 ->first();
+
             return view('revenues.view-modal')->with(compact(
                 'item',
                 'id'
