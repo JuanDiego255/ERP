@@ -164,7 +164,7 @@
                                 body.append(
                                     '<tr>' +
                                     '<td>' + row.fecha_compra + '</td>' +
-                                    '<td>' + row.vehiculo + '</td>' +
+                                    '<td>' + row.proveedor + '</td>' +
                                     '<td>' + row.descripcion + '</td>' +
                                     '<td>' + row.factura + '</td>' +
                                     '<td>' + formattedMonto + '</td>' +
