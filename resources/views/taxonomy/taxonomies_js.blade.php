@@ -25,6 +25,7 @@
                 category_table = $('#category_table').DataTable({
                     processing: true,
                     serverSide: true,
+                    dom: 'tip',
                     ajax: '/taxonomies?type=' + category_type,
                     columns: [{
                             data: 'image',

@@ -61,7 +61,7 @@
                     "orderable": false,
                     "searchable": false
                 }],
-                dom: '<"text-center"B><"top"p>frtip',
+                dom: '<"text-center"B><"top"p>rtip',
                 columns: [{
                         "data": "numero"
                     },

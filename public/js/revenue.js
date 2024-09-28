@@ -137,7 +137,7 @@ $(document).ready(function () {
                 }
             });
         },
-        dom: '<"text-center"B><"top"p>frtip'
+        dom: '<"text-center"B><"top"p>rtip'
 
     });
 

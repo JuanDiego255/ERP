@@ -260,7 +260,7 @@
                     $(row).find('td:eq(0)').attr('class', 'selectable_td');
                     $(row).find('td:eq(1)').attr('class', 'selectable_td');
                 },
-                dom: '<"text-center"B><"top"p>frtip',
+                dom: '<"text-center"B><"top"p>rtip',
                 fnDrawCallback: function(oSettings) {
                     __currency_convert_recursively($('#product_table'));
                 },

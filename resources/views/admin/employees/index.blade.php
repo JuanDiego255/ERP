@@ -80,7 +80,7 @@
                         "data": "action"
                     }
                 ],
-                dom: '<"text-center"B><"top"p>frtip',
+                dom: '<"text-center"B><"top"p>rtip',
                 initComplete: function() {
                     $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();

@@ -77,7 +77,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: '/brands',
-        dom: '<"text-center"B><"top"p>frtip',
+        dom: '<"text-center"B><"top"p>rtip',
         columnDefs: [{
             targets: 2,
             orderable: false,
@@ -430,7 +430,7 @@ $(document).ready(function () {
             [1, 'desc']
         ],
         columns: columns,
-        dom: '<"text-center"B><"top"p>frtip',
+        dom: '<"text-center"B><"top"p>rtip',
         fnDrawCallback: function (oSettings) {
             var total_due = sum_table_col($('#contact_table'), 'contact_due');
             $('#footer_contact_due').text(total_due);
@@ -1504,7 +1504,7 @@ $(document).ready(function () {
                 .find('td:eq(6)')
                 .attr('class', 'clickable_td');
         },
-        dom: '<"text-center"B><"top"p>frtip',
+        dom: '<"text-center"B><"top"p>rtip',
         buttons: [{
                 extend: 'pageLength',
                 text: 'Mostrando 25',
