@@ -13,7 +13,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 
 use Datatables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class TransactionPaymentController extends Controller
@@ -166,7 +166,12 @@ class TransactionPaymentController extends Controller
             $transaction = Transaction::where('id', $id)
                 ->with(['contact', 'business', 'transaction_for'])
                 ->first();
-            $payments_query = TransactionPayment::where('transaction_id', $id);
+            $payments_query = TransactionPayment::leftJoin('users AS usr', 'transaction_payments.created_by', '=', 'usr.id')
+                ->select(
+                    'transaction_payments.*',
+                    DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
+                )
+                ->where('transaction_id', $id);
 
             $accounts_enabled = false;
             if ($this->moduleUtil->isModuleEnabled('account')) {
@@ -626,7 +631,13 @@ class TransactionPaymentController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('business.id');
-            $single_payment_line = TransactionPayment::findOrFail($payment_id);
+            $single_payment_line = TransactionPayment::
+            leftJoin('users AS usr', 'transaction_payments.created_by', '=', 'usr.id')
+                ->select(
+                    'transaction_payments.*',
+                    DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
+                )
+            ->findOrFail($payment_id);
 
             $transaction = null;
             if (!empty($single_payment_line->transaction_id)) {

@@ -182,6 +182,7 @@
                           <th>@lang('purchase.amount')</th>
                           <th>@lang('purchase.payment_method')</th>
                           <th>@lang('purchase.payment_note')</th>
+                          <th>@lang('Creado por')</th>
                           @if($accounts_enabled)
                             <th>@lang('lang_v1.payment_account')</th>
                           @endif
@@ -194,6 +195,7 @@
                               <td><span class="display_currency" data-currency_symbol="true">{{ $payment->amount }}</span></td>
                               <td>{{ $payment_types[$payment->method] ?? '' }}</td>
                               <td>{{ $payment->note }}</td>
+                              <td>{{ $payment->added_by }}</td>
                               @if($accounts_enabled)
                                 <td>{{$payment->payment_account->name ?? ''}}</td>
                               @endif

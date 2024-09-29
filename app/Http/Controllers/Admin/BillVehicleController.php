@@ -33,6 +33,7 @@ class BillVehicleController extends Controller
             ->where('vehicle_bills.product_id', $id)
             ->join('products', 'vehicle_bills.product_id', '=', 'products.id')
             ->join('contacts', 'vehicle_bills.proveedor_id', '=', 'contacts.id')
+            ->leftJoin('users AS usr', 'vehicle_bills.created_by', '=', 'usr.id')
             ->select([
                 'vehicle_bills.id as bill_id',
                 'vehicle_bills.fecha_compra as fecha_compra',
@@ -43,7 +44,8 @@ class BillVehicleController extends Controller
                 'vehicle_bills.monto as monto',
                 'vehicle_bills.factura as factura',
                 'vehicle_bills.business_id',
-                'vehicle_bills.created_at'
+                'vehicle_bills.created_at',
+                DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
             ]);
         if (request()->ajax()) {
 

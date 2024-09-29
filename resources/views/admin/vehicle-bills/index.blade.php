@@ -9,9 +9,9 @@
             <small>@lang('Administrar los gastos por vehículos')</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                <li class="active">Here</li>
-                            </ol> -->
+                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                    <li class="active">Here</li>
+                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -62,13 +62,14 @@
                             <table class="table table-bordered table-striped" id="bills_table">
                                 <thead>
                                     <tr>
+                                        <th>@lang('messages.action')</th>
                                         <th>@lang('Fecha compra')</th>
                                         <th>@lang('Vehículo')</th>
                                         <th>@lang('Proveedor')</th>
                                         <th>@lang('Descripción')</th>
                                         <th>@lang('Monto')</th>
                                         <th>@lang('Factura')</th>
-                                        <th>@lang('messages.action')</th>
+                                        <th>@lang('Creado por')</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -104,7 +105,11 @@
                     "orderable": false,
                     "searchable": false
                 }],
-                "columns": [{
+                "columns": [
+                    {
+                        "data": "action"
+                    },
+                    {
                         "data": "fecha_compra"
                     },
                     {
@@ -123,7 +128,7 @@
                         "data": "factura"
                     },
                     {
-                        "data": "action"
+                        "data": "added_by"
                     }
                 ],
                 buttons: [{
@@ -202,7 +207,7 @@
                                     '<div style="text-align: center; margin-bottom: 10px;">' +
                                     '<h3 style="margin: 0;">Reporte de gastos sobre el vehículo: ' +
                                     vehiculo + '</h3>' +
-                                    '</div>' + 
+                                    '</div>' +
                                     // Sección de información del vehículo
                                     '<div class="text-justify" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background-color: #f9f9f9;">' +
                                     '<p style="margin: 5px 0;"><strong>En este reporte puede detallar los gastos aplicados a un vehículo en específico, donde puede observar cada gasto, y la sumatoria de todos estos.</strong></p>' +
