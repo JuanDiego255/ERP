@@ -7,6 +7,7 @@ use App\Models\Business;
 use App\Models\BusinessLocation;
 use App\Models\Category;
 use App\Models\Media;
+use App\Models\PlanVenta;
 use App\Models\Product;
 use App\Models\ProductVariation;
 use App\Models\PurchaseLine;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\Util;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -161,7 +163,7 @@ class ProductController extends Controller
                         //Boton para ver los gastos del vehiculo
                         if ($row->is_inactive == 1) {
                             $html .=
-                                '<li><a href="' . action('ProductController@activate', [$row->id]) . '" class="activate-product"><i class="fas fa-check-circle"></i> ' . __("lang_v1.reactivate") . '</a></li>';
+                                '<li><a href="' . action('ProductController@activate', [$row->id]) . '" class="activate-product"><i class="fas fa-check-circle"></i> ' . __("Reactivar") . '</a></li>';
                         }
 
                         $html .= '<li class="divider"></li>';
@@ -458,7 +460,7 @@ class ProductController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $request->merge(['sell_price_inc_tax' => $request->single_dsp]);
 
-            $form_fields = ['name', 'is_show', 'kilometraje','monto_venta', 'combustible','motor', 'traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
+            $form_fields = ['name', 'is_show', 'kilometraje', 'monto_venta', 'combustible', 'motor', 'traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
@@ -2023,6 +2025,14 @@ class ProductController extends Controller
 
         if (request()->ajax()) {
             try {
+                $plan_active = PlanVenta::where('vehiculo_venta_id', $id)->first();
+                if ($plan_active) {
+                    $output = [
+                        'success' => false,
+                        'msg' => __("No se puede reactivar este vehículo, ya que se encuentra ligado al plan de venta " . $plan_active->numero . ", elimina el plan de ventas para reactivarlo")
+                    ];
+                    return $output;
+                }
                 $business_id = request()->session()->get('user.business_id');
                 $product = Product::where('id', $id)
                     ->where('business_id', $business_id)
@@ -2033,7 +2043,7 @@ class ProductController extends Controller
                     'msg' => __("lang_v1.updated_success")
                 ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
                 $output = [
                     'success' => false,
