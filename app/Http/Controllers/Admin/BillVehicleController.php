@@ -61,7 +61,9 @@ class BillVehicleController extends Controller
                                                                     <button data-href="{{ action(\'Admin\BillVehicleController@destroy\', [$bill_id]) }}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 @endcan'
                 )
-                ->editColumn('fecha_compra', '{{ @format_date($fecha_compra) }}')
+                ->editColumn('fecha_compra', function ($row) {
+                    return \Carbon\Carbon::parse($row->created_at)->format('Y/m/d g:i A');
+                })        
                 ->editColumn('monto', '{{"₡ ". number_format($monto) }}')
                 ->rawColumns(['action', 'name'])
                 ->make(true);

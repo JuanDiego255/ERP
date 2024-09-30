@@ -208,6 +208,7 @@
                     <br />
                     <b>@lang('lang_v1.paid_on'):</b> {{ @format_date($single_payment_line->vencimento) }}<br />
                     <b>@lang('Creado por:')</b> {{ $single_payment_line->added_by }}<br />
+                    <b>@lang('Creación:')</b> {{ $single_payment_line->created_at->format('Y/m/d g:i A') }}<br />
                     <br>
                     @if (!empty($single_payment_line->document_path))
                         <a href="{{ $single_payment_line->document_path }}" class="btn btn-success btn-xs no-print"
