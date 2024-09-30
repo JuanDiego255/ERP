@@ -45,7 +45,9 @@ class PlanVentaController extends Controller
                 
                     @can("plan_venta.delete")
                         <button data-href="{{ action(\'PlanVentaController@destroy\', [$id]) }}" class="btn btn-xs btn-danger delete_plan_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
+                    @endcan
+                    <a href="{{ action(\'PlanVentaController@viewPlan\', [$id]) }}" class="btn btn-xs btn-success view-plan"><i class="glyphicon glyphicon-print"></i></a>
+                    '
                 )
                 ->editColumn('fecha_plan', '{{ @format_date($fecha_plan) }}')
                 ->rawColumns(['action', 'name'])
@@ -126,6 +128,59 @@ class PlanVentaController extends Controller
 
         return view('admin.plan_ventas.edit')
             ->with(compact('plan', 'categories', 'brands', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details'));
+    }
+    public function viewPlan($id)
+    {
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $plan = PlanVenta::where('plan_ventas.business_id', $business_id)
+                ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
+                ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
+                ->join('employees as emp', 'plan_ventas.vendedor_id', '=', 'emp.id')
+                ->join('revenues as cxc', 'plan_ventas.id', '=', 'cxc.plan_venta_id')
+                ->leftJoin('products as vv', 'plan_ventas.vehiculo_venta_id', '=', 'vv.id')
+                ->leftJoin('brands as b', 'vv.brand_id', '=', 'b.id')
+                ->leftJoin('products as vr', 'plan_ventas.vehiculo_recibido_id', '=', 'vr.id')
+                ->select(
+                    'plan_ventas.*',
+                    'cli.name as cliente_name',
+                    'cli.identificacion as cliente_ident',
+                    'cli.state as cliente_state',
+                    'cli.position as cliente_puesto',
+                    'cli.landline as cliente_tel',
+                    'cli.landmark as cliente_direccion',
+                    'cli.email as cliente_email',
+                    'fdr.name as fiador_name',
+                    'fdr.identificacion as fiador_ident',
+                    'fdr.state as fiador_state',
+                    'fdr.position as fiador_puesto',
+                    'fdr.landline as fiador_tel',
+                    'fdr.landmark as fiador_direccion',
+                    'fdr.email as fiador_email',
+                    'emp.name as vendedor_name',
+                    'vv.name as veh_venta',
+                    'vv.model as model',
+                    'vv.bin as bin',
+                    'vv.motor as motor',
+                    'vv.color as color',
+                    'vv.placa as placa',
+                    'vv.product_description as observacion',
+                    'b.name as marca',
+                    'cxc.plazo as plazo',
+                    'cxc.tasa as tasa',
+                    'cxc.cuota as cuota',
+                    'cxc.tipo_prestamo as tipo_prestamo',
+                    'cxc.moneda as moneda'
+                )
+                ->where('plan_ventas.id', $id) // Filtramos por el ID aquí
+                ->firstOrFail();
+            return view('admin.plan_ventas.view-modal')->with(compact(
+                'plan'
+            ));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+        }
     }
     /**
      * Show the form for creating a new resource.

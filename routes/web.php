@@ -498,6 +498,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::get('/plan-ventas-create', 'PlanVentaController@create');
     Route::get('/plan-ventas-edit/{id}', 'PlanVentaController@edit');
     Route::post('/plan-ventas-store', 'PlanVentaController@store');
+    Route::get('/plan-ventas-view/{id}', 'PlanVentaController@viewPlan');
     Route::put('/plan-ventas-update/{id}', 'PlanVentaController@update');
     Route::delete('/plan-ventas-delete/{id}', 'PlanVentaController@destroy');
     Route::get('/payments/revenues/{id}', 'RevenueController@receive');

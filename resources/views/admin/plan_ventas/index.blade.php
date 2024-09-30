@@ -45,6 +45,9 @@
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         </div>
 
+        <div class="modal fade" id="view_plan" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        </div>
+
     </section>
     <!-- /.content -->
 @stop
@@ -149,6 +152,20 @@
                     }
                 });
             });
-        });
+        });       
+        $(document).on('click', 'a.view-plan', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('href'),
+                dataType: 'html',
+                success: function(result) {
+                    console.log(result)
+                    $('#view_plan')
+                        .html(result)
+                        .modal('show');
+                    __currency_convert_recursively($('#view_plan'));
+                },
+            });
+        }); 
     </script>
 @endsection

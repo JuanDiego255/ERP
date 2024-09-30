@@ -206,6 +206,15 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
+                        {!! Form::label('motor', __('Motor') . ':') !!}
+                        {!! Form::text('motor', $product->motor, [
+                            'class' => 'form-control',
+                            'placeholder' => __('motor'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
                         {!! Form::label('combustible', __('Tipo de combustible') . ':') !!}
                         {!! Form::text('combustible', $product->combustible, [
                             'class' => 'form-control',

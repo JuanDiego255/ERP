@@ -453,11 +453,12 @@ class ProductController extends Controller
             $request->merge(['kilometraje' => $request->kilometraje ?? '']);
             $request->merge(['combustible' => $request->combustible ?? '']);
             $request->merge(['traccion' => $request->traccion ?? '']);
+            $request->merge(['motor' => $request->motor ?? '']);
 
             $business_id = $request->session()->get('user.business_id');
             $request->merge(['sell_price_inc_tax' => $request->single_dsp]);
 
-            $form_fields = ['name', 'is_show', 'kilometraje', 'combustible', 'traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
+            $form_fields = ['name', 'is_show', 'kilometraje', 'combustible','motor', 'traccion', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description', 'sub_unit_ids', 'perc_icms', 'perc_cofins', 'perc_pis', 'perc_ipi', 'cfop_interno', 'cfop_externo', 'cst_csosn', 'cst_pis', 'cst_cofins', 'cst_ipi', 'ncm', 'cest', 'codigo_barras', 'codigo_anp', 'perc_glp', 'perc_gnn', 'perc_gni', 'valor_partida', 'unidade_tributavel', 'quantidade_tributavel', 'tipo', 'veicProd', 'tpOp', 'chassi', 'cCor', 'xCor', 'pot', 'cilin', 'pesoL', 'pesoB', 'nSerie', 'tpComb', 'nMotor', 'CMT', 'dist', 'anoMod', 'anoFab', 'tpPint', 'tpVeic', 'espVeic', 'VIN', 'condVeic', 'cMod', 'cCorDENATRAN', 'lota', 'tpRest', 'color', 'model', 'bin', 'placa', 'dua', 'comprado_a', 'valor_ecommerce', 'origem'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
@@ -903,6 +904,7 @@ class ProductController extends Controller
             $product->traccion = $request->traccion;
             $product->bin = $request->bin;
             $product->placa = $request->placa;
+            $product->motor = $request->motor;
             if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
                 $product->is_show = 1;
             } else {
