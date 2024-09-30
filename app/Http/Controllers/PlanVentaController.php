@@ -341,6 +341,7 @@ class PlanVentaController extends Controller
                 ->where('id', $request->vehiculo_venta_id_hidden)
                 ->firstOrFail();
             $vendido['is_inactive'] = 1;
+            $vendido['monto_venta'] = $request->venta_sin_rebajos;
             $vehicle->update($vendido);
             DB::commit();
             $output = [
@@ -452,6 +453,11 @@ class PlanVentaController extends Controller
             $cxc_pay['interes_c'] = 0;
             $cxc_pay['amortiza'] = 0;
             $pay->update($cxc_pay);
+            $vehicle = Product::where('business_id', $business_id)
+                ->where('id', $request->vehiculo_venta_id_hidden)
+                ->firstOrFail();
+            $vendido['monto_venta'] = $request->venta_sin_rebajos;
+            $vehicle->update($vendido);
             DB::commit();
             $output = [
                 'success' => 1,
