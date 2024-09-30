@@ -11,7 +11,7 @@
                 <div class="col-sm-12 text-center">
                     <h5 class="modal-title" id="modalTitle">Autos Grecia A Su Servicio, Grecia, Costa Rica</h5>
                     <h5>Tel: 2494-7694</h5>
-                    <h5>{{ @format_datetime('now') }}</h5>
+                    <h5>{{ \Carbon\Carbon::now()->format('d-m-Y') }}</h5>
                     <h5 class="text-info text-center">RECIBO DE DINERO</h5>
                 </div>               
             </div>
