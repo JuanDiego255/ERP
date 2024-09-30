@@ -215,6 +215,15 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
+                        {!! Form::label('monto_venta', __('Monto venta') . ':') !!}
+                        {!! Form::text('monto_venta', $product->monto_venta, [
+                            'class' => 'form-control',
+                            'placeholder' => __('motor'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
                         {!! Form::label('combustible', __('Tipo de combustible') . ':') !!}
                         {!! Form::text('combustible', $product->combustible, [
                             'class' => 'form-control',

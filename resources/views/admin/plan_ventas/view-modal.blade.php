@@ -87,7 +87,7 @@
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Placa: </b>{{ $plan->placa }}<br>
-                    <b>Valor: </b>₡{{ number_format($plan->total_financiado) }}<br>
+                    <b>Valor: </b>₡{{ number_format($plan->monto_venta) }}<br>
                 </div>
             </div>
             <div class="row">

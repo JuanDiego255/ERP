@@ -164,6 +164,7 @@ class PlanVentaController extends Controller
                     'vv.motor as motor',
                     'vv.color as color',
                     'vv.placa as placa',
+                    'vv.monto_venta as monto_venta',
                     'vv.product_description as observacion',
                     'b.name as marca',
                     'cxc.plazo as plazo',

@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('vehiculos.add_new_product')</h1>
         <!-- <ol class="breadcrumb">
-                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                            <li class="active">Here</li>
-                                                          </ol> -->
+                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                <li class="active">Here</li>
+                                                              </ol> -->
     </section>
 
     <!-- Main content -->
@@ -130,6 +130,15 @@
                         {!! Form::text('motor', !empty($duplicate_product->motor) ? $duplicate_product->motor : null, [
                             'class' => 'form-control',
                             'placeholder' => __('Motor'),
+                        ]) !!}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('monto_venta', __('Monto venta') . ':') !!}
+                        {!! Form::number('monto_venta', !empty($duplicate_product->monto_venta) ? $duplicate_product->monto_venta : null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('Monto'),
                         ]) !!}
                     </div>
                 </div>

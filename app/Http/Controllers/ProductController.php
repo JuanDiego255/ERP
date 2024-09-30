@@ -454,7 +454,7 @@ class ProductController extends Controller
             $request->merge(['combustible' => $request->combustible ?? '']);
             $request->merge(['traccion' => $request->traccion ?? '']);
             $request->merge(['motor' => $request->motor ?? '']);
-
+            $request->merge(['monto_venta' => $request->monto_venta ?? '']);
             $business_id = $request->session()->get('user.business_id');
             $request->merge(['sell_price_inc_tax' => $request->single_dsp]);
 
@@ -905,6 +905,7 @@ class ProductController extends Controller
             $product->bin = $request->bin;
             $product->placa = $request->placa;
             $product->motor = $request->motor;
+            $product->monto_venta = $request->monto_venta;
             if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
                 $product->is_show = 1;
             } else {
