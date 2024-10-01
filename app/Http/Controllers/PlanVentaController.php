@@ -10,6 +10,7 @@ use App\Models\PaymentRevenue;
 use App\Models\PlanVenta;
 use App\Models\Product;
 use App\Models\Revenue;
+use App\Utils\TransactionUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,11 @@ use Yajra\DataTables\Facades\DataTables;
 class PlanVentaController extends Controller
 {
     //
+    protected $transactionUtil;
+    public function __construct(TransactionUtil $transactionUtil)
+    {
+        $this->transactionUtil = $transactionUtil;
+    }
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -330,6 +336,7 @@ class PlanVentaController extends Controller
             $cxc['created_by'] = Auth::user()->id;
             $cxc_reg = Revenue::create($cxc);
             //Primer linea de pago CxC
+            $cxc_pay['referencia'] = $this->transactionUtil->getInvoiceNumber($business_id, 'final', "");
             $cxc_pay['revenue_id'] = $cxc_reg->id;
             $cxc_pay['cuota'] = $request->cuota;
             $cxc_pay['monto_general'] = $request->total_financiado;

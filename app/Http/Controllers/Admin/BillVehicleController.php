@@ -110,8 +110,12 @@ class BillVehicleController extends Controller
                 'product_id',
                 'proveedor_id'
             ]);
+            $monto =  isset($request->monto)
+                ? floatval(str_replace(',', '', $request->monto))
+                : null;
             $business_id = $request->session()->get('user.business_id');
             $bill_details['business_id'] = $business_id;
+            $bill_details['monto'] = $monto;
             $bill_details['is_cxp'] = 0;
             if ($request->is_cxp) {
                 $bill_details['is_cxp'] = 1;

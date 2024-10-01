@@ -6,7 +6,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header content-header-custom">
         <!-- <h1>{{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
-                                                    </h1> -->
+                                                                        </h1> -->
     </section>
     @if (auth()->user()->can('dashboard.data'))
         <!-- Main content -->
@@ -280,10 +280,14 @@
                     dataType: 'html',
                     success: function(result) {
                         $('#view_product_modal')
-                            .html(result);                      
+                            .html(result);
 
                         $('#view_product_modal').modal('show');
-                        __currency_convert_recursively($('#view_product_modal_container'));
+                        $('#view_product_modal').on('shown.bs.modal', function() {
+                            $('#product_table').DataTable()
+                                .draw();
+                        });
+                        __currency_convert_recursively($('#view_product_modal'));
                     },
                 });
             });

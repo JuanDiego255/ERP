@@ -155,11 +155,34 @@
                         "data": "total"
                     }
                 ],
+                createdRow: function(row, data, dataIndex) {
+                    $(row).find('td').css({
+                        'padding': '5px',
+                        'font-size': '15px'
+                    });
+
+                    $(row).find('input').css({
+                        'width': '90px',
+                        'height': '30px',
+                        'padding': '5px'
+                    });
+
+                    $(row).find('input.cant_hora_extra').css({
+                        'width': '50px',
+                        'height': '30px',
+                        'padding': '5px'
+                    });
+                    $(row).find('input.hora_extra').css({
+                        'width': '70px',
+                        'height': '30px',
+                        'padding': '5px'
+                    });
+                },
                 fnDrawCallback: function(oSettings) {
                     var total = sum_table_col($('#planillas'), 'final-total');
                     updatePlanillaTotal();
                 },
-                dom: '<"text-center"B><"top"p>frtip',
+                dom: '<"text-center"B><"top"p>rtip',
                 initComplete: function() {
                     $('.dataTables_paginate').css('margin-top', '15px');
                 },
@@ -340,14 +363,24 @@
                     ''); // Elimina todo lo que sigue al punto
                 input.data('initialValue', valorSinFormato);
             });
+            $('#planillas').on('input', '.number', function() {
+                let input = $(this).val().replace(/[^0-9]/g, ''); // Elimina todo lo que no sea un número
+                if (input) {
+                    // Formatea el número con comas para los miles
+                    let formatted = new Intl.NumberFormat('en-US').format(input);
+                    $(this).val(formatted);
+                }
+            });
             $('#planillas').on('blur', 'input[type="text"]', function() {
                 var input = $(this);
-                var value = input.val();
+                var value = input.val().replace(/,/g, '').split('.')[0];
                 var initialValue = input.data('initialValue'); // Recupera el valor inicial
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var employee_id = input.closest('tr').find('td').eq(2).text();
-
+                if(value == 0.00){
+                    value = 0;
+                }
                 // Solo procede si el valor cambió
                 if (value != initialValue && value >= 0 && canUpdate && aprobada != 1) {
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud

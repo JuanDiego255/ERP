@@ -3,7 +3,9 @@
 <header class="main-header no-print">
     <a href="{{ route('home') }}" class="logo">
         <div class="col-xs-12">
-            <img src="/images/logo_ag_cor.png" class="img-rounded" alt="Logo" width="150" style="margin-bottom: 30px;">
+            <img src="/images/logo_ag_cor.png" class="img-rounded" alt="Logo" id="logo_ag" width="150"
+                style="margin-bottom: 30px;">
+            {{-- <span id="logo_ag_text" class="text-left text-success" style="display: none; margin-left:0; margin-right:20px; font-size: 18px; font-weight: bold;">AG</span> --}}
         </div>
     </a>
 

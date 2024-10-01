@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Log;
 class RevenueController extends Controller
 {
 
-    protected $contactUtil;
+    protected $transactionUtil;
 
     public function __construct(TransactionUtil $transactionUtil, ModuleUtil $moduleUtil, ContactUtil $contactUtil)
     {
@@ -206,7 +206,7 @@ class RevenueController extends Controller
         return view('revenues.index')
             ->with(compact('categories', 'business_locations', 'users'));
     }
-    public function storeRow($id)
+    public function storeRow($id, Request $request)
     {
         if (!auth()->user()->can('cxc.create')) {
             return response()->json(['success' => false, 'msg' => 'No cuentas con permisos para realizar modificaciones, o insertar nuevas lineas']);
@@ -224,9 +224,11 @@ class RevenueController extends Controller
                 )
                 ->orderBy('payment_revenues.monto_general', 'asc')
                 ->first();
+            $business_id = $request->session()->get('user.business_id');
             $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
             $interes = round($monto_general * ($record->tasa / 100), 2);
             $cxc_pay['revenue_id'] = $id;
+            $cxc_pay['referencia'] = $this->transactionUtil->getInvoiceNumber($business_id, 'final', "");
             $cxc_pay['monto_general'] = round($monto_general - ($record->cuota - $interes), 2);
             $cxc_pay['interes_c'] = round($interes, 2);
             $cxc_pay['paga'] = 0;
@@ -351,7 +353,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'created_at',
                     '@can("cxc.update")
-                    {!! Form::text("created_at", @format_date($created_at), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("created_at", @format_date($created_at), array_merge(["class" => "form-control fecha"])) !!}
                     @else
                     {!! Form::text("created_at", @format_date($created_at), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
@@ -359,7 +361,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'fecha_interes',
                     '@can("cxc.update")
-                    {!! Form::text("fecha_interes", @format_date($fecha_interes), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("fecha_interes", @format_date($fecha_interes), array_merge(["class" => "form-control fecha"])) !!}
                     @else
                     {!! Form::text("fecha_interes", @format_date($fecha_interes), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
@@ -388,7 +390,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'paga',
                     '@can("cxc.update")
-                    {!! Form::text("paga", number_format($paga, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("paga", number_format($paga, 2, ".", ","), array_merge(["class" => "form-control number"])) !!}
                     @else
                     {!! Form::text("paga", number_format($paga, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
@@ -396,7 +398,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'amortiza',
                     '@can("cxc.update")
-                    {!! Form::text("amortiza", number_format($amortiza, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("amortiza", number_format($amortiza, 2, ".", ","), array_merge(["class" => "form-control number"])) !!}
                     @else
                     {!! Form::text("amortiza", number_format($amortiza, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
@@ -404,7 +406,7 @@ class RevenueController extends Controller
                 ->editColumn(
                     'interes_c',
                     '@can("cxc.update")
-                    {!! Form::text("interes_c", number_format($interes_c, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("interes_c", number_format($interes_c, 2, ".", ","), array_merge(["class" => "form-control number"])) !!}
                     @else
                     {!! Form::text("interes_c", number_format($interes_c, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
                     @endcan'
@@ -412,9 +414,9 @@ class RevenueController extends Controller
                 ->editColumn(
                     'monto_general',
                     '@can("cxc.update")
-                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control"])) !!}
+                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control saldo number"])) !!}
                     @else
-                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control"], ["readonly"])) !!}
+                    {!! Form::text("monto_general", number_format($monto_general, 2, ".", ","), array_merge(["class" => "form-control saldo"], ["readonly"])) !!}
                     @endcan'
                 )
                 ->rawColumns(['action', 'calcular', 'fecha_interes', 'created_at', 'referencia', 'detalle',  'monto_general', 'amortiza', 'paga', 'interes_c', 'monto_general'])

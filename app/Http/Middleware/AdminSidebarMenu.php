@@ -476,10 +476,10 @@ class AdminSidebarMenu
                             /* if (auth()->user()->can('access_shipping')) {
                                 $sub->url('/naturezas', 'Naturezas de operação', ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'naturezas' && request()->segment(2) == null]);
                             } */
-                            /* if (auth()->user()->can('invoice_settings.access')) {
-                                $sub->url(action('InvoiceSchemeController@index'), __('invoice.invoice_settings'), ['icon' => 'fa fas fa-file', 'active' => in_array(request()->segment(1), ['invoice-schemes', 'invoice-layouts'])]);
-                            }
-                            if (auth()->user()->can('barcode_settings.access')) {
+                            
+                            $sub->url(action('InvoiceSchemeController@index'), __('Consec. Referencia'), ['icon' => 'fa fas fa-file', 'active' => in_array(request()->segment(1), ['invoice-schemes', 'invoice-layouts'])]);
+                            
+                            /* if (auth()->user()->can('barcode_settings.access')) {
                                 $sub->url(action('BarcodeController@index'), __('barcode.barcode_settings'), ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'barcodes']);
                             } */
                             if (auth()->user()->can('access_printers')) {

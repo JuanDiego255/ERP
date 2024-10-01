@@ -29,13 +29,18 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('monto', __('Monto') . ':*') !!}
-                            {!! Form::text('monto', null, ['class' => 'form-control', 'required', 'placeholder' => __('Monto')]) !!}
+                            {!! Form::text('monto', null, ['class' => 'form-control number', 'required', 'placeholder' => __('Monto')]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('factura', __('Factura') . ':*') !!}
-                            {!! Form::text('factura', null, ['class' => 'form-control','id' => 'factura', 'required', 'placeholder' => __('# Factura')]) !!}
+                            {!! Form::text('factura', null, [
+                                'class' => 'form-control',
+                                'id' => 'factura',
+                                'required',
+                                'placeholder' => __('# Factura'),
+                            ]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -174,6 +179,14 @@
                                 console.error("Error in validation request:", error);
                             }
                         });
+                    }
+                });
+
+                $('.number').on('input', function() {
+                    let input = $(this).val().replace(/[^0-9]/g, '');
+                    if (input) {
+                        let formatted = new Intl.NumberFormat('en-US').format(input);
+                        $(this).val(formatted);
                     }
                 });
             });

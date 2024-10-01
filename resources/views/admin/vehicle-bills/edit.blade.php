@@ -6,7 +6,9 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('Editar gasto')<p>Si la factura esta ligada a Cuentas Por Pagar, no puedes modificar la fecha de vencimiento</p></h1>
+        <h1>@lang('Editar gasto')<p>Si la factura esta ligada a Cuentas Por Pagar, no puedes modificar la fecha de vencimiento
+            </p>
+        </h1>
     </section>
 
     <!-- Main content -->
@@ -30,7 +32,11 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('monto', __('Monto') . ':*') !!}
-                            {!! Form::text('monto',  number_format($bill->monto, 2, '.', ','), ['class' => 'form-control', 'required', 'placeholder' => __('Monto')]) !!}
+                            {!! Form::text('monto', number_format($bill->monto, 2, '.', ','), [
+                                'class' => 'form-control number',
+                                'required',
+                                'placeholder' => __('Monto'),
+                            ]) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -90,7 +96,7 @@
     @section('javascript')
         <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
         <script>
-            $(document).ready(function() {                
+            $(document).ready(function() {
                 $('#factura').on('blur', function() {
                     var factura = $(this).val();
                     var is_cxp = $('#is_cxp').val();
@@ -101,7 +107,7 @@
                             data: {
                                 ref_no: factura
                             },
-                            success: function(response) {          
+                            success: function(response) {
                                 if (response.valid) {
                                     swal({
                                         title: "La factura digitada ya existe",
@@ -128,6 +134,13 @@
                                 console.error("Error in validation request:", error);
                             }
                         });
+                    }
+                });
+                $('.number').on('input', function() {
+                    let input = $(this).val().replace(/[^0-9]/g, '');
+                    if (input) {
+                        let formatted = new Intl.NumberFormat('en-US').format(input);
+                        $(this).val(formatted);
                     }
                 });
             });

@@ -15,8 +15,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', [
-                    'title' => __(
-                        'Información del vehículo (Si deseas cambiar el vehículo debes modificar el plan de ventas ligado a esta cuenta)'),
+                    'title' => __('Información del vehículo'),
                 ])
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -53,8 +52,7 @@
                     </div>
                 @endcomponent
                 @component('components.widget', [
-                    'title' => __(
-                        'Información Cuenta Por Cobrar (Para modificar la información de la cuenta debes hacerlo desde el plan de ventas)'),
+                    'title' => __('Información Cuenta Por Cobrar'),
                 ])
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -148,8 +146,7 @@
                     </div>
                 @endcomponent
                 @component('components.widget', [
-                    'title' => __(
-                        'Información del cliente (Si deseas cambiar la información del cliente debes hacerlo desde el módulo de clientes)'),
+                    'title' => __('Información del cliente'),
                 ])
                     <div class="row">
                         <div class="col-sm-3">
@@ -250,8 +247,7 @@
                     </div>
                 </div>
                 @component('components.widget', [
-                    'title' => __(
-                        'Gestión de pagos en esta cuenta (Al realizar cambios en los rubros no es necesario agregar los separador de miles, el sistema los detecta automaticamente, al usar comas o puntos no se actualiza el campo. El monto pagado se agrega en 0, por lo cual lo ideal es ingresar el monto antes de crear una nueva línea, ya que las lineas anteriores se bloquean por seguridad de los cálculos)'),
+                    'title' => __('Gestión de pagos en esta cuenta'),
                 ])
                     @slot('tool')
                         <div class="box-tools">
@@ -267,7 +263,7 @@
                                     <th>@lang('messages.action')</th>
                                     <th>@lang('ID')</th>
                                     <th>@lang('Fecha pago')</th>
-                                    <th>@lang('Fecha Int')</th>
+                                    <th>@lang('Fecha Interés')</th>
                                     <th>@lang('No. Ref')</th>
                                     <th>@lang('Detalle')</th>
                                     <th>@lang('Monto Pagado')</th>
@@ -333,7 +329,13 @@
                     });
 
                     $(row).find('input').css({
-                        'width': '120px',
+                        'width': '95px',
+                        'height': '30px',
+                        'padding': '5px'
+                    });
+
+                    $(row).find('input.saldo').css({
+                        'width': '110px',
                         'height': '30px',
                         'padding': '5px'
                     });
@@ -611,6 +613,25 @@
                     });
                 }
             });
+            $('#payments').on('input', '.fecha', function() {
+                let input = $(this).val().replace(/\D/g, ''); // Elimina todo lo que no sea un número
+                if (input.length <= 2) {
+                    $(this).val(input);
+                } else if (input.length <= 4) {
+                    $(this).val(`${input.slice(0, 2)}/${input.slice(2)}`);
+                } else {
+                    $(this).val(`${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4, 8)}`);
+                }
+            });
+            $('#payments').on('input', '.number', function() {
+                let input = $(this).val().replace(/[^0-9]/g, ''); // Elimina todo lo que no sea un número
+                if (input) {
+                    // Formatea el número con comas para los miles
+                    let formatted = new Intl.NumberFormat('en-US').format(input);
+                    $(this).val(formatted);
+                }
+            });
+
             $(document).on('click', '.btn_add_row', function(event) {
                 event.preventDefault(); // Evita que el enlace siga el href de forma predeterminada
 

@@ -34330,7 +34330,7 @@ h6 {
 
 .box,
 .info-box {
-    margin-bottom: 30px;
+    margin-bottom: 5px;
     box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15) !important;
     border-radius: 5px
 }
@@ -34338,7 +34338,7 @@ h6 {
 .box .box-body,
 .box .box-footer,
 .box .box-header {
-    padding: 20px 24px
+    padding: 14px 18px;
 }
 
 .row-custom {

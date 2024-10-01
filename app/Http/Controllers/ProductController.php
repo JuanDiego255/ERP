@@ -268,6 +268,7 @@ class ProductController extends Controller
                 ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
                 ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
                 ->where('products.business_id', $business_id)
+                ->where('products.is_inactive', 0)
                 ->where($filter, 1);
 
             $products = $query->select(
@@ -2557,7 +2558,7 @@ class ProductController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $vehicles = Product::where('products.business_id', $business_id)
-                ->where('products.is_inactive', 0)
+                ->where('products.is_inactive', '!=', 1)
                 ->join('brands', 'products.brand_id', '=', 'brands.id')
                 ->leftJoin('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
                 ->when(!empty($term), function ($query) use ($term) {

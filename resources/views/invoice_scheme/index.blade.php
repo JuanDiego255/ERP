@@ -1,12 +1,11 @@
 @extends('layouts.app')
-@section('title', __('invoice.invoice_settings'))
+@section('title', __('Consecutivo de las referencias en CXC'))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang( 'invoice.invoice_settings' )
-        <small>@lang( 'invoice.manage_your_invoices' )</small>
+    <h1>@lang( 'Consecutivo de las referencias en CXC' )
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -21,14 +20,13 @@
           <!-- Custom Tabs -->
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">@lang('invoice.invoice_schemes')</a></li>
-              <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">@lang('invoice.invoice_layouts')</a></li>
+              <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">@lang('Consecutivos')</a></li>
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_1">
                 <div class="row">
                     <div class="col-md-12">
-                        <h4>@lang( 'invoice.all_your_invoice_schemes' ) <button type="button" class="btn btn-primary btn-modal pull-right" 
+                        <h4>@lang( 'Consecutivos' ) <button type="button" class="btn btn-primary btn-modal pull-right" 
                                 data-href="{{action('InvoiceSchemeController@create')}}" 
                                 data-container=".invoice_modal">
                                 <i class="fa fa-plus"></i> @lang( 'messages.add' )</button></h4>
@@ -44,7 +42,7 @@
                                     <th>@lang( 'invoice.name' ) @show_tooltip(__('tooltip.invoice_scheme_name'))</th>
                                     <th>@lang( 'invoice.prefix' ) @show_tooltip(__('tooltip.invoice_scheme_prefix'))</th>
                                     <th>@lang( 'invoice.start_number' ) @show_tooltip(__('tooltip.invoice_scheme_start_number'))</th>
-                                    <th>@lang( 'invoice.invoice_count' ) @show_tooltip(__('tooltip.invoice_scheme_count'))</th>
+                                    <th>@lang( 'Recuento' ) @show_tooltip(__('tooltip.invoice_scheme_count'))</th>
                                     <th>@lang( 'invoice.total_digits' ) @show_tooltip(__('tooltip.invoice_scheme_total_digits'))</th>
                                     <th>@lang( 'messages.action' )</th>
                                 </tr>

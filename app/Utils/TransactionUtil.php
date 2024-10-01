@@ -1800,13 +1800,7 @@ class TransactionUtil extends Util
     public function getInvoiceNumber($business_id, $status, $location_id, $invoice_scheme_id = null)
     {
         if ($status == 'final') {
-            if (empty($invoice_scheme_id)) {
-                $scheme = $this->getInvoiceScheme($business_id, $location_id);
-            } else {
-                $scheme = InvoiceScheme::where('business_id', $business_id)
-                    ->find($invoice_scheme_id);
-            }
-
+            $scheme = InvoiceScheme::where('business_id', $business_id)->where('name','Referencia')->first();
             if ($scheme->scheme_type == 'blank') {
                 $prefix = $scheme->prefix;
             } else {
@@ -1833,7 +1827,6 @@ class TransactionUtil extends Util
     private function getInvoiceScheme($business_id, $location_id)
     {
         $scheme_id = BusinessLocation::where('business_id', $business_id)
-            ->where('id', $location_id)
             ->first()
             ->invoice_scheme_id;
         if (!empty($scheme_id) && $scheme_id != 0) {
@@ -3773,13 +3766,13 @@ class TransactionUtil extends Util
         $created_by = null
     ) {
         $query = Transaction::leftJoin(
-                'transaction_payments AS tp',
-                'transactions.id',
-                '=',
-                'tp.transaction_id'
-            )
+            'transaction_payments AS tp',
+            'transactions.id',
+            '=',
+            'tp.transaction_id'
+        )
             ->where('transactions.business_id', $business_id)
-            ->where('transactions.type', 'expense');    
+            ->where('transactions.type', 'expense');
 
         if (!empty($start_date) && !empty($end_date)) {
             $start = $start_date;
@@ -3808,10 +3801,10 @@ class TransactionUtil extends Util
         $sumBill = VehicleBill::where('business_id', $business_id);
         if (!empty($start_date) && !empty($end_date)) {
             $sumBill->where('fecha_compra', '>=', $start_date)
-                    ->where('fecha_compra', '<=', $end_date);
-        }        
+                ->where('fecha_compra', '<=', $end_date);
+        }
         $sum = $sumBill->sum('monto');
-        
+
         $output['sum_bill'] = $sum;
 
         return $output;

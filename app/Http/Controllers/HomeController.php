@@ -210,8 +210,8 @@ class HomeController extends Controller
     {
         try {
             $business_id = request()->session()->get('user.business_id');
-            $productsCount = Product::where('is_show',1)->count();
-            $productsCountMant = Product::where('is_mant',1)->count();
+            $productsCount = Product::where('is_show',1)->where('is_inactive',0)->count();
+            $productsCountMant = Product::where('is_mant',1)->where('is_inactive',0)->count();
             if (request()->ajax()) {
                 $start = request()->start;
                 $end = request()->end;
