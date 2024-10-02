@@ -51,7 +51,7 @@
                             <span class="info-box-icon bg-green"><i class="fa fa-car"></i></span>
                         </a>
                         <div class="info-box-content">
-                            <span class="info-box-text">{{ __('Autos en exhibición') }}</span>
+                            <span class="info-box-text">{{ __('Exhibición') }}</span>
                             <span class="info-box-number vehicle_count"><i
                                     class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
                         </div>
@@ -69,7 +69,7 @@
                         </a>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">{{ __('Vehículo en mantenimiento') }}</span>
+                            <span class="info-box-text">{{ __('Mantenimiento') }}</span>
                             <span class="info-box-number vehicle_mant"><i
                                     class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
                         </div>
@@ -109,7 +109,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">
-                                {{ __('Monto a pagar CxP') }}
+                                {{ __('Cuentas por Pagar') }}
                             </span>
                             <span class="info-box-number total_expense"><i
                                     class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
