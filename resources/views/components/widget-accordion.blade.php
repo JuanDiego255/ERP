@@ -15,7 +15,7 @@
         @endif
     </div>
     <div id="collapseFilter{{ $id ?? 'default' }}"
-        class="panel-collapse active collapse @if (empty($closed)) in @endif" aria-expanded="true">
+        class="panel-collapse active collapse @if (!empty($id) && $id === "accordionPagos") in @endif" aria-expanded="true">
         <div class="box-body">
             {{ $slot }}
         </div>
