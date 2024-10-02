@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -105,6 +105,37 @@ class Contact extends Authenticatable
         }
 
         $contacts = $query->pluck('supplier', 'id');
+
+        //Prepend none
+        if ($prepend_none) {
+            $contacts = $contacts->prepend(__('lang_v1.none'), '');
+        }
+
+        return $contacts;
+    }
+    /**
+     * Return list of contact dropdown for a business
+     *
+     * @param $business_id int
+     * @param $exclude_default = false (boolean)
+     * @param $prepend_none = true (boolean)
+     *
+     * @return array users
+     */
+    public static function contactDropdownCustomer($business_id, $exclude_default = false, $prepend_none = true, $append_id = true)
+    {
+        $query = Contact::where('contacts.business_id', $business_id)
+            ->join('revenues as rev', 'contacts.id', '=', 'rev.contact_id')
+            ->where('type', 'customer')
+            ->active();
+        $query->select(
+            DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' - ', COALESCE(supplier_business_name, ''), '(', contacts.contact_id, ')')) AS contact"),
+            'rev.id as rev_id',
+            'contacts.id as contact_id'
+        );
+
+
+        $contacts = $query->pluck('contact', 'contact_id', 'rev_id');
 
         //Prepend none
         if ($prepend_none) {

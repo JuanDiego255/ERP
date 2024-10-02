@@ -6,11 +6,17 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1></h1>
+        <div class="col-md-4 col-xs-12 mt-15 pull-right mb-10">
+            {!! Form::select('contact_id', $contacts, $contact->id, [
+                'class' => 'form-control select2',
+                'id' => 'contact_id',
+            ]) !!}
+        </div>
     </section>
 
     <!-- Main content -->
     <section class="content">
-        <input type="hidden" id="revenue_id" value="{{ $id }}">
+        <input type="hidden" id="revenue_id" value="{{ $item->id }}">
         <input type="hidden" id="can_update" value="{{ $canUpdate }}">
         <div class="row">
             <div class="col-md-12">
@@ -252,7 +258,7 @@
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-block btn-primary btn_add_row"
-                                href="{{ action('RevenueController@storeRow', [$id]) }}">
+                                href="{{ action('RevenueController@storeRow', [$item->id]) }}">
                                 <i class="fa fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
@@ -287,6 +293,9 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#contact_id').change(function() {
+                window.location = "{{ url('/revenues/receive/') }}/" + $(this).val();
+            });
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
@@ -298,7 +307,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '/payments/revenues/' + revenue_id,
+                    url: '/payments/revenues/' + $('#contact_id').val(),
                     data: function(d) {
                         d.start_date = $('input#expense_date_range')
                             .data('daterangepicker')

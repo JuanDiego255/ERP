@@ -14,6 +14,7 @@ use App\Models\City;
 use App\Models\Revenue;
 use App\Models\TaxRate;
 use App\Models\Account;
+use App\Models\Contact;
 use App\Models\PaymentRevenue;
 use App\Utils\ContactUtil;
 use Carbon\Carbon;
@@ -98,6 +99,7 @@ class RevenueController extends Controller
                     'revenues.detalle',
                     'revenues.created_by',
                     'ct.contact_id',
+                    'ct.id as cliente_id',
                     'v.name as vehiculo',
                     'v.model as model',
                     'ct.name',
@@ -151,7 +153,7 @@ class RevenueController extends Controller
 
 
 
-                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->rev_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
+                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->cliente_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
 
                         $html .= '<li>
                     <a data-href="' . action('RevenueController@destroy', [$row->rev_id]) . '" class="delete_revenue"><i class="glyphicon glyphicon-trash"></i> Eliminar</a>
@@ -275,8 +277,9 @@ class RevenueController extends Controller
             return $output;
         }
     }
-    public function receive($id)
+    public function receive($id, Request $request)
     {
+        $business_id = $request->session()->get('user.business_id');
         $item = DB::table('revenues as rev')
             ->join('plan_ventas as pv', 'rev.plan_venta_id', '=', 'pv.id')
             ->join('products as vv', 'pv.vehiculo_venta_id', '=', 'vv.id')
@@ -294,6 +297,7 @@ class RevenueController extends Controller
                 'rev.valor_total as valor_total',
                 'rev.detalle as detalle',
                 'rev.plazo as plazo',
+                'cli.id as cliente_id',
                 'cli.name as name',
                 'cli.identificacion as identificacion',
                 'cli.tipo_identificacion as tipo_identificacion',
@@ -302,10 +306,12 @@ class RevenueController extends Controller
                 'cli.email as email',
                 'cli.landmark as direccion'
             )
-            ->where('rev.id', $id)
+            ->where('cli.id', $id)
             ->first();
 
-        //$payment_types = $this->transactionUtil->payment_types(); 
+        $contact = Contact::where('business_id', $business_id)
+            ->find($item->cliente_id);
+        $contacts = Contact::contactDropdownCustomer($business_id, false);
 
         $canUpdate = true;
         if (!auth()->user()->can('cxc.update')) {
@@ -313,7 +319,7 @@ class RevenueController extends Controller
         }
 
         if (request()->ajax()) {
-            $payment_revenues = PaymentRevenue::where('payment_revenues.revenue_id', $id)
+            $payment_revenues = PaymentRevenue::where('payment_revenues.revenue_id', $item->id)
                 ->select([
                     'payment_revenues.id as id',
                     'payment_revenues.created_at as created_at',
@@ -423,7 +429,7 @@ class RevenueController extends Controller
                 ->make(true);
         }
 
-        return view('revenues.receive', compact('item', 'id', 'canUpdate'));
+        return view('revenues.receive', compact('item', 'id', 'canUpdate','contacts','contact'));
     }
     public function updatePayment(Request $request, $id, $revenue_id)
     {
