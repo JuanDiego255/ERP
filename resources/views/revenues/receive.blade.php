@@ -20,8 +20,9 @@
         <input type="hidden" id="can_update" value="{{ $canUpdate }}">
         <div class="row">
             <div class="col-md-12">
-                @component('components.widget', [
+                @component('components.widget-accordion', [
                     'title' => __('Información del vehículo'),
+                    'id' => 'accordionVehicle'
                 ])
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -57,8 +58,9 @@
                         </div>
                     </div>
                 @endcomponent
-                @component('components.widget', [
+                @component('components.widget-accordion', [
                     'title' => __('Información Cuenta Por Cobrar'),
+                    'id' => 'accordionCXC'
                 ])
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -151,8 +153,9 @@
                         {!! Form::textarea('detalle', $item->detalle, ['class' => 'form-control', 'required', 'readonly', 'rows' => 3]) !!}
                     </div>
                 @endcomponent
-                @component('components.widget', [
+                @component('components.widget-accordion', [
                     'title' => __('Información del cliente'),
+                    'id' => 'accordionCliente'
                 ])
                     <div class="row">
                         <div class="col-sm-3">
@@ -237,7 +240,7 @@
                 @endcomponent
                 <div class="row">
                     <div class="col-md-12">
-                        @component('components.filters', ['title' => __('report.filters')])
+                        @component('components.filters', ['title' => __('report.filters'), 'id' => 'expenseFilter'])
                             <div class="col-md-4">
                                 <div class="form-group">
                                     {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
@@ -252,8 +255,9 @@
                         @endcomponent
                     </div>
                 </div>
-                @component('components.widget', [
+                @component('components.widget-accordion', [
                     'title' => __('Gestión de pagos en esta cuenta'),
+                    'id' => 'accordionPagos'
                 ])
                     @slot('tool')
                         <div class="box-tools">
@@ -389,7 +393,7 @@
                 initComplete: function() {
                     $('.dataTables_paginate').css('margin-top', '15px');
                 },
-                dom: '<"text-center"B><"top"p>frtip',
+                dom: '<"text-center"B><"top"p>rtip',
                 buttons: [{
                         extend: 'pageLength',
                         text: 'Mostrando 25',
