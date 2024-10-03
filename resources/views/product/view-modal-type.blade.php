@@ -11,6 +11,7 @@
                 <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                     <thead>
                         <tr>
+                            <th>@lang('ID')</th>
                             <th>@lang('Vehículo')</th>
                             <th>@lang('product.category')</th>
                             <th>@lang('product.brand')</th>
@@ -19,16 +20,15 @@
                             <th>@lang('vehiculos.vin')</th>
                             <th>@lang('vehiculos.placa')</th>
                             <th>@lang('vehiculos.dua')</th>
-                            <th>@lang('vehiculos.comprado_a')</th>
                             <th>@lang('vehiculos.created_at')</th>
-                            <th>@lang('product.sku')</th>
+                            <th>@lang('Precio')</th>
                         </tr>
                     </thead>
                 </table>
             </div>
         </div>
         <div class="modal-footer">
-           {{--  <button type="button" class="btn btn-primary no-print" aria-label="Print"
+            {{--  <button type="button" class="btn btn-primary no-print" aria-label="Print"
                 onclick="$(this).closest('div.modal').printThis();">
                 <i class="fa fa-print"></i> @lang('messages.print')
             </button> --}}
@@ -39,7 +39,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         var type = $('#type').val();
-        $('#product_table').DataTable({
+        product_table = $('#product_table').DataTable({
             processing: true,
             serverSide: true,
             aaSorting: [
@@ -57,6 +57,10 @@
                 "searchable": true
             }],
             columns: [{
+                    data: 'id',
+                    name: 'products.id'
+                },
+                {
                     data: 'product',
                     name: 'products.name'
                 },
@@ -89,17 +93,13 @@
                     name: 'products.dua'
                 },
                 {
-                    data: 'comprado_a',
-                    name: 'products.comprado_a'
-                },
-                {
                     data: 'created_at',
                     name: 'products.created_at'
                 },
                 {
-                    data: 'sku',
-                    name: 'products.sku'
-                },
+                    data: 'price',
+                    name: 'products.price'
+                }
             ],
             dom: '<"text-center"B><"top"p>frtip',
             fnDrawCallback: function(oSettings) {
@@ -111,8 +111,7 @@
                 $('.dataTables_paginate').css('margin-top', '15px');
 
                 // Indices de las columnas donde quieres aplicar los filtros
-                var filterableColumns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                    10
+                var filterableColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9
                 ]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
                 // Agregar una fila en el encabezado para los filtros de búsqueda
@@ -150,6 +149,74 @@
                             });
                     }
                 });
+            }
+        });
+
+        $('#product_table').on('focus', 'input[type="text"]', function() {
+            var input = $(this);
+            var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
+                '');
+            input.data('initialValue', valorSinFormato);
+        });
+        $('#product_table').on('blur', 'input[type="text"]', function() {
+            var input = $(this);
+            var value = input.val();
+            var value = value.replace(/,/g, '').replace(/\.\d+$/,
+                '');
+            var initialValue = input.data('initialValue'); // Recupera el valor inicial
+            var column_name = input.attr('name');
+            var row_id = input.closest('tr').find('td').eq(0).text();
+            var totalColumns = input.closest('tr').find('td').length;
+            var allRows = input.closest('tbody').find('tr');
+            var penultimaFila = allRows.eq(allRows.length - 2);
+            var saldo = penultimaFila.find('td').eq(9).find('input').val();
+            var inputType = input.attr('type'); // Obtiene el tipo de input   
+            // Verificar si es un input de tipo "text" o "number" y realizar las validaciones correspondientes
+            var isValid = false;
+            if (inputType === 'text') {
+                // Validar que el campo de texto no esté vacío
+                isValid = value.trim() !== '';
+            } else if (inputType === 'number') {
+                // Validar que el número sea mayor o igual a 0
+                isValid = value >= 0;
+            }
+
+            // Solo procede si el valor cambió, la entrada es válida y se pueden hacer actualizaciones
+            if (value != initialValue && isValid && saldo != 0) {
+                // Deshabilita todos los campos de entrada mientras se procesa la solicitud
+                $('input[type="text"], input[type="number"]').prop('disabled', true);
+
+                $.ajax({
+                    url: '/vehicle-update-price/' + row_id,
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        column: column_name,
+                        value: value
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            product_table.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        // Manejo de error
+                    },
+                    complete: function() {
+                        // Rehabilita los campos de entrada después de que la solicitud se complete
+                        $('input[type="text"], input[type="number"]').prop('disabled',
+                            false);
+                    }
+                });
+            }
+        });
+        $('#product_table').on('input', '.number', function() {
+            let input = $(this).val().replace(/[^0-9]/g, ''); // Elimina todo lo que no sea un número
+            if (input) {
+                // Formatea el número con comas para los miles
+                let formatted = new Intl.NumberFormat('en-US').format(input);
+                $(this).val(formatted);
             }
         });
     });

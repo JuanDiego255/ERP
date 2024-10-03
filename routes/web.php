@@ -370,6 +370,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/contacts/check-contact-id', 'ContactController@checkContactId');
     Route::post('/expense/check-ref_no', 'ExpenseController@checkFacId');
     Route::post('/modal-car/', 'ProductController@store');
+    Route::post('/vehicle-update-price/{id}', 'ProductController@updatePrice');
     Route::get('/contacts/customers', 'ContactController@getCustomers');
     Route::get('/contacts/guarantor', 'ContactController@getGuarantor');
     Route::get('/employees/vendedor', 'EmployeeController@getVendedores');

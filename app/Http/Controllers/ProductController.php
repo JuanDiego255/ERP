@@ -282,6 +282,7 @@ class ProductController extends Controller
                 'products.model',
                 'products.color',
                 'products.dua',
+                'products.price',
                 'products.comprado_a',
                 'products.placa',
                 'products.bin',
@@ -292,7 +293,11 @@ class ProductController extends Controller
             $products->orderBy('created_at', 'desc');
             return Datatables::of($products)
                 ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
-
+                ->editColumn(
+                    'price',
+                    '        
+                    {!! Form::text("price", number_format($price, 2, ".", ","), array_merge(["class" => "form-control number"])) !!}'
+                )
                 ->editColumn('product', function ($row) {
                     $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->product;
 
@@ -302,7 +307,7 @@ class ProductController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return $this->commonUtil->format_date($row->created_at, true);
                 })
-                ->rawColumns(['image', 'product', 'category'])
+                ->rawColumns(['image', 'product', 'category', 'price'])
                 ->make(true);
         }
     }
@@ -403,6 +408,19 @@ class ProductController extends Controller
             'variable' => __('lang_v1.variable'),
             'combo' => __('lang_v1.combo')
         ];
+    }
+    public function updatePrice(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $column = $request->input('column');
+        $value = $request->input('value');
+        $price = isset($value)
+        ? floatval(str_replace(',', '', $value))
+        : null;
+        $product_detalle[$column] = $price;
+        $product->update($product_detalle);
+
+        return response()->json(['success' => true]);
     }
 
     /**
