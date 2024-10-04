@@ -385,6 +385,18 @@ class PlanVentaController extends Controller
             abort(403, 'Unauthorized action.');
         }
         try {
+            $business_id = $request->session()->get('user.business_id');
+            $cxc_item = Revenue::where('business_id', $business_id)
+                ->where('plan_venta_id', $id)
+                ->firstOrFail();
+            $countPayment = PaymentRevenue::where('revenue_id',$cxc_item->id)->count();
+            if($countPayment > 1){
+                $output = [
+                    'success' => 0,
+                    'msg' => __("No puedes modificar un plan de ventas que tiene más de un pago realizado en su cuenta por cobrar")
+                ];
+                return redirect('/plan-ventas-index')->with('status', $output);
+            }
             DB::beginTransaction();
             $plan_details = $request->only([
                 'numero',
@@ -422,7 +434,7 @@ class PlanVentaController extends Controller
                 ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
                 : null;
             //Formatear montos
-            $business_id = $request->session()->get('user.business_id');
+           
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden;
@@ -434,9 +446,7 @@ class PlanVentaController extends Controller
                 ? floatval(str_replace(',', '', $request->cuota))
                 : null;
 
-            $cxc_item = Revenue::where('business_id', $business_id)
-                ->where('plan_venta_id', $id)
-                ->firstOrFail();
+            
             $cxc['business_id'] = $business_id;
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;

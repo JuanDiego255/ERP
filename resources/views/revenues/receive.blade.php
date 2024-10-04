@@ -789,7 +789,7 @@
 
                     // Si solo hay una fila, los inputs quedan habilitados (sin readonly)
                     if (totalRows === 1) {
-                        inputs.prop('readonly', false); // Elimina readonly si solo hay una fila
+                        inputs.prop('readonly', true); // Elimina readonly si solo hay una fila
                     } else {
                         // Si es la última fila, habilita los inputs (sin readonly), de lo contrario, agrégales readonly
                         if (index === totalRows - 1 && can_update == true) {

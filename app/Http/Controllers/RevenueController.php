@@ -214,6 +214,7 @@ class RevenueController extends Controller
             return response()->json(['success' => false, 'msg' => 'No cuentas con permisos para realizar modificaciones, o insertar nuevas lineas']);
         }
         try {
+            DB::beginTransaction();
             $record = PaymentRevenue::where('payment_revenues.revenue_id', $id)
                 ->join('revenues', 'payment_revenues.revenue_id', '=', 'revenues.id')
                 ->select(
@@ -224,10 +225,10 @@ class RevenueController extends Controller
                     'revenues.valor_total as monto_general_first',
                     'revenues.cuota'
                 )
-                ->orderBy('payment_revenues.monto_general', 'asc')
+                ->orderByRaw('CAST(payment_revenues.monto_general AS DECIMAL(15,2)) ASC')
                 ->first();
             $business_id = $request->session()->get('user.business_id');
-            $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
+            $monto_general = $record->monto_general;
             $interes = round($monto_general * ($record->tasa / 100), 2);
             $cxc_pay['revenue_id'] = $id;
             $cxc_pay['referencia'] = $this->transactionUtil->getInvoiceNumber($business_id, 'final', "");
@@ -236,8 +237,10 @@ class RevenueController extends Controller
             $cxc_pay['paga'] = 0;
             $cxc_pay['amortiza'] = round($record->cuota - $interes, 2);
             PaymentRevenue::create($cxc_pay);
-            return response()->json(['success' => true]);
+            DB::commit();
+            return response()->json(['success' => true,'msg' => $monto_general]);
         } catch (Exception $th) {
+            DB::rollBack();
             return response()->json(['success' => false, 'msg' => 'Ocurrió un error al insertar la linea']);
         }
     }
@@ -486,8 +489,16 @@ class RevenueController extends Controller
     {
         if (request()->ajax()) {
             try {
-                $planilla = PaymentRevenue::where('id', $id)->first();
-                $planilla->delete();
+                $payment = PaymentRevenue::where('id', $id)->first();
+                $count = PaymentRevenue::where('revenue_id',$payment->revenue_id)->count();
+                if($count == 1){
+                    $output = [
+                        'success' => false,
+                        'msg' => __("No puedes eliminar la primer linea de pago, puede causar inconsistencias, si deseas editar los montos debes hacerlo desde el plan de ventas")
+                    ];
+                    return $output;
+                }
+                $payment->delete();
                 $output = [
                     'success' => true,
                     'msg' => __("Linea eliminada con éxito")
