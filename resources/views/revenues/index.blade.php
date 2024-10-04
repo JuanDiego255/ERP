@@ -15,8 +15,8 @@
             @component('components.filters', ['title' => __('report.filters')])
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                        {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        {!! Form::label('location_id',  __('Sucursal') . ':') !!}
+                        {!! Form::select('location_id', [ 'GRECIA' => 'GRECIA','NICOYA' => 'NICOYA'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
                 
@@ -36,7 +36,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('expense_payment_status',  __('purchase.payment_status') . ':') !!}
-                        {!! Form::select('expense_payment_status', ['1' => 'Cobrado', '2' => 'Pendiente'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('expense_payment_status', ['2' => 'Pendiente', '1' => 'Cobrado'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
             @endcomponent
@@ -56,6 +56,7 @@
                                 <th>Total a cobrar</th>
                                 <th>Vehículo</th>
                                 <th>Modelo</th>
+                                <th>Sucursal</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>
@@ -65,7 +66,7 @@
                                 <td id="footer_payment_status_count"></td>
                                 <td><span class="display_currency" id="footer_revenue_total" data-currency_symbol ="true"></span></td>
                                 <td><span class="display_currency" id="footer_total_due" data-currency_symbol ="true"></span></td>
-                                <td colspan="3"></td>
+                                <td colspan="4"></td>
                             </tr>
                         </tfoot>
                     </table>

@@ -82,6 +82,11 @@ $(document).ready(function () {
                 name: 'v.model'
             },
             {
+                data: 'sucursal',
+                name: 'sucursal',
+                orderable: false
+            },
+            {
                 data: 'status',
                 name: 'status',
                 orderable: false

@@ -95,6 +95,7 @@ class RevenueController extends Controller
                     'revenues.expense_category_id',
                     'revenues.location_id',
                     'revenues.status',
+                    'revenues.sucursal',
                     'revenues.valor_total',
                     'revenues.detalle',
                     'revenues.created_by',
@@ -127,12 +128,12 @@ class RevenueController extends Controller
                     ->whereDate('revenues.created_at', '<=', $end);
             }
 
-            /* if (request()->has('location_id')) {
+            if (request()->has('location_id')) {
                 $location_id = request()->get('location_id');
-                if (!empty($location_id)) {
-                    $revenues->where('revenues.location_id', $location_id);
+                if (!empty($location_id) && $location_id != "TODAS") {
+                    $revenues->where('revenues.sucursal', $location_id);
                 }
-            } */
+            }
 
             /* $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {

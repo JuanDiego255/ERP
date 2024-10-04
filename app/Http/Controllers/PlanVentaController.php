@@ -322,6 +322,7 @@ class PlanVentaController extends Controller
 
             //Crear CxC
             $cxc['business_id'] = $business_id;
+            $cxc['sucursal'] = "GRECIA";
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
             $cxc['valor_total'] = $request->total_financiado;
@@ -450,6 +451,7 @@ class PlanVentaController extends Controller
             $cxc['business_id'] = $business_id;
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
+            $cxc['sucursal'] = "GRECIA";
             $cxc['valor_total'] = $plan_details['total_financiado'];
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
