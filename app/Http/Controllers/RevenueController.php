@@ -239,7 +239,7 @@ class RevenueController extends Controller
             $cxc_pay['amortiza'] = round($record->cuota - $interes, 2);
             PaymentRevenue::create($cxc_pay);
             DB::commit();
-            return response()->json(['success' => true,'msg' => $monto_general]);
+            return response()->json(['success' => true, 'msg' => $monto_general]);
         } catch (Exception $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'msg' => 'Ocurrió un error al insertar la linea']);
@@ -433,7 +433,7 @@ class RevenueController extends Controller
                 ->make(true);
         }
 
-        return view('revenues.receive', compact('item', 'id', 'canUpdate','contacts','contact'));
+        return view('revenues.receive', compact('item', 'id', 'canUpdate', 'contacts', 'contact'));
     }
     public function updatePayment(Request $request, $id, $revenue_id)
     {
@@ -443,7 +443,16 @@ class RevenueController extends Controller
             $value = $request->input('value');
             $detalle[$column] = $value;
             if ($column == "created_at" || $column == "fecha_interes") {
-                $fechaFormateada = Carbon::createFromFormat('d/m/Y', $value);
+                $fechaFormateada = Carbon::createFromFormat('m/d/Y', $value);
+                if ($fechaFormateada && $fechaFormateada->format('m/d/Y') === $value) {
+                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto(dd/MM/yyyy ó dd/MM/yy)']);
+                }
+                if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $value)) {
+                    $fechaFormateada = Carbon::createFromFormat('d/m/y', $value);
+                }
+                elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $value)) {
+                    $fechaFormateada = Carbon::createFromFormat('d/m/Y', $value);
+                }
                 $detalle[$column] = $fechaFormateada;
             }
             $detalle_planilla->update($detalle);
@@ -491,8 +500,8 @@ class RevenueController extends Controller
         if (request()->ajax()) {
             try {
                 $payment = PaymentRevenue::where('id', $id)->first();
-                $count = PaymentRevenue::where('revenue_id',$payment->revenue_id)->count();
-                if($count == 1){
+                $count = PaymentRevenue::where('revenue_id', $payment->revenue_id)->count();
+                if ($count == 1) {
                     $output = [
                         'success' => false,
                         'msg' => __("No puedes eliminar la primer linea de pago, puede causar inconsistencias, si deseas editar los montos debes hacerlo desde el plan de ventas")
