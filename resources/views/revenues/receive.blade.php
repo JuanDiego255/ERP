@@ -22,7 +22,7 @@
             <div class="col-md-12">
                 @component('components.widget-accordion', [
                     'title' => __('Información del vehículo'),
-                    'id' => 'accordionVehicle'
+                    'id' => 'accordionVehicle',
                 ])
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -60,7 +60,7 @@
                 @endcomponent
                 @component('components.widget-accordion', [
                     'title' => __('Información Cuenta Por Cobrar'),
-                    'id' => 'accordionCXC'
+                    'id' => 'accordionCXC',
                 ])
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -155,7 +155,7 @@
                 @endcomponent
                 @component('components.widget-accordion', [
                     'title' => __('Información del cliente'),
-                    'id' => 'accordionCliente'
+                    'id' => 'accordionCliente',
                 ])
                     <div class="row">
                         <div class="col-sm-3">
@@ -257,7 +257,7 @@
                 </div>
                 @component('components.widget-accordion', [
                     'title' => __('Gestión de pagos en esta cuenta'),
-                    'id' => 'accordionPagos'
+                    'id' => 'accordionPagos',
                 ])
                     @slot('tool')
                         <div class="box-tools">
@@ -660,6 +660,16 @@
                         console.log(response);
                         if (response.success) {
                             payment_table.ajax.reload();
+                            setTimeout(function() {
+                                var lastRow = $(
+                                '#payments tbody tr:last'); // Selecciona la última fila
+                                if (lastRow.length) {
+                                    lastRow[0].scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'center'
+                                    });
+                                }
+                            }, 1000);
                             toggleInputs();
                         } else {
                             swal({
