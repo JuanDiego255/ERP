@@ -138,8 +138,8 @@ class BillVehicleController extends Controller
                 $transaction_data['transaction_date'] = $request->fecha_compra;
                 $transaction_data['fecha_vence'] = $request->fecha_vence;
                 $transaction_data['additional_notes'] = $request->descripcion;
-                $transaction_data['final_total'] = $request->monto;
-                $transaction_data['total_before_tax'] = $request->monto;
+                $transaction_data['final_total'] = $monto;
+                $transaction_data['total_before_tax'] = $monto;
                 $transaction_data['plazo'] = $request->plazo;
                 $transaction = Transaction::create($transaction_data);
                 DetailTransaction::create([
