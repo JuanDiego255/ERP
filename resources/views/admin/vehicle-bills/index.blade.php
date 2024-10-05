@@ -227,12 +227,12 @@
                 var i = 0;
                 $('#bills_table tbody tr').each(function() {
                     var row = $(this);
-                    var fecha_compra = row.find('td:eq(0)').text();
-                    var vehiculo = row.find('td:eq(1)').text();
-                    var proveedor = row.find('td:eq(2)').text();
-                    var descripcion = row.find('td:eq(3)').text();
-                    var monto = parseFloat(row.find('td:eq(4)').text().replace(/[^\d.-]/g, ''));
-                    var factura = row.find('td:eq(5)').text();
+                    var fecha_compra = row.find('td:eq(1)').text();
+                    var vehiculo = row.find('td:eq(2)').text();
+                    var proveedor = row.find('td:eq(3)').text();
+                    var descripcion = row.find('td:eq(4)').text();
+                    var monto = parseFloat(row.find('td:eq(5)').text().replace(/[^\d.-]/g, ''));
+                    var factura = row.find('td:eq(6)').text();
 
                     selected_rows[i++] = {
                         fecha_compra: fecha_compra.trim(),
