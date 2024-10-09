@@ -69,8 +69,11 @@
                 <i class="fa fa-print"></i> @lang('messages.print')
             </button>
             <button type="button" class="btn btn-info sendPaymentWhats no-print" aria-label="Print"
-                id="sendPaymentWhats">
+                id="whats">
                 <i class="fa fa-share"></i> @lang('Enviar por WhatsApp')
+            </button>
+            <button type="button" class="btn btn-info sendPaymentDetail no-print" aria-label="Print" id="email">
+                <i class="fa fa-envelope"></i> @lang('Enviar comprobante')
             </button>
             <button type="button" class="btn btn-default no-print" data-dismiss="modal">@lang('messages.close')</button>
         </div>

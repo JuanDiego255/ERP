@@ -243,7 +243,7 @@
                         @component('components.filters', ['title' => __('report.filters'), 'id' => 'expenseFilter'])
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
+                                    {!! Form::label('expense_date_range', __('Tomar pagos desde') . ':') !!}
                                     {!! Form::text('date_range', null, [
                                         'placeholder' => __('lang_v1.select_a_date_range'),
                                         'class' => 'form-control',
@@ -266,24 +266,31 @@
                                 <i class="fa fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="payments">
-                            <thead>
-                                <tr>
-                                    <th>@lang('messages.action')</th>
-                                    <th>@lang('ID')</th>
-                                    <th>@lang('Fecha pago')</th>
-                                    <th>@lang('Fecha Interés')</th>
-                                    <th>@lang('No. Ref')</th>
-                                    <th>@lang('Detalle')</th>
-                                    <th>@lang('Monto Pagado')</th>
-                                    <th>@lang('Amortiza')</th>
-                                    <th>@lang('Interés C')</th>
-                                    <th>@lang('Calcular')</th>
-                                    <th>@lang('Saldo')</th>
-                                </tr>
-                            </thead>
-                        </table>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-info sendReport no-print" aria-label="Print" id="report">
+                            <i class="fa fa-envelope"></i> Enviar Reporte
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="payments">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('messages.action')</th>
+                                        <th>@lang('ID')</th>
+                                        <th>@lang('Fecha pago')</th>
+                                        <th>@lang('Fecha Interés')</th>
+                                        <th>@lang('No. Ref')</th>
+                                        <th>@lang('Detalle')</th>
+                                        <th>@lang('Monto Pagado')</th>
+                                        <th>@lang('Amortiza')</th>
+                                        <th>@lang('Interés C')</th>
+                                        <th>@lang('Calcular')</th>
+                                        <th>@lang('Saldo')</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 @endcomponent
             </div>
@@ -303,8 +310,10 @@
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
+            var email = $('#email').val();
             var vehiculo = $('#vehiculo').val();
             var placa = $('#placa').val();
+            var htmlContent = "";
             var modelo = $('#modelo').val();
             var can_update = $('#can_update').val();
             var payment_table = $('#payments').DataTable({
@@ -316,9 +325,6 @@
                         d.start_date = $('input#expense_date_range')
                             .data('daterangepicker')
                             .startDate.format('YYYY-MM-DD');
-                        d.end_date = $('input#expense_date_range')
-                            .data('daterangepicker')
-                            .endDate.format('YYYY-MM-DD');
                     },
                 },
                 columnDefs: [{
@@ -405,7 +411,7 @@
                     },
                     {
                         extend: 'print',
-                        text: 'Reporte General',
+                        text: 'Estado de Cuenta',
                         customize: function(win) {
                             $(win.document.body).find('h1').remove();
                             $(win.document.body).find('div.printHeader').remove();
@@ -517,6 +523,8 @@
                             $(win.document.body).find('table')
                                 .addClass('display')
                                 .css('font-size', 'inherit');
+
+                            htmlContent =  htmlContent = $(win.document.body).html();
                         }
                     }
 
@@ -525,9 +533,9 @@
             if ($('#expense_date_range').length == 1) {
                 $('#expense_date_range').daterangepicker(
                     dateRangeSettings,
-                    function(start, end) {
+                    function(start) {
                         $('#expense_date_range').val(
-                            start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                            start.format(moment_date_format)
                         );
                         payment_table.ajax.reload();
                     }
@@ -538,7 +546,6 @@
                     payment_table.ajax.reload();
                 });
             }
-
             function groupPaymentData() {
                 var selected_rows = [];
                 var i = 0;
@@ -575,17 +582,17 @@
             });
             $('#payments').on('blur', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
-                var value = input.val();
-                var value = value.replace(/,/g, '').replace(/\.\d+$/,
-                    '');
+                var value = input.val().replace(/,/g, '').replace(/\.\d+$/, '');
                 var initialValue = input.data('initialValue'); // Recupera el valor inicial
                 var column_name = input.attr('name');
-                var row_id = input.closest('tr').find('td').eq(1).text();
+                var row_id = input.closest('tr').find('td').eq(1)
+                    .text(); // Identificamos la fila por el ID (puedes cambiar este selector)
                 var totalColumns = input.closest('tr').find('td').length;
                 var allRows = input.closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
                 var saldo = penultimaFila.find('td').eq(9).find('input').val();
-                var inputType = input.attr('type'); // Obtiene el tipo de input   
+                var inputType = input.attr('type'); // Obtiene el tipo de input
+
                 // Verificar si es un input de tipo "text" o "number" y realizar las validaciones correspondientes
                 var isValid = false;
                 if (inputType === 'text') {
@@ -601,6 +608,9 @@
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud
                     $('input[type="text"], input[type="number"]').prop('disabled', true);
 
+                    // Guardar la posición del siguiente input antes de la recarga
+                    var currentInputIndex = input.closest('td').index() - 1;
+
                     $.ajax({
                         url: '/payment-revenue-update/' + row_id + '/' + revenue_id,
                         method: 'POST',
@@ -612,7 +622,25 @@
                         success: function(response) {
                             console.log(response);
                             if (response.success) {
-                                payment_table.ajax.reload();
+                                htmlContent = "";
+                                payment_table.ajax.reload(function() {
+                                    // Buscar la fila por el 'row_id' después de recargar la tabla
+                                    var updatedRow = $('#payments tbody tr').filter(
+                                        function() {
+                                            return $(this).find('td').eq(1)
+                                                .text() === row_id;
+                                        });
+
+                                    // Encontrar el siguiente input dentro de esa fila
+                                    var nextInput = updatedRow.find('td input').eq(
+                                        currentInputIndex);
+
+                                    // Si existe el siguiente input, aplicar el foco y seleccionar el texto
+                                    if (nextInput.length > 0) {
+                                        console.log('aqui');
+                                        nextInput.focus().select();
+                                    }
+                                });
                             }
                         },
                         error: function(xhr) {
@@ -644,7 +672,6 @@
                     $(this).val(formatted);
                 }
             });
-
             $(document).on('click', '.btn_add_row', function(event) {
                 event.preventDefault(); // Evita que el enlace siga el href de forma predeterminada
 
@@ -662,7 +689,8 @@
                             payment_table.ajax.reload();
                             setTimeout(function() {
                                 var lastRow = $(
-                                '#payments tbody tr:last'); // Selecciona la última fila
+                                    '#payments tbody tr:last'
+                                ); // Selecciona la última fila
                                 if (lastRow.length) {
                                     lastRow[0].scrollIntoView({
                                         behavior: 'smooth',
@@ -753,6 +781,7 @@
                                     console.log(result);
                                     toastr.success(result.msg);
                                     payment_table.ajax.reload();
+                                    htmlContent = "";
                                 } else {
                                     console.log(result);
                                     toastr.error(result.msg);
@@ -764,6 +793,7 @@
             });
             $(document).on('click', 'a.view-payment', function(e) {
                 e.preventDefault();
+                console.log(htmlContent);
                 $.ajax({
                     url: $(this).attr('href'),
                     dataType: 'html',
@@ -775,9 +805,39 @@
                     },
                 });
             });
-
+            $(document).on('click', 'button.sendReport', function(e) {
+                e.preventDefault();
+                var htmlContentWithoutImage = htmlContent.replace(/<img[^>]*>/g, '');
+                console.log(htmlContentWithoutImage);
+                if (htmlContent == "") {
+                    toastr.warning("Debe generar el *ESTADO DE CUENTA* para que se cargue la plantilla");
+                    return;
+                }
+                $.ajax({
+                    url: '/send-payment-report',
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        html_content: htmlContentWithoutImage,
+                        name: name,
+                        dates: dates,
+                        vehiculo: vehiculo,
+                        modelo: modelo,
+                        placa: placa,
+                        email: email
+                    },
+                    success: function(response) {
+                        toastr.success('El estado de cuenta se ha enviado por correo al cliente.');
+                    },
+                    error: function(xhr) {
+                        console.log(xhr)
+                        alert('Ocurrió un error al enviar el estado de cuenta.');
+                    }
+                });
+            });
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
+                htmlContent = "";
                 var allRows = payment_table.rows({
                     'search': 'applied'
                 }).nodes(); // Accede a todas las filas visibles
@@ -811,19 +871,25 @@
                 });
             }
             toggleInputs();
-            $(document).on('click', 'button.sendPaymentWhats', function() {
+            $(document).on('click', 'button.sendPaymentWhats, button.sendPaymentDetail', function() {
+                var buttonId = $(this).attr('id');
                 var data = $(this).serialize();
                 var pay_id = $('#payment_id').val();
 
                 $.ajax({
                     method: 'get',
-                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id,
+                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id + '/' + buttonId,
                     dataType: 'json',
                     data: data,
                     success: function(result) {
                         if (result.success === true) {
-                            toastr.success(result.msg);
-                            window.open(result.whatsapp_link, '_blank');
+                            if (result.type === "whats") {
+                                toastr.success(result.msg);
+                                window.open(result.whatsapp_link, '_blank');
+                            } else {
+                                toastr.success("Correo enviado con éxito al cliente");
+                            }
+
                         } else {
                             toastr.error(result.msg);
                         }

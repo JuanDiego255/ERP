@@ -13,9 +13,11 @@ use App\Models\User;
 use App\Models\City;
 use App\Models\Revenue;
 use App\Models\TaxRate;
+use Illuminate\Support\Facades\Notification;
 use App\Models\Account;
 use App\Models\Contact;
 use App\Models\PaymentRevenue;
+use App\Notifications\CustomerNotification;
 use App\Utils\ContactUtil;
 use Carbon\Carbon;
 use Exception;
@@ -335,13 +337,12 @@ class RevenueController extends Controller
                     'payment_revenues.interes_c as interes_c',
                     'payment_revenues.monto_general as monto_general',
                     'payment_revenues.revenue_id as rev_id'
-                ]);
+                ])->orderBy('created_at', 'asc');
 
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end = request()->end_date;
-                $payment_revenues->whereDate('payment_revenues.created_at', '>=', $start)
-                    ->whereDate('payment_revenues.created_at', '<=', $end);
+                $payment_revenues->whereDate('payment_revenues.created_at', '>=', $start);
             }
             return Datatables::of($payment_revenues)
                 ->addColumn(
@@ -449,8 +450,7 @@ class RevenueController extends Controller
                 }
                 if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $value)) {
                     $fechaFormateada = Carbon::createFromFormat('d/m/y', $value);
-                }
-                elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $value)) {
+                } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $value)) {
                     $fechaFormateada = Carbon::createFromFormat('d/m/Y', $value);
                 }
                 $detalle[$column] = $fechaFormateada;
@@ -511,7 +511,7 @@ class RevenueController extends Controller
                 $payment->delete();
                 $output = [
                     'success' => true,
-                    'msg' => __("Linea eliminada con éxito")
+                    'msg' => 'Linea eliminada con éxito'
                 ];
             } catch (\Exception $e) {
                 Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
@@ -576,7 +576,7 @@ class RevenueController extends Controller
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
         }
     }
-    public function sendPaymentsWhatsDetallado($id, $revenue_id)
+    public function sendPaymentsWhatsDetallado($id, $revenue_id, $type)
     {
         try {
             // Obtener los datos necesarios
@@ -622,10 +622,14 @@ class RevenueController extends Controller
             // Nombre del PDF y generación
             $namePdf = "Comprobante_de_recibo_de_pago_" . time() . ".pdf";
             $for_pdf = true;
-            $logo_url = public_path('images/logo_ag_cor.png');
+
+            // Leer el archivo de imagen y codificar en base64
+            $logo_path = public_path('images/logo_ag_cor.png');
+            $logo_data = base64_encode(file_get_contents($logo_path));
+            $logo = 'data:image/png;base64,' . $logo_data;
 
             // Renderización del HTML para PDF
-            $html = view('revenues.whats')->with(compact('item', 'for_pdf', 'logo_url'))->render();
+            $html = view('revenues.whats')->with(compact('item', 'for_pdf', 'logo'))->render();
             $mpdf = $this->getMpdf();
             $mpdf->WriteHTML($html);
 
@@ -635,17 +639,102 @@ class RevenueController extends Controller
 
             // Crear el enlace de WhatsApp
             $publicFileUrl = url('pdfs/' . $namePdf);
-            $whatsappMessage = urlencode("Hola, en la siguiente URL puedes encontrar el recibo del pago realizado " . $publicFileUrl);
+            $whatsappLink = "";
+            if ($type === "whats") {
+                $whatsappMessage = urlencode("Hola, en la siguiente URL puedes encontrar el recibo del pago realizado " . $publicFileUrl);
+                $whatsappNumber = $item->celular;
+                $whatsappLink = "https://wa.me/{$whatsappNumber}?text={$whatsappMessage}";
+            } else {
+                if ($item->email != "") {
+                    $data = [
+                        'to_email' => $item->email,
+                        'subject' => "Recibo de dinero del día " . $item->fecha_pago . " - " . $item->name,
+                        'email_body' => 'Adjunto encuentra el PDF del recibo de pago'
+                    ];
 
-            // Número de teléfono del cliente (modificar según sea necesario)
-            $whatsappNumber = $item->celular;
-            $whatsappLink = "https://wa.me/{$whatsappNumber}?text={$whatsappMessage}";
+                    $data['email_settings'] = request()->session()->get('business.email_settings');
+
+                    $data['attachment'] =  $file;
+                    $data['attachment_name'] =  $namePdf;
+                    Notification::route('mail', $data['to_email'])->notify(new CustomerNotification($data));
+
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+            }
 
             // Retornar el enlace en la respuesta AJAX
             $output = [
                 'success' => true,
                 'msg' => __('Se generó el enlace para compartir por WhatsApp, se abrió una nueva ventana'),
+                'type' => $type,
                 'whatsapp_link' => $whatsappLink
+            ];
+        } catch (\Exception $e) {
+            Log::emergency("File:" . $e->getFile() . " Line:" . $e->getLine() . " Message:" . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => "File:" . $e->getFile() . " Line:" . $e->getLine() . " Message:" . $e->getMessage()
+            ];
+        }
+
+        return $output;
+    }
+    public function sendReportToClient(Request $request)
+    {
+        try {
+            // Obtener los datos del request
+            $htmlContent = $request->input('html_content');
+            $name = $request->input('name');
+            $dates = $request->input('dates');
+            $vehiculo = $request->input('vehiculo');
+            $modelo = $request->input('modelo');
+            $placa = $request->input('placa');
+            $toEmail = $request->input('email');
+
+            // Nombre del PDF a generar
+            $namePdf = "Estado_de_Cuenta_" . time() . ".pdf";
+            $for_pdf = true;
+
+            // Leer el archivo de imagen y codificar en base64
+            $logo_path = public_path('images/logo_ag_cor.png');
+            $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(
+				public_path('images/logo_ag_cor.png')));
+
+            // Renderizar el HTML con el logo y otros detalles
+            $html = view('revenues.report')->with(compact('htmlContent', 'name', 'dates', 'vehiculo', 'modelo', 'placa', 'logo'))->render();
+            $mpdf = $this->getMpdf();
+            $mpdf->WriteHTML($html);
+
+            // Guardar el archivo PDF
+            $file = public_path('pdfs/') . $namePdf;
+            $mpdf->Output($file, 'F');
+
+            // Verificar si hay un correo al cual enviar
+            if ($toEmail) {
+                $data = [
+                    'to_email' => $toEmail,
+                    'subject' => "Estado de Cuenta de: " . $name,
+                    'email_body' => 'Adjunto encontrarás el PDF con el estado de cuenta solicitado.',
+                    'attachment' => $file,
+                    'attachment_name' => $namePdf
+                ];
+                $data['email_settings'] = request()->session()->get('business.email_settings');
+
+                Notification::route('mail', $data['to_email'])->notify(new CustomerNotification($data));
+
+                // Eliminar el archivo después de enviarlo
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            // Retornar el resultado en la respuesta AJAX
+            $output = [
+                'success' => true,
+                'msg' => __('El estado de cuenta se ha enviado por correo.')
             ];
         } catch (\Exception $e) {
             Log::emergency("File:" . $e->getFile() . " Line:" . $e->getLine() . " Message:" . $e->getMessage());

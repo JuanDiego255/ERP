@@ -1,8 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estado de Cuenta</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <style>
     .text-blue {
@@ -102,8 +104,8 @@
 <div class="row">
     <div class="row">
         <div class="col-sm-12 text-center">
-            <img src="{{ $logo_url }}" alt="Logo de la Empresa">
-        </div>
+            <img src="{{ public_path() . '/images/logo_ag_cor.png' }}" alt="Logo de la Empresa" style="max-width: 100%; height: auto;">
+        </div>        
     </div>
     <div class="row">
         <div class="col-sm-12 text-center">
@@ -122,7 +124,7 @@
         <b>Fecha de interés:</b> {{ $item->fecha_interes }}
     </div>
     <div class="col-sm-4 invoice-col">
-        <b>Cantidad recibida:</b> {{ number_format($item->paga) }}<br>
+        <b>Cantidad recibida:</b> ₡{{ number_format($item->paga) }}<br>
         <b>Recibo:</b> {{ $item->referencia }}
     </div>
     <div class="col-sm-4 invoice-col">
@@ -137,11 +139,11 @@
         <hr>
     </div>
     <div class="col-sm-6">
-        <b>Saldo anterior: </b> {{ number_format($item->monto_general + $item->amortiza) }}
+        <b>Saldo anterior: </b> ₡{{ number_format($item->monto_general + $item->amortiza) }}
         <br>
-        <b>Intereses pagados: </b> {{ number_format($item->interes_c) }}<br>
-        <b>Monto que amortiza: </b> {{ number_format($item->amortiza) }}<br>
-        <b>Saldo actual: </b> {{ number_format($item->monto_general) }}
+        <b>Intereses pagados: </b> ₡{{ number_format($item->interes_c) }}<br>
+        <b>Monto que amortiza: </b> ₡{{ number_format($item->amortiza) }}<br>
+        <b>Saldo actual: </b> ₡{{ number_format($item->monto_general) }}
     </div>
 </div>
 <div class="row">
