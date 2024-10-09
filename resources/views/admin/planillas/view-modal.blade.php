@@ -82,7 +82,7 @@
                 onclick="$(this).closest('div.modal').printThis();">
                 <i class="fa fa-print"></i> @lang('messages.print')
             </button>
-            <button type="button" class="btn btn-info sendPaymentDetail" aria-label="Print" id="sendPaymentDetail">
+            <button type="button" class="btn btn-info sendPaymentDetail no-print" aria-label="Print" id="sendPaymentDetail">
                 <i class="fa fa-envelope"></i> @lang('Enviar comprobante')
             </button>
             <button type="button" class="btn btn-default no-print" data-dismiss="modal">@lang('messages.close')</button>
