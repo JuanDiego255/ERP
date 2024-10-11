@@ -476,10 +476,8 @@ class RevenueController extends Controller
                 if ($id == $lastRecord->id) {
                     $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
                     $interes = round($monto_general * ($record->tasa / 100), 2);
-                    if($es_cero != 1){                        
-                        $cxc_pay['monto_general'] = round($monto_general - ($value - $interes), 2);
-                    }         
-                    $cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);          
+                    $cxc_pay['monto_general'] = $es_cero != 1 ? round($monto_general - ($value - $interes), 2) : $monto_general;
+                    $cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
                     $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
                     $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
@@ -705,8 +703,9 @@ class RevenueController extends Controller
 
             // Leer el archivo de imagen y codificar en base64
             $logo_path = public_path('images/logo_ag_cor.png');
-            $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(
-				public_path('images/logo_ag_cor.png')));
+            $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents(
+                public_path('images/logo_ag_cor.png')
+            ));
 
             // Renderizar el HTML con el logo y otros detalles
             $html = view('revenues.report')->with(compact('htmlContent', 'name', 'dates', 'vehiculo', 'modelo', 'placa', 'logo'))->render();
