@@ -83,32 +83,17 @@ class PlanVentaController extends Controller
 
         $brands = Brands::where('business_id', $business_id)
             ->pluck('name', 'id');
-
+        
         //Get all business locations
         $business_locations = BusinessLocation::forDropdown($business_id);
-
         //Duplicate product
         $duplicate_product = null;
         $rack_details = null;
 
         $sub_categories = [];
-        if (!empty(request()->input('d'))) {
-
-            $duplicate_product = Product::where('business_id', $business_id)->find(request()->input('d'));
-            $duplicate_product->name .= ' (copia)';
-
-            if (!empty($duplicate_product->category_id)) {
-                $sub_categories = Category::where('business_id', $business_id)
-                    ->where('parent_id', $duplicate_product->category_id)
-                    ->pluck('name', 'id')
-                    ->toArray();
-            }
-        }
 
         $common_settings = session()->get('business.common_settings');
         $business = Business::find($business_id);
-
-        $business_id = request()->session()->get('user.business_id');
         $plan = PlanVenta::where('plan_ventas.business_id', $business_id)
             ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
             ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')

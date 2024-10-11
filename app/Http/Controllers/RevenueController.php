@@ -442,6 +442,8 @@ class RevenueController extends Controller
             $detalle_planilla = PaymentRevenue::findOrFail($id);
             $column = $request->input('column');
             $value = $request->input('value');
+            $es_cero = $request->input('es_cero');
+            $fecha_interes_cero = $request->input('fecha_interes_cero');
             $detalle[$column] = $value;
             if ($column == "created_at" || $column == "fecha_interes") {
                 $fechaFormateada = Carbon::createFromFormat('m/d/Y', $value);
@@ -474,9 +476,12 @@ class RevenueController extends Controller
                 if ($id == $lastRecord->id) {
                     $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
                     $interes = round($monto_general * ($record->tasa / 100), 2);
-                    $cxc_pay['monto_general'] = round($monto_general - ($value - $interes), 2);
-                    $cxc_pay['interes_c'] = round($interes, 2);
-                    $cxc_pay['amortiza'] = round($value - $interes, 2);
+                    if($es_cero != 1){                        
+                        $cxc_pay['monto_general'] = round($monto_general - ($value - $interes), 2);
+                    }         
+                    $cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);          
+                    $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
+                    $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
                 }
             }

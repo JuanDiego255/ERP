@@ -524,7 +524,7 @@
                                 .addClass('display')
                                 .css('font-size', 'inherit');
 
-                            htmlContent =  htmlContent = $(win.document.body).html();
+                            htmlContent = htmlContent = $(win.document.body).html();
                         }
                     }
 
@@ -546,6 +546,7 @@
                     payment_table.ajax.reload();
                 });
             }
+
             function groupPaymentData() {
                 var selected_rows = [];
                 var i = 0;
@@ -582,16 +583,20 @@
             });
             $('#payments').on('blur', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
+                var bOk = true;
                 var value = input.val().replace(/,/g, '').replace(/\.\d+$/, '');
-                var initialValue = input.data('initialValue'); // Recupera el valor inicial
+                var initialValue = input.data('initialValue');
                 var column_name = input.attr('name');
-                var row_id = input.closest('tr').find('td').eq(1)
-                    .text(); // Identificamos la fila por el ID (puedes cambiar este selector)
+                var row_id = input.closest('tr').find('td').eq(1).text();
+                var fecha_pago = input.closest('tr').find('td').eq(2).find('input').val();
                 var totalColumns = input.closest('tr').find('td').length;
                 var allRows = input.closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
-                var saldo = penultimaFila.find('td').eq(9).find('input').val();
+                var saldo = penultimaFila.find('td').eq(10).find('input').val();
+                var tasa = $('#tasa').val();
+                var cuota = $('#cuota').val().replace(/,/g, '').replace(/\.\d+$/, '');
                 var inputType = input.attr('type'); // Obtiene el tipo de input
+                var fecha_interes_cero = "";
 
                 // Verificar si es un input de tipo "text" o "number" y realizar las validaciones correspondientes
                 var isValid = false;
@@ -605,7 +610,68 @@
 
                 // Solo procede si el valor cambió, la entrada es válida y se pueden hacer actualizaciones
                 if (value != initialValue && isValid && saldo != 0) {
+                    var pagoDiario = cuota / 30;
+                    var diasCubiertos = Math.floor(value / pagoDiario);
+                    var partesFecha = fecha_pago.split('/');
+                    var dia = parseInt(partesFecha[0], 10);
+                    var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-11
+                    var anio = parseInt(partesFecha[2], 10);
+                    var fechaInicial = new Date(anio, mes, dia);
+                    // Sumar los días cubiertos a la fecha de pago
+                    fechaInicial.setDate(fechaInicial.getDate() + diasCubiertos);
+
+                    // Formatear la nueva fecha a formato dd/MM/yyyy
+                    var nuevoDia = fechaInicial.getDate().toString().padStart(2, '0');
+                    var nuevoMes = (fechaInicial.getMonth() + 1).toString().padStart(2,
+                        '0'); // Ajustar el mes
+                    var nuevoAnio = fechaInicial.getFullYear();
+                    var nuevaFechaPago = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
+                    fecha_interes_cero = nuevaFechaPago;
+                    if (column_name === "paga" && parseFloat(value) < parseFloat(cuota)) {
+                        saldo = saldo.replace(/,/g, '').replace(/\.\d+$/, '');
+                        var interes_calc = parseFloat(saldo * (tasa / 100));
+                        var amortiza = parseFloat(value - interes_calc);
+                        if (amortiza < 0) {
+                            swal({
+                                title: LANG.sure,
+                                text: 'La cuota pagada solo cubre ' + diasCubiertos +
+                                    ' días, nueva fecha de interés: ' + nuevaFechaPago +
+                                    ',¿Desea continuar?',
+                                icon: "warning",
+                                buttons: true,
+                                dangerMode: true,
+                            }).then((willDelete) => {
+                                if (willDelete) {
+                                    ejecutarAjax
+                                        (1,
+                                        fecha_interes_cero); // Llama a la función para realizar la solicitud AJAX
+                                } else {
+                                    restablecerValorInicial
+                                        (); // Restablece y formatea el valor inicial si el usuario cancela
+                                }
+                            });
+                        } else {
+                            ejecutarAjax
+                                (
+                                    0, fecha_interes_cero
+                                    ); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
+                        }
+                    } else {
+                        ejecutarAjax
+                            (0,
+                            fecha_interes_cero); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
+                    }
+                }
+
+                function restablecerValorInicial() {
+                    // Formatea el valor inicial con comas para los miles
+                    let formattedInitialValue = new Intl.NumberFormat('en-US').format(initialValue);
+                    input.val(formattedInitialValue); // Restablece el valor inicial formateado
+                }
+
+                function ejecutarAjax(es_cero, pfecha_interes_cero) {
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud
+                    console.log(es_cero);
                     $('input[type="text"], input[type="number"]').prop('disabled', true);
 
                     // Guardar la posición del siguiente input antes de la recarga
@@ -617,7 +683,9 @@
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
                             column: column_name,
-                            value: value
+                            value: value,
+                            es_cero: es_cero,
+                            fecha_interes_cero: pfecha_interes_cero
                         },
                         success: function(response) {
                             console.log(response);
@@ -637,7 +705,6 @@
 
                                     // Si existe el siguiente input, aplicar el foco y seleccionar el texto
                                     if (nextInput.length > 0) {
-                                        console.log('aqui');
                                         nextInput.focus().select();
                                     }
                                 });
@@ -654,6 +721,7 @@
                     });
                 }
             });
+
             $('#payments').on('input', '.fecha', function() {
                 let input = $(this).val().replace(/\D/g, ''); // Elimina todo lo que no sea un número
                 if (input.length <= 2) {
@@ -827,7 +895,8 @@
                         email: email
                     },
                     success: function(response) {
-                        toastr.success('El estado de cuenta se ha enviado por correo al cliente.');
+                        toastr.success(
+                            'El estado de cuenta se ha enviado por correo al cliente.');
                     },
                     error: function(xhr) {
                         console.log(xhr)
@@ -835,6 +904,7 @@
                     }
                 });
             });
+
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
                 htmlContent = "";
