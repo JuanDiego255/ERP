@@ -730,9 +730,9 @@ class RevenueController extends Controller
                 Notification::route('mail', $data['to_email'])->notify(new CustomerNotification($data));
 
                 // Eliminar el archivo después de enviarlo
-                if (file_exists($file)) {
-                    unlink($file);
-                }
+                // if (file_exists($file)) {
+                //     unlink($file);
+                // }
             }
 
             // Retornar el resultado en la respuesta AJAX
