@@ -63,8 +63,11 @@ class ExpenseController extends Controller
         if (!auth()->user()->can('expense.access') && !auth()->user()->can('view_own_expense')) {
             abort(403, 'Unauthorized action.');
         }
+        $current_path = request()->path();
+        $is_report = $current_path == "expense-report" ? true : false;
 
         if (request()->ajax()) {
+            $is_report = $current_path == "expense-report" ? true : false;
             $business_id = request()->session()->get('user.business_id');
 
             $expenses = Transaction::leftJoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
@@ -110,7 +113,7 @@ class ExpenseController extends Controller
                     DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
                 )
                 ->groupBy('transactions.id')
-                ->orderBy('ct.name','asc');
+                ->orderBy('ct.name', 'asc');
 
             //Add condition for expense for,used in sales representative expense report & list of expense
             if (request()->has('expense_for')) {
@@ -176,33 +179,44 @@ class ExpenseController extends Controller
             if (!$is_admin && auth()->user()->can('view_own_expense')) {
                 $expenses->where('transactions.created_by', request()->session()->get('user.id'));
             } */
-
             return Datatables::of($expenses)
-                ->addColumn(
-                    'action',
-                    '<div class="btn-group">
-                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                data-toggle="dropdown" aria-expanded="false"> @lang("messages.actions")<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                </span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-left" role="menu">
-                <li><a href="{{action(\'ExpenseController@edit\', [$id])}}"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a></li>
-                @if($document)
-                <li><a href="{{ url(\'uploads/documents/\' . $document)}}" 
-                download=""><i class="fa fa-download" aria-hidden="true"></i> @lang("purchase.download_document")</a></li>
-                @if(isFileImage($document))
-                <li><a href="#" data-href="{{ url(\'uploads/documents/\' . $document)}}" class="view_uploaded_document"><i class="fa fa-picture-o" aria-hidden="true"></i>@lang("lang_v1.view_document")</a></li>
-                @endif
-                @endif
-                <li>
-                <a data-href="{{action(\'ExpenseController@destroy\', [$id])}}" class="delete_expense"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</a></li>
-                <li class="divider"></li> 
-                @if($payment_status != "paid")
-                <li><a href="{{action("TransactionPaymentController@addPayment", [$id])}}" class="add_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true"></i> @lang("purchase.add_payment")</a></li>
-                @endif
-                <li><a href="{{action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> @lang("purchase.view_payments")</a></li>
-                </ul></div>'
-                )
+                ->addColumn('action', function ($row) use ($is_report) {
+                    $action = '';
+                    if (!$is_report) {
+                        $action .= '<div class="btn-group">
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                    data-toggle="dropdown" aria-expanded="false"> ' . __("messages.actions") . '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                    </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-left" role="menu">';
+
+
+                        // Mostrar botón de editar si no es reporte
+                        $action .= '<li><a href="' . action('ExpenseController@edit', [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a></li>';
+
+                        // Descargar documento
+                        if ($row->document) {
+                            $action .= '<li><a href="' . url('uploads/documents/' . $row->document) . '" download=""><i class="fa fa-download" aria-hidden="true"></i> ' . __("purchase.download_document") . '</a></li>';
+                            if (isFileImage($row->document)) {
+                                $action .= '<li><a href="#" data-href="' . url('uploads/documents/' . $row->document) . '" class="view_uploaded_document"><i class="fa fa-picture-o" aria-hidden="true"></i>' . __("lang_v1.view_document") . '</a></li>';
+                            }
+                        }
+
+                        // Eliminar
+                        $action .= '<li><a data-href="' . action('ExpenseController@destroy', [$row->id]) . '" class="delete_expense"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</a></li>';
+
+                        // Agregar pago si no está pagado
+                        if ($row->payment_status != "paid") {
+                            $action .= '<li><a href="' . action("TransactionPaymentController@addPayment", [$row->id]) . '" class="add_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true"></i> ' . __("purchase.add_payment") . '</a></li>';
+                        }
+                        $action .= '<li><a href="' . action("TransactionPaymentController@show", [$row->id]) . '" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> ' . __("purchase.view_payments") . '</a></li>
+                    </ul>
+                </div>';
+                    }
+
+
+                    return $action;
+                })
                 ->addColumn('mass_check', function ($row) {
                     return  '<input type="checkbox" checked  class="row-select" value="' . $row->id . '">';
                 })
@@ -251,7 +265,7 @@ class ExpenseController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('expense.index')
-            ->with(compact('categories', 'business_locations', 'users'));
+            ->with(compact('categories', 'business_locations', 'users', 'is_report'));
     }
 
     /**

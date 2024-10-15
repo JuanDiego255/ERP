@@ -86,7 +86,7 @@ $(document).ready(function () {
         initComplete: function () {
             $('.dataTables_paginate').css('margin-top', '15px');
             var api = this.api();
-            var filterableColumns = [0,1];
+            var filterableColumns = [0, 1];
             $('#brands_table thead').append('<tr class="filter-row"></tr>');
             api.columns().every(function (index) {
                 var column = this;
@@ -1413,11 +1413,229 @@ $(document).ready(function () {
     }
 
     //Expense table
+    var buttonsConfig = [{
+            extend: 'pageLength',
+            text: 'Mostrando 25',
+            titleAttr: 'Mostrar registros'
+        },
+        {
+            extend: 'print',
+            text: 'Rep. CUEPAG',
+            customize: function (win) {
+                // Obtener el cuerpo de la tabla
+                $(win.document.body).find('h1').remove();
+                $(win.document.body).find('div.printHeader').remove();
+                var body = $(win.document.body).find('table tbody');
+
+                var selectedRows = getSelectedRowsCuepag();
+                var groupedData = {};
+                var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
+
+                // Recorrer los resultados y acceder al proveedor
+                selectedRows.forEach(function (row) {
+                    if (!groupedData[row.provider]) {
+                        groupedData[row.provider] = {
+                            invoices: [],
+                            totalAmount: 0
+                        };
+                    }
+
+                    // Agregar la factura y sumar el monto total al proveedor correspondiente
+                    groupedData[row.provider].invoices.push(row.invoice);
+                    groupedData[row.provider].totalAmount += row.amount;
+                    grandTotal += row.amount;
+                });
+
+                body.empty();
+
+                // Insertar las filas agrupadas en el reporte
+                $.each(groupedData, function (provider, data) {
+                    // Unir facturas con comas
+                    var invoices = data.invoices.join(', ');
+                    // Formato de monto
+                    var totalAmount = data.totalAmount.toFixed(2);
+                    var formattedAmount = new Intl.NumberFormat('es-ES', {
+                        minimumFractionDigits: 3,
+                        maximumFractionDigits: 3
+                    }).format(totalAmount);
+                    formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
+
+                    // Agregar la fila a la tabla solo con proveedor, facturas y monto total
+                    body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>' + formattedAmount + '</td><td> ' + '' + '</td></tr>');
+                });
+
+                // Formatear el monto total general
+                grandTotal = grandTotal.toFixed(2);
+                var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3
+                }).format(grandTotal);
+                formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
+                // Añadir un div al final de la tabla con el monto total general
+                $(win.document.body).append(
+                    '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
+                    'Monto Total de Facturas Procesadas: ' + formattedGrandTotal +
+                    '</div>'
+                );
+
+                // Ajustar encabezados de la tabla para mostrar solo las columnas necesarias
+                $(win.document.body).find('table thead tr').html('<th>Proveedor</th><th>Facturas</th><th>Total</th><th>Método de Pago</th>');
+                var rangeDate = $('#expense_date_vence').val();
+
+                // Personalizar el cuerpo del documento
+                $(win.document.body)
+                    .css('font-size', '10pt')
+                    .prepend(
+                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                        '<div style="text-align: center; margin-bottom: 10px;">' +
+                        '<h3 style="margin: 0;">Reporte de Cuentas por Pagar (CUEPAG)</h3>' +
+                        '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + rangeDate + '</p>' +
+                        '</div>'
+                    );
+
+                $(win.document.body).find('table')
+                    .addClass('display')
+                    .css('font-size', 'inherit');
+            }
+        },
+        {
+            extend: 'print',
+            text: 'Cuentas por Pagar (AG)',
+            customize: function (win) {
+                // Obtener el cuerpo de la tabla
+                $(win.document.body).find('h1').remove();
+                $(win.document.body).find('div.printHeader').remove();
+                var body = $(win.document.body).find('table tbody');
+
+                var selectedRows = getSelectedRows();
+                var groupedData = {};
+                var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
+
+                // Recorrer los resultados y agrupar por proveedor
+                selectedRows.forEach(function (row) {
+                    if (!groupedData[row.provider]) {
+                        groupedData[row.provider] = {
+                            rows: [],
+                            subtotal: 0
+                        };
+                    }
+
+                    // Agregar la fila al proveedor correspondiente
+                    groupedData[row.provider].rows.push(row);
+                    groupedData[row.provider].subtotal += row.saldo;
+                    grandTotal += row.saldo;
+                });
+
+                body.empty();
+
+                // Insertar las filas agrupadas en el reporte
+                $.each(groupedData, function (provider, data) {
+
+                    var acumulado = 0;
+                    // Agregar nombre del proveedor
+                    body.append('<tr><td colspan="7" style="font-weight: bold; text-align: left;">' + provider + '</td></tr>');
+
+                    // Agregar las facturas del proveedor
+                    data.rows.forEach(function (row) {
+                        acumulado += row.saldo;
+                        // Formatear los montos
+                        var rowAmount = row.amount.toFixed(2);
+                        var formattedAmount = new Intl.NumberFormat('es-ES', {
+                            minimumFractionDigits: 3,
+                            maximumFractionDigits: 3
+                        }).format(rowAmount);
+                        formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
+                        var saldoAmount = row.saldo.toFixed(2);
+                        var formattedSaldo = new Intl.NumberFormat('es-ES', {
+                            minimumFractionDigits: 3,
+                            maximumFractionDigits: 3
+                        }).format(saldoAmount);
+                        formattedSaldo = __currency_trans_from_en(formattedSaldo, true, true);
+                        var rowAcumulado = acumulado.toFixed(2);
+                        var formattedAcumulado = new Intl.NumberFormat('es-ES', {
+                            minimumFractionDigits: 3,
+                            maximumFractionDigits: 3
+                        }).format(rowAcumulado);
+                        formattedAcumulado = __currency_trans_from_en(formattedAcumulado, true, true);
+
+                        // Agregar la fila a la tabla con los datos formateados
+                        body.append(
+                            '<tr>' +
+                            '<td>' + row.invoice + '</td>' +
+                            '<td>' + formattedAmount + '</td>' +
+                            '<td>' + formattedSaldo + '</td>' +
+                            '<td>' + row.montoAdelanto.toFixed(2) + '</td>' +
+                            '<td>' + row.fechaVence + '</td>' +
+                            '<td>' + row.detalle + '</td>' +
+                            '<td>' + formattedAcumulado + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                    var rowSubtotal = data.subtotal.toFixed(2);
+                    var formattedSubtotal = new Intl.NumberFormat('es-ES', {
+                        minimumFractionDigits: 3,
+                        maximumFractionDigits: 3
+                    }).format(rowSubtotal);
+                    formattedSubtotal = __currency_trans_from_en(formattedSubtotal, true, true);
+                    body.append('<tr><td colspan="7" style="text-align: right; font-weight: bold;">Subtotales ' + formattedSubtotal + '</td></tr>');
+                });
+
+                // Formatear el monto total general
+                var rowGrandTotal = grandTotal.toFixed(2);
+                var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3
+                }).format(rowGrandTotal);
+                formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
+                // Añadir un div al final de la tabla con el monto total general
+                $(win.document.body).append(
+                    '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
+                    'Monto Total de Facturas a pagar: ' + formattedGrandTotal +
+                    '</div>'
+                );
+
+                // Ajustar encabezados de la tabla para mostrar las columnas necesarias
+                $(win.document.body).find('table thead tr').html(
+                    '<th>Factura</th><th>Total</th><th>Saldo</th><th>Monto Adelantos</th><th>Fecha Vence</th><th>Detalle</th><th>Acumulado</th>'
+                );
+
+                // Personalizar el cuerpo del documento
+                $(win.document.body)
+                    .css('font-size', '10pt')
+                    .prepend(
+                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
+                        '<div style="text-align: center; margin-bottom: 10px;">' +
+                        '<h3 style="margin: 0;">Reporte de Cuentas por Pagar Autos Grecia (S.R.L)</h3>' +
+                        '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + $('#expense_date_vence').val() + '</p>' +
+                        '</div>'
+                    );
+
+                $(win.document.body).find('table')
+                    .addClass('display')
+                    .css('font-size', 'inherit');
+            }
+        },
+        {
+            extend: 'colvis',
+            text: 'Visibilidad de columna'
+        }
+    ];
+    /* if (is_report) {
+        buttonsConfig.push({
+            extend: 'excel',
+            text: 'Exportar a Excel'
+        }, {
+            extend: 'print',
+            text: 'Impresión'
+        });
+    } */
+    var is_report = $('#is_report').val();
+    var url = is_report == 1 ? '/expense-report' : '/expenses';
     expense_table = $('#expense_table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            url: '/expenses',
+            url: url,
             data: function (d) {
                 console.log(d);
                 d.expense_for = $('select#expense_for').val();
@@ -1505,227 +1723,13 @@ $(document).ready(function () {
                 .attr('class', 'clickable_td');
         },
         dom: '<"text-center"B><"top"p>rtip',
-        buttons: [{
-                extend: 'pageLength',
-                text: 'Mostrando 25',
-                titleAttr: 'Mostrar registros'
-            },
-            {
-                extend: 'excel',
-                text: 'Exportar a Excel'
-            },
-            {
-                extend: 'print',
-                text: 'Impresión'
-            },
-            {
-                extend: 'print',
-                text: 'Rep. CUEPAG',
-                customize: function (win) {
-                    // Obtener el cuerpo de la tabla
-                    $(win.document.body).find('h1').remove();
-                    $(win.document.body).find('div.printHeader').remove();
-                    var body = $(win.document.body).find('table tbody');
-
-                    var selectedRows = getSelectedRowsCuepag();
-                    var groupedData = {};
-                    var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
-
-                    // Recorrer los resultados y acceder al proveedor
-                    selectedRows.forEach(function (row) {
-                        if (!groupedData[row.provider]) {
-                            groupedData[row.provider] = {
-                                invoices: [],
-                                totalAmount: 0
-                            };
-                        }
-
-                        // Agregar la factura y sumar el monto total al proveedor correspondiente
-                        groupedData[row.provider].invoices.push(row.invoice);
-                        groupedData[row.provider].totalAmount += row.amount;
-                        grandTotal += row.amount;
-                    });
-
-                    body.empty();
-
-                    // Insertar las filas agrupadas en el reporte
-                    $.each(groupedData, function (provider, data) {
-                        // Unir facturas con comas
-                        var invoices = data.invoices.join(', ');
-                        // Formato de monto
-                        var totalAmount = data.totalAmount.toFixed(2);
-                        var formattedAmount = new Intl.NumberFormat('es-ES', {
-                            minimumFractionDigits: 3,
-                            maximumFractionDigits: 3
-                        }).format(totalAmount);
-                        formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
-
-                        // Agregar la fila a la tabla solo con proveedor, facturas y monto total
-                        body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>' + formattedAmount + '</td><td> ' + '' + '</td></tr>');
-                    });
-
-                    // Formatear el monto total general
-                    grandTotal = grandTotal.toFixed(2);
-                    var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
-                        minimumFractionDigits: 3,
-                        maximumFractionDigits: 3
-                    }).format(grandTotal);
-                    formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
-                    // Añadir un div al final de la tabla con el monto total general
-                    $(win.document.body).append(
-                        '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
-                        'Monto Total de Facturas Procesadas: ' + formattedGrandTotal +
-                        '</div>'
-                    );
-
-                    // Ajustar encabezados de la tabla para mostrar solo las columnas necesarias
-                    $(win.document.body).find('table thead tr').html('<th>Proveedor</th><th>Facturas</th><th>Total</th><th>Método de Pago</th>');
-                    var rangeDate = $('#expense_date_vence').val();
-
-                    // Personalizar el cuerpo del documento
-                    $(win.document.body)
-                        .css('font-size', '10pt')
-                        .prepend(
-                            '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                            '<div style="text-align: center; margin-bottom: 10px;">' +
-                            '<h3 style="margin: 0;">Reporte de Cuentas por Pagar (CUEPAG)</h3>' +
-                            '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + rangeDate + '</p>' +
-                            '</div>'
-                        );
-
-                    $(win.document.body).find('table')
-                        .addClass('display')
-                        .css('font-size', 'inherit');
-                }
-            },
-            {
-                extend: 'print',
-                text: 'Cuentas por Pagar (AG)',
-                customize: function (win) {
-                    // Obtener el cuerpo de la tabla
-                    $(win.document.body).find('h1').remove();
-                    $(win.document.body).find('div.printHeader').remove();
-                    var body = $(win.document.body).find('table tbody');
-
-                    var selectedRows = getSelectedRows();
-                    var groupedData = {};
-                    var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
-
-                    // Recorrer los resultados y agrupar por proveedor
-                    selectedRows.forEach(function (row) {
-                        if (!groupedData[row.provider]) {
-                            groupedData[row.provider] = {
-                                rows: [],
-                                subtotal: 0
-                            };
-                        }
-
-                        // Agregar la fila al proveedor correspondiente
-                        groupedData[row.provider].rows.push(row);
-                        groupedData[row.provider].subtotal += row.saldo;
-                        grandTotal += row.saldo;
-                    });
-
-                    body.empty();
-
-                    // Insertar las filas agrupadas en el reporte
-                    $.each(groupedData, function (provider, data) {
-
-                        var acumulado = 0;
-                        // Agregar nombre del proveedor
-                        body.append('<tr><td colspan="7" style="font-weight: bold; text-align: left;">' + provider + '</td></tr>');
-
-                        // Agregar las facturas del proveedor
-                        data.rows.forEach(function (row) {
-                            acumulado += row.saldo;
-                            // Formatear los montos
-                            var rowAmount = row.amount.toFixed(2);
-                            var formattedAmount = new Intl.NumberFormat('es-ES', {
-                                minimumFractionDigits: 3,
-                                maximumFractionDigits: 3
-                            }).format(rowAmount);
-                            formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
-                            var saldoAmount = row.saldo.toFixed(2);
-                            var formattedSaldo = new Intl.NumberFormat('es-ES', {
-                                minimumFractionDigits: 3,
-                                maximumFractionDigits: 3
-                            }).format(saldoAmount);
-                            formattedSaldo = __currency_trans_from_en(formattedSaldo, true, true);
-                            var rowAcumulado = acumulado.toFixed(2);
-                            var formattedAcumulado = new Intl.NumberFormat('es-ES', {
-                                minimumFractionDigits: 3,
-                                maximumFractionDigits: 3
-                            }).format(rowAcumulado);
-                            formattedAcumulado = __currency_trans_from_en(formattedAcumulado, true, true);
-
-                            // Agregar la fila a la tabla con los datos formateados
-                            body.append(
-                                '<tr>' +
-                                '<td>' + row.invoice + '</td>' +
-                                '<td>' + formattedAmount + '</td>' +
-                                '<td>' + formattedSaldo + '</td>' +
-                                '<td>' + row.montoAdelanto.toFixed(2) + '</td>' +
-                                '<td>' + row.fechaVence + '</td>' +
-                                '<td>' + row.detalle + '</td>' +
-                                '<td>' + formattedAcumulado + '</td>' +
-                                '</tr>'
-                            );
-                        });
-                        var rowSubtotal = data.subtotal.toFixed(2);
-                        var formattedSubtotal = new Intl.NumberFormat('es-ES', {
-                            minimumFractionDigits: 3,
-                            maximumFractionDigits: 3
-                        }).format(rowSubtotal);
-                        formattedSubtotal = __currency_trans_from_en(formattedSubtotal, true, true);
-                        body.append('<tr><td colspan="7" style="text-align: right; font-weight: bold;">Subtotales ' + formattedSubtotal + '</td></tr>');
-                    });
-
-                    // Formatear el monto total general
-                    var rowGrandTotal = grandTotal.toFixed(2);
-                    var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
-                        minimumFractionDigits: 3,
-                        maximumFractionDigits: 3
-                    }).format(rowGrandTotal);
-                    formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
-                    // Añadir un div al final de la tabla con el monto total general
-                    $(win.document.body).append(
-                        '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
-                        'Monto Total de Facturas a pagar: ' + formattedGrandTotal +
-                        '</div>'
-                    );
-
-                    // Ajustar encabezados de la tabla para mostrar las columnas necesarias
-                    $(win.document.body).find('table thead tr').html(
-                        '<th>Factura</th><th>Total</th><th>Saldo</th><th>Monto Adelantos</th><th>Fecha Vence</th><th>Detalle</th><th>Acumulado</th>'
-                    );
-
-                    // Personalizar el cuerpo del documento
-                    $(win.document.body)
-                        .css('font-size', '10pt')
-                        .prepend(
-                            '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                            '<div style="text-align: center; margin-bottom: 10px;">' +
-                            '<h3 style="margin: 0;">Reporte de Cuentas por Pagar Autos Grecia (S.R.L)</h3>' +
-                            '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + $('#expense_date_vence').val() + '</p>' +
-                            '</div>'
-                        );
-
-                    $(win.document.body).find('table')
-                        .addClass('display')
-                        .css('font-size', 'inherit');
-                }
-            },
-            {
-                extend: 'colvis',
-                text: 'Visibilidad de columna'
-            }
-        ],
-        initComplete: function() {
+        buttons: buttonsConfig,
+        initComplete: function () {
             $('.dataTables_paginate').css('margin-top', '15px');
             var api = this.api();
-            var filterableColumns = [ 2, 3];
+            var filterableColumns = [2, 3];
             $('#expense_table thead').append('<tr class="filter-row"></tr>');
-            api.columns().every(function(index) {
+            api.columns().every(function (index) {
                 var column = this;
                 var headerCell = $(column.header());
                 var th = $('<th></th>').appendTo('.filter-row');
@@ -1735,7 +1739,7 @@ $(document).ready(function () {
                         headerCell.text() + '" style="width: 100%;" />');
 
                     input.appendTo(th)
-                        .on('keyup change', function() {
+                        .on('keyup change', function () {
                             if (column.search() !== this.value) {
                                 console.log(this.value);
                                 column.search(this.value).draw();

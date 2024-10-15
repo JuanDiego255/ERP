@@ -1,16 +1,15 @@
 <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="profit_by_products_table">
+    <table class="table table-bordered table-striped" id="bills_table">
         <thead>
             <tr>
-                <th>@lang('sale.product')</th>
-                <th>@lang('lang_v1.gross_profit')</th>
+                <th>@lang('Fecha compra')</th>
+                <th>@lang('Vehículo')</th>
+                <th>@lang('Proveedor')</th>
+                <th>@lang('Descripción')</th>
+                <th>@lang('Monto')</th>
+                <th>@lang('Factura')</th>
+                <th>@lang('Creado por')</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr class="bg-gray font-17 footer-total">
-                <td><strong>@lang('sale.total'):</strong></td>
-                <td><span class="display_currency footer_total" data-currency_symbol ="true"></span></td>
-            </tr>
-        </tfoot>
     </table>
 </div>
