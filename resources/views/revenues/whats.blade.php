@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Estado de Cuenta</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <style>
@@ -92,7 +91,12 @@
     }
 
     .text-danger {
-        color: #a94442
+        color: #a94442;
+        font-weight: bold;
+    }
+    .text-black {
+        color: #000;
+        font-weight: bold;
     }
 
     .linea {
@@ -118,20 +122,20 @@
 </div>
 <div class="row">
     <div class="col-sm-4 invoice-col">
-        <b>Recibí de:</b> {{ $item->name }}<br>
-        <b>Interés pagado al:</b> {{ $item->created_at }}<br>
-        <b>Fecha de pago:</b> {{ $item->fecha_pago }}<br>
-        <b>Fecha de interés:</b> {{ $item->fecha_interes }}
+        <b class="text-black">Recibí de:</b> {{ $item->name }}<br>
+        <b class="text-black">Interés pagado al:</b> {{ $item->created_at }}<br>
+        <b class="text-black">Fecha de pago:</b> {{ $item->fecha_pago }}<br>
+        <b class="text-black">Fecha de interés:</b> {{ $item->fecha_interes }}
     </div>
     <div class="col-sm-4 invoice-col">
-        <b>Cantidad recibida:</b> ₡{{ number_format($item->paga) }}<br>
-        <b>Recibo:</b> {{ $item->referencia }}
+        <b class="text-black">Cantidad recibida:</b> ₡{{ number_format($item->paga) }}<br>
+        <b class="text-black">Recibo:</b> {{ $item->referencia }}
     </div>
-    <div class="col-sm-4 invoice-col">
-        <b>Vehículo comprado:</b>{{ $item->veh_venta }}<br>
-        <b>Modelo:</b> {{ $item->modelo }}<br>
-        <b>Color:</b> {{ $item->color }}<br>
-        <b>Gasolina:</b> {{ $item->combustible }}
+    <div class="col-sm-3">
+        <b class="text-black">Vehículo comprado:</b>{{ $item->veh_venta }}<br>
+        <b class="text-black">Modelo:</b> {{ $item->modelo }}<br>
+        <b class="text-black">Color:</b> {{ $item->color }}<br>
+        <b class="text-black">Gasolina:</b> {{ $item->combustible }}
     </div>
 </div>
 <div class="row">
@@ -139,11 +143,11 @@
         <hr>
     </div>
     <div class="col-sm-6">
-        <b>Saldo anterior: </b> ₡{{ number_format($item->monto_general + $item->amortiza) }}
+        <b class="text-black">Saldo anterior: </b> ₡{{ number_format($item->monto_general + $item->amortiza) }}
         <br>
-        <b>Intereses pagados: </b> ₡{{ number_format($item->interes_c) }}<br>
-        <b>Monto que amortiza: </b> ₡{{ number_format($item->amortiza) }}<br>
-        <b>Saldo actual: </b> ₡{{ number_format($item->monto_general) }}
+        <b class="text-black">Intereses pagados: </b> ₡{{ number_format($item->interes_c) }}<br>
+        <b class="text-black">Monto que amortiza: </b> ₡{{ number_format($item->amortiza) }}<br>
+        <b class="text-black">Saldo actual: </b> ₡{{ number_format($item->monto_general) }}
     </div>
 </div>
 <div class="row">
@@ -156,7 +160,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-6 invoice-col">
+    <div class="col-sm-12">
         <br>
         <span class="linea">&nbsp;</span>
     </div>

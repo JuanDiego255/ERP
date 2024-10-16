@@ -11,7 +11,7 @@ class Revenue extends Model
 
     protected $fillable = [
         'referencia', 'detalle', 'business_id', 'valor_total',
-        'status', 'created_by', 'expense_category_id', 'location_id', 'contact_id','tasa','cuota','tipo_prestamo','moneda','plan_venta_id','plazo'
+        'status', 'created_by', 'expense_category_id', 'location_id', 'contact_id','tasa','cuota','tipo_prestamo','moneda','plan_venta_id','plazo','sucursal'
     ];
 
     public function location(){
