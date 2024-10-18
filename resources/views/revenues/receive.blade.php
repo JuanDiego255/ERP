@@ -474,7 +474,8 @@
 
                             // Agregar la fila final con los totales
                             body.append(
-                                '<tr>' +
+                                '<tr style="background-color: #d9d9d9;">' +
+                                // Fondo gris claro más oscuro para los totales
                                 '<td colspan="4" style="text-align: right;"><strong>Total:</strong></td>' +
                                 '<td><strong>' + formattedGrandTotalPaga + '</strong></td>' +
                                 '<td><strong>' + formattedGrandTotalAmortiza +
@@ -486,14 +487,14 @@
 
                             // Ajustar encabezados de la tabla para la planilla
                             $(win.document.body).find('table thead tr').html(
-                                '<th>Fecha de pago</th>' +
-                                '<th>Fecha de interés</th>' +
-                                '<th>No. Ref</th>' +
-                                '<th>Detalle</th>' +
-                                '<th>Monto pagado</th>' +
-                                '<th>Amortiza</th>' +
-                                '<th>Interes Corriente</th>' +
-                                '<th>Saldo</th>'
+                                '<th style="background-color: #023b9d; color: white; padding:8px;">Fecha de pago</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Fecha de interés</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">No. Ref</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Detalle</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Monto pagado</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Amortiza</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Interes Corriente</th>' +
+                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Saldo</th>'
                             );
 
                             // Personalizar el estilo del documento
@@ -508,7 +509,6 @@
                                     '<p style="margin-top: 5px; text-align:center;">Generado al: ' +
                                     dates + '</p>' +
                                     '</div>' +
-                                    // Sección de información del vehículo
                                     '<div class="text-center" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background-color: #f9f9f9;">' +
                                     '<h4 style="text-align: center; margin: 0;">Información del Vehículo</h4>' +
                                     '<p style="margin: 5px 0;"><strong>Marca:</strong> ' +
@@ -522,11 +522,33 @@
 
                             $(win.document.body).find('table')
                                 .addClass('display')
-                                .css('font-size', 'inherit');
+                                .css({
+                                    'font-size': 'inherit',
+                                    'border-collapse': 'collapse',
+                                    'width': '100%'
+                                })
+                                .find('td').css({
+                                    'border': '1px solid #ddd',
+                                    'padding': '8px',
+                                    'color': '#666' // Color gris para el texto de las celdas
+                                });
 
-                            htmlContent = htmlContent = $(win.document.body).html();
+                            // Establecer los colores intermitentes en las filas
+                            $(win.document.body).find('table tbody tr:odd').css({
+                                'background-color': '#f2f2f2', // Gris claro
+                                'color': '#666', // Texto en gris
+                                'font-size': '9pt' // Tamaño de letra más pequeño
+                            });
+                            $(win.document.body).find('table tbody tr:even').css({
+                                'background-color': '#e6e6e6', // Gris un poco más oscuro
+                                'color': '#666', // Texto en gris
+                                'font-size': '9pt' // Tamaño de letra más pequeño
+                            });
+
+                            htmlContent = $(win.document.body).html();
                         }
                     }
+
 
                 ]
             });
@@ -644,7 +666,8 @@
                                 if (willDelete) {
                                     ejecutarAjax
                                         (1,
-                                        fecha_interes_cero); // Llama a la función para realizar la solicitud AJAX
+                                            fecha_interes_cero
+                                        ); // Llama a la función para realizar la solicitud AJAX
                                 } else {
                                     restablecerValorInicial
                                         (); // Restablece y formatea el valor inicial si el usuario cancela
@@ -654,12 +677,13 @@
                             ejecutarAjax
                                 (
                                     0, fecha_interes_cero
-                                    ); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
+                                ); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
                         }
                     } else {
                         ejecutarAjax
                             (0,
-                            fecha_interes_cero); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
+                                fecha_interes_cero
+                            ); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
                     }
                 }
 
