@@ -468,7 +468,7 @@ class ExpenseController extends Controller
 
             // Iterar sobre los valores para procesarlos
             foreach ($descripciones as $index => $descripcion) {
-                $precio = $precios[$index];
+                $precio = str_replace(',', '', $precios[$index]);
                 $cantidad = $cantidades[$index];
 
                 DetailTransaction::create([
@@ -637,7 +637,7 @@ class ExpenseController extends Controller
             $updatedDetails = [];
             if ($descripciones != null) {
                 foreach ($descripciones as $index => $descripcion) {
-                    $precio = $precios[$index];
+                    $precio = str_replace(',', '', $precios[$index]);
                     $cantidad = $cantidades[$index];
                     $detalleId = $detalles_ids[$index] ?? null; // Puede ser null si es nuevo
 

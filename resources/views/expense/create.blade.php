@@ -171,7 +171,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('precio', 'Precio:*') !!}
-                            {!! Form::number('precio', null, ['class' => 'form-control', 'id' => 'precio', 'step' => '0.01']) !!}
+                            {!! Form::text('precio', null, ['class' => 'form-control precio', 'id' => 'precio', 'step' => '0.01']) !!}
                         </div>
                     </div>
 
@@ -227,44 +227,66 @@
             calculateExpensePaymentDue();
         });
 
+        function number_format(number, decimals, dec_point, thousands_sep) {
+            number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+            var n = !isFinite(+number) ? 0 : +number,
+                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+                dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+                s = '',
+                toFixedFix = function(n, prec) {
+                    var k = Math.pow(10, prec);
+                    return '' + Math.round(n * k) / k;
+                };
+
+            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+            if (s[0].length > 3) {
+                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+            }
+            if ((s[1] || '').length < prec) {
+                s[1] = s[1] || '';
+                s[1] += new Array(prec - s[1].length + 1).join('0');
+            }
+            return s.join(dec);
+        }
+
         function calculateExpensePaymentDue() {
             var final_total = 0;
-
-            // Recorrer cada fila de la tabla para calcular el total
             $('#detalle-table tbody tr').each(function() {
-                var subtotal = parseFloat($(this).find('.subtotal').text()) || 0;
+                var cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
+                var precio = parseFloat($(this).find('.precio').val().replace(/,/g, '')) || 0;
+                var subtotal = precio * cantidad;
+                $(this).find('.subtotal').text(subtotal.toFixed(2)); // Actualiza el subtotal con formato
                 final_total += subtotal;
             });
-
-            // Mostrar el total final calculado
-            $('#payment_due').text(__currency_trans_from_en(final_total, true, false));
-            $('input#final_total').val(final_total.toFixed(2));
+            $('#payment_due').text(final_total.toFixed(2)); // Actualiza el total
+            $('input#final_total').val(final_total);
         }
         $('#add-row').click(function() {
             // Obtener los valores de los inputs
             var descripcion = $('#descripcion').val();
-            var precio = parseFloat($('#precio').val()) || 0;
+            var precio = parseFloat($('#precio').val().replace(/,/g, '')) || 0;
             var cantidad = parseFloat($('#cantidad').val()) || 0;
             var subtotal = precio * cantidad;
 
             // Validar que los campos no estén vacíos
             if (descripcion && precio > 0 && cantidad > 0) {
                 // Crear una nueva fila con los valores y un botón de eliminar
+                var subtotal = precio * cantidad;
+
                 var newRow = `
-            <tr>
-                <td>{!! Form::text('descripcion[]', '', ['class' => 'form-control']) !!}</td>
-                <td>{!! Form::number('precio[]', '', ['class' => 'form-control precio']) !!}</td>
-                <td>{!! Form::number('cantidad[]', '', ['class' => 'form-control cantidad']) !!}</td>
-                <td class="subtotal">${subtotal.toFixed(2)}</td>
-                <td><button class="btn btn-xs btn-danger delete_user_button remove-row"><i class="glyphicon glyphicon-trash"></i> Borrar</button></td>
-            </tr>`;
+                    <tr>
+                    <td><input type="text" name="descripcion[]" value="${descripcion}" class="form-control" /></td>
+                    <td><input type="text" name="precio[]" value="${number_format(precio, 2, '.', ',')}" class="form-control precio" /></td>
+                    <td><input type="text" name="cantidad[]" value="${cantidad}" class="form-control cantidad" /></td>
+                    <td class="subtotal">${subtotal.toFixed(2)}</td>
+                    <td>
+                    <input type="hidden" name="detalle_id[]" value="">
+                    <button class="btn btn-xs btn-danger delete_user_button remove-row"><i class="glyphicon glyphicon-trash"></i> Borrar</button>
+                    </td>
+                    </tr>`;
 
-                // Cambiar los valores de los inputs con valores actuales
-                newRow = newRow.replace('value=""', `value="${descripcion}"`);
-                newRow = newRow.replace('value=""', `value="${precio}"`);
-                newRow = newRow.replace('value=""', `value="${cantidad}"`);
-
-                // Agregar la nueva fila a la tabla
                 $('#detalle-table tbody').append(newRow);
 
                 // Actualizar el total
@@ -320,6 +342,7 @@
                 });
             }
         });
+
         function parsearFecha(fechaStr) {
             // Divide la parte de la fecha y la hora
             var partes = fechaStr.split(' ');
@@ -373,6 +396,29 @@
         // Escucha el cambio en el campo de fecha de transacción
         $('#expense_transaction_date').on('blur', function() {
             calcularFechaVencimiento();
+        });
+        $(document).on('input', '.precio', function() {
+            let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
+
+            // Asegúrate de que sólo haya un punto decimal
+            if ((input.match(/\./g) || []).length > 1) {
+                input = input.replace(/\.+$/, ""); // Remueve puntos adicionales
+            }
+
+            if (input) {
+                // Si el número tiene parte decimal, no lo formateamos con comas aún
+                let parts = input.split('.');
+                let formatted = new Intl.NumberFormat('en-US').format(parts[0]); // Formatea los miles
+                if (parts[1] !== undefined) {
+                    input = formatted + '.' + parts[1]; // Recompone el número con la parte decimal
+                } else {
+                    input = formatted;
+                }
+                $(this).val(input);
+            }
+        });
+        $(document).on('input', '.precio, .cantidad', function() {
+            calculateExpensePaymentDue();
         });
     </script>
     <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>

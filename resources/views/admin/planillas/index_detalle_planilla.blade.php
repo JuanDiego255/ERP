@@ -14,9 +14,9 @@
             <small>@lang('generada del: '){{ $planilla->fecha_desde }} al {{ $planilla->fecha_hasta }}</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                                        <li class="active">Here</li>
-                                                                                                                                                                                    </ol> -->
+                                                                                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                                            <li class="active">Here</li>
+                                                                                                                                                                                        </ol> -->
     </section>
 
     <!-- Main content -->
@@ -109,73 +109,89 @@
                     "searchable": false
                 }],
                 columns: [{
-                        "data": "action"
+                        "data": "action",
+                        orderable: false
                     },
                     {
-                        "data": "id"
+                        "data": "id",
+                        orderable: false
                     },
                     {
-                        "data": "employee_id"
+                        "data": "employee_id",
+                        orderable: false
                     },
                     {
                         "data": "name"
                     },
                     {
-                        "data": "salario_base"
+                        "data": "salario_base",
+                        orderable: false
                     },
                     {
-                        "data": "bonificacion"
+                        "data": "bonificacion",
+                        orderable: false
                     },
                     // { "data": "comisiones" },
                     {
-                        "data": "hora_extra"
+                        "data": "hora_extra",
+                        orderable: false
                     },
                     {
-                        "data": "cant_hora_extra"
+                        "data": "cant_hora_extra",
+                        orderable: false
                     },
                     {
-                        "data": "monto_hora_extra"
+                        "data": "monto_hora_extra",
+                        orderable: false
                     },
                     // { "data": "adelantos" },
                     {
-                        "data": "prestamos"
+                        "data": "prestamos",
+                        orderable: false
                     },
                     // { "data": "deudas" },
                     // { "data": "rebajados" },
                     {
-                        "data": "total_ccss"
+                        "data": "total_ccss",
+                        orderable: false
                     },
                     {
-                        "data": "calc_aguinaldo"
+                        "data": "calc_aguinaldo",
+                        orderable: false
                     },
                     {
-                        "data": "aguinaldo"
+                        "data": "aguinaldo",
+                        orderable: false
                     },
                     {
-                        "data": "total"
+                        "data": "total",
+                        orderable: false
                     }
                 ],
                 createdRow: function(row, data, dataIndex) {
                     $(row).find('td').css({
                         'padding': '5px',
-                        'font-size': '15px'
+                       'font-size': '12px'
                     });
 
                     $(row).find('input').css({
                         'width': '90px',
                         'height': '30px',
-                        'padding': '5px'
+                        'padding': '5px',
+                        'font-size': '12px'
                     });
 
                     $(row).find('input.cant_hora_extra').css({
                         'width': '50px',
                         'height': '30px',
-                        'padding': '5px'
+                        'padding': '5px',
+                         'font-size': '12px'
                     });
                     $(row).find('input.hora_extra').css({
                         'width': '70px',
                         'height': '30px',
-                        'padding': '5px'
+                        'padding': '5px',
+                         'font-size': '12px'
                     });
                 },
                 fnDrawCallback: function(oSettings) {
@@ -359,26 +375,37 @@
             }
             $('#planillas').on('focus', 'input[type="text"]', function() {
                 var input = $(this);
-                var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
-                    ''); // Elimina todo lo que sigue al punto
+                var valorSinFormato = input.val().replace(/,/g, '');
                 input.data('initialValue', valorSinFormato);
             });
             $('#planillas').on('input', '.number', function() {
-                let input = $(this).val().replace(/[^0-9]/g, ''); // Elimina todo lo que no sea un número
+                let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
+
+                // Asegúrate de que sólo haya un punto decimal
+                if ((input.match(/\./g) || []).length > 1) {
+                    input = input.replace(/\.+$/, ""); // Remueve puntos adicionales
+                }
+
                 if (input) {
-                    // Formatea el número con comas para los miles
-                    let formatted = new Intl.NumberFormat('en-US').format(input);
-                    $(this).val(formatted);
+                    // Si el número tiene parte decimal, no lo formateamos con comas aún
+                    let parts = input.split('.');
+                    let formatted = new Intl.NumberFormat('en-US').format(parts[0]); // Formatea los miles
+                    if (parts[1] !== undefined) {
+                        input = formatted + '.' + parts[1]; // Recompone el número con la parte decimal
+                    } else {
+                        input = formatted;
+                    }
+                    $(this).val(input);
                 }
             });
             $('#planillas').on('blur', 'input[type="text"]', function() {
                 var input = $(this);
-                var value = input.val().replace(/,/g, '').split('.')[0];
+                var value = input.val().replace(/,/g, '');
                 var initialValue = input.data('initialValue'); // Recupera el valor inicial
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var employee_id = input.closest('tr').find('td').eq(2).text();
-                if(value == 0.00){
+                if (value == 0.00) {
                     value = 0;
                 }
                 // Solo procede si el valor cambió

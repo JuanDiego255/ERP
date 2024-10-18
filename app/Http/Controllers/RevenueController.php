@@ -334,6 +334,7 @@ class RevenueController extends Controller
                     'payment_revenues.detalle as detalle',
                     'payment_revenues.paga as paga',
                     'payment_revenues.amortiza as amortiza',
+                    DB::raw('null as empty'),
                     'payment_revenues.interes_c as interes_c',
                     'payment_revenues.monto_general as monto_general',
                     'payment_revenues.revenue_id as rev_id'

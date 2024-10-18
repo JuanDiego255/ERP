@@ -38,7 +38,7 @@
                             </li>
                             <li class="list-group-item">
                                 <b>@lang('Total:')</b>
-                                <a class="pull-right">₡{{ number_format($totalMonto) }}</a>
+                                <a class="pull-right">₡{{ number_format($totalMonto, 2, ".", ",") }}</a>
                             </li>
                         </ul>
                     </div>

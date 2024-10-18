@@ -137,10 +137,23 @@
                     }
                 });
                 $('.number').on('input', function() {
-                    let input = $(this).val().replace(/[^0-9]/g, '');
+                    let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
+
+                    // Asegúrate de que sólo haya un punto decimal
+                    if ((input.match(/\./g) || []).length > 1) {
+                        input = input.replace(/\.+$/, ""); // Remueve puntos adicionales
+                    }
+
                     if (input) {
-                        let formatted = new Intl.NumberFormat('en-US').format(input);
-                        $(this).val(formatted);
+                        // Si el número tiene parte decimal, no lo formateamos con comas aún
+                        let parts = input.split('.');
+                        let formatted = new Intl.NumberFormat('en-US').format(parts[0]); // Formatea los miles
+                        if (parts[1] !== undefined) {
+                            input = formatted + '.' + parts[1]; // Recompone el número con la parte decimal
+                        } else {
+                            input = formatted;
+                        }
+                        $(this).val(input);
                     }
                 });
             });

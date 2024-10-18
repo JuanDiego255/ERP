@@ -64,7 +64,7 @@ class BillVehicleController extends Controller
                 ->editColumn('fecha_compra', function ($row) {
                     return \Carbon\Carbon::parse($row->created_at)->format('Y/m/d g:i A');
                 })        
-                ->editColumn('monto', '{{"₡ ". number_format($monto) }}')
+                ->editColumn('monto', '{{"₡ ". number_format($monto, 2, ".", ",") }}')
                 ->rawColumns(['action', 'name'])
                 ->make(true);
         }

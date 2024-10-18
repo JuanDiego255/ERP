@@ -255,44 +255,48 @@
                         @endcomponent
                     </div>
                 </div>
-                @component('components.widget-accordion', [
-                    'title' => __('Gestión de pagos en esta cuenta'),
-                    'id' => 'accordionPagos',
-                ])
-                    @slot('tool')
-                        <div class="box-tools">
-                            <a class="btn btn-block btn-primary btn_add_row"
-                                href="{{ action('RevenueController@storeRow', [$item->id]) }}">
-                                <i class="fa fa-plus"></i> @lang('messages.add')</a>
+                <div class="container-pay">
+                    @component('components.widget-accordion', [
+                        'title' => __('Gestión de pagos en esta cuenta'),
+                        'id' => 'accordionPagos',
+                    ])
+                        @slot('tool')
+                            <div class="box-tools">
+
+                            </div>
+                        @endslot
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-info sendReport no-print" aria-label="Print" id="report">
+                                <i class="fa fa-envelope"></i> Enviar Reporte
+                            </button>
                         </div>
-                    @endslot
-                    <div class="col-md-4">
-                        <button type="button" class="btn btn-info sendReport no-print" aria-label="Print" id="report">
-                            <i class="fa fa-envelope"></i> Enviar Reporte
-                        </button>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="payments">
-                                <thead>
-                                    <tr>
-                                        <th>@lang('messages.action')</th>
-                                        <th>@lang('ID')</th>
-                                        <th>@lang('Fecha pago')</th>
-                                        <th>@lang('Fecha Interés')</th>
-                                        <th>@lang('No. Ref')</th>
-                                        <th>@lang('Detalle')</th>
-                                        <th>@lang('Monto Pagado')</th>
-                                        <th>@lang('Amortiza')</th>
-                                        <th>@lang('Interés C')</th>
-                                        <th>@lang('Calcular')</th>
-                                        <th>@lang('Saldo')</th>
-                                    </tr>
-                                </thead>
-                            </table>
+
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped" id="payments">
+                                    <thead>
+                                        <tr>
+                                            <th>@lang('messages.action')</th>
+                                            <th>@lang('ID')</th>
+                                            <th>@lang('Fecha pago')</th>
+                                            <th>@lang('Fecha Interés')</th>
+                                            <th>@lang('No. Ref')</th>
+                                            <th>@lang('Detalle')</th>
+                                            <th>@lang('Monto Pagado')</th>
+                                            <th>@lang('Amortiza')</th>
+                                            <th>@lang('Interés C')</th>
+                                            <th>@lang('Calcular')</th>
+                                            <th>@lang('Saldo')</th>
+                                            <th class="text-center"><a class="btn btn-primary btn_add_row"
+                                                    href="{{ action('RevenueController@storeRow', [$item->id]) }}">
+                                                    <i class="fa fa-plus"></i> @lang('messages.add')</a></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                @endcomponent
+                    @endcomponent
+                </div>
             </div>
         </div>
     </section>
@@ -327,6 +331,7 @@
                             .startDate.format('YYYY-MM-DD');
                     },
                 },
+                pageLength: 500,
                 columnDefs: [{
                         targets: [0],
                         width: "80px"
@@ -344,13 +349,19 @@
                 createdRow: function(row, data, dataIndex) {
                     $(row).find('td').css({
                         'padding': '5px',
-                        'font-size': '15px'
+                        'font-size': '12px'
                     });
-
-                    $(row).find('input').css({
-                        'width': '95px',
+                    $('#payments thead th').css({
+                        'width': '90px',
                         'height': '30px',
-                        'padding': '5px'
+                        'padding': '5px',
+                        'font-size': '12px'
+                    });
+                    $(row).find('input').css({
+                        'width': '90px',
+                        'height': '30px',
+                        'padding': '5px',
+                        'font-size': '12px'
                     });
 
                     $(row).find('input.saldo').css({
@@ -360,10 +371,12 @@
                     });
                 },
                 columns: [{
-                        "data": "action"
+                        "data": "action",
+                        orderable: false
                     },
                     {
-                        "data": "id"
+                        "data": "id",
+                        orderable: false
                     },
                     {
                         "data": "created_at"
@@ -375,22 +388,32 @@
                         "data": "referencia"
                     },
                     {
-                        "data": "detalle"
+                        "data": "detalle",
+                        orderable: false
                     },
                     {
-                        "data": "paga"
+                        "data": "paga",
+                        orderable: false
                     },
                     {
-                        "data": "amortiza"
+                        "data": "amortiza",
+                        orderable: false
                     },
                     {
-                        "data": "interes_c"
+                        "data": "interes_c",
+                        orderable: false
                     },
                     {
-                        "data": "calcular"
+                        "data": "calcular",
+                        orderable: false
                     },
                     {
-                        "data": "monto_general"
+                        "data": "monto_general",
+                        orderable: false
+                    },
+                    {
+                        "data": "empty",
+                        orderable: false
                     }
                 ],
                 fnDrawCallback: function(oSettings) {
@@ -402,7 +425,7 @@
                 dom: '<"text-center"B><"top"p>rtip',
                 buttons: [{
                         extend: 'pageLength',
-                        text: 'Mostrando 25',
+                        text: 'Mostrando 500',
                         titleAttr: 'Mostrar registros'
                     },
                     {
@@ -599,15 +622,15 @@
             }
             $('#payments').on('focus', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
-                var valorSinFormato = input.val().replace(/,/g, '').replace(/\.\d+$/,
-                    '');
+                var valorSinFormato = input.val().replace(/,/g, '');
                 input.data('initialValue', valorSinFormato);
             });
             $('#payments').on('blur', 'input[type="text"], input[type="number"]', function() {
                 var input = $(this);
                 var bOk = true;
-                var value = input.val().replace(/,/g, '').replace(/\.\d+$/, '');
+                var value = input.val().replace(/,/g, '');
                 var initialValue = input.data('initialValue');
+                console.log(initialValue + ' - ' + value);
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var fecha_pago = input.closest('tr').find('td').eq(2).find('input').val();
@@ -757,13 +780,26 @@
                 }
             });
             $('#payments').on('input', '.number', function() {
-                let input = $(this).val().replace(/[^0-9]/g, ''); // Elimina todo lo que no sea un número
+                let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
+
+                // Asegúrate de que sólo haya un punto decimal
+                if ((input.match(/\./g) || []).length > 1) {
+                    input = input.replace(/\.+$/, ""); // Remueve puntos adicionales
+                }
+
                 if (input) {
-                    // Formatea el número con comas para los miles
-                    let formatted = new Intl.NumberFormat('en-US').format(input);
-                    $(this).val(formatted);
+                    // Si el número tiene parte decimal, no lo formateamos con comas aún
+                    let parts = input.split('.');
+                    let formatted = new Intl.NumberFormat('en-US').format(parts[0]); // Formatea los miles
+                    if (parts[1] !== undefined) {
+                        input = formatted + '.' + parts[1]; // Recompone el número con la parte decimal
+                    } else {
+                        input = formatted;
+                    }
+                    $(this).val(input);
                 }
             });
+
             $(document).on('click', '.btn_add_row', function(event) {
                 event.preventDefault(); // Evita que el enlace siga el href de forma predeterminada
 
