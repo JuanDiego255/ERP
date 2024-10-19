@@ -62,9 +62,9 @@
                             {!! Form::label('expense_payment_status', __('purchase.payment_status') . ':') !!}
                             {!! Form::select(
                                 'expense_payment_status',
-                                ['paid' => __('lang_v1.paid'), 'due' => __('lang_v1.due'), 'partial' => __('lang_v1.partial')],
+                                ['due' => __('lang_v1.due'), 'paid' => __('lang_v1.paid'), 'partial' => __('lang_v1.partial')],
                                 null,
-                                ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
+                                ['class' => 'form-control select2', 'style' => 'width:100%'],
                             ) !!}
                         </div>
                     </div>

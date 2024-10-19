@@ -50,8 +50,8 @@
 
                         <label for="product_custom_field2">Identificación:</label>
 
-                        <input class="form-control" required placeholder="Identificación" name="identificacion" value="{{$contact->identificacion}}"
-                            type="text" id="identificacion">
+                        <input class="form-control" required placeholder="Identificación" name="identificacion"
+                            value="{{ $contact->identificacion }}" type="text" id="identificacion">
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -89,7 +89,9 @@
                         {!! Form::label('tipo', 'Tipo' . ':') !!}
                         <div class="input-group" style="width: 100%;">
 
-                            {!! Form::select('tipo_identificacion', ['j' => 'Juridica', 'f' => 'Fisica'], $contact->tipo_identificacion, ['class' => 'form-control']) !!}
+                            {!! Form::select('tipo_identificacion', ['j' => 'Juridica', 'f' => 'Fisica'], $contact->tipo_identificacion, [
+                                'class' => 'form-control',
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -110,28 +112,28 @@
                 <div class="col-md-12">
                     <hr />
                 </div>
-                <div class="col-md-4 ">
+               {{--  <div class="col-md-4 ">
                     <div class="form-group">
                         <label for="product_custom_field2">Cantón:</label>
-                        <input class="form-control" value="{{ $contact->city }}" placeholder="Cantón"
-                            name="city" type="text" id="city">
+                        <input class="form-control" value="{{ $contact->city }}" placeholder="Cantón" name="city"
+                            type="text" id="city">
                     </div>
                 </div>
                 <div class="col-md-4 ">
                     <div class="form-group">
                         <label for="product_custom_field2">Distrito:</label>
-                        <input class="form-control" value="{{ $contact->bairro }}" placeholder="Distrito"
-                            name="bairro" type="text" id="bairro">
+                        <input class="form-control" value="{{ $contact->bairro }}" placeholder="Distrito" name="bairro"
+                            type="text" id="bairro">
                     </div>
                 </div>
 
                 <div class="col-md-4 ">
                     <div class="form-group">
                         <label for="product_custom_field2">Barrio:</label>
-                        <input class="form-control" value="{{ $contact->rua }}" placeholder="Barrio"
-                            name="rua" type="text" id="rua">
+                        <input class="form-control" value="{{ $contact->rua }}" placeholder="Barrio" name="rua"
+                            type="text" id="rua">
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('landmark', __('Dirección Exacta') . ':') !!}

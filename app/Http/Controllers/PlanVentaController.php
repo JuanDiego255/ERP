@@ -83,7 +83,7 @@ class PlanVentaController extends Controller
 
         $brands = Brands::where('business_id', $business_id)
             ->pluck('name', 'id');
-        
+
         //Get all business locations
         $business_locations = BusinessLocation::forDropdown($business_id);
         //Duplicate product
@@ -375,8 +375,20 @@ class PlanVentaController extends Controller
             $cxc_item = Revenue::where('business_id', $business_id)
                 ->where('plan_venta_id', $id)
                 ->firstOrFail();
-            $countPayment = PaymentRevenue::where('revenue_id',$cxc_item->id)->count();
-            if($countPayment > 1){
+            $countPayment = PaymentRevenue::where('revenue_id', $cxc_item->id)->count();
+
+            if (request()->ajax()) {
+                DB::beginTransaction();
+                $cxc['tasa'] = $request->tasa;
+                $cxc_item->update($cxc);
+                DB::commit();
+                $output = [
+                    'success' => true,
+                    'msg' => 'Se ha actualizado la información de la cuenta'
+                ];
+                return $output;
+            }
+            if ($countPayment > 1) {
                 $output = [
                     'success' => 0,
                     'msg' => __("No puedes modificar un plan de ventas que tiene más de un pago realizado en su cuenta por cobrar")
@@ -420,7 +432,7 @@ class PlanVentaController extends Controller
                 ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
                 : null;
             //Formatear montos
-           
+
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden;
@@ -432,7 +444,7 @@ class PlanVentaController extends Controller
                 ? floatval(str_replace(',', '', $request->cuota))
                 : null;
 
-            
+
             $cxc['business_id'] = $business_id;
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;

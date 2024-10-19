@@ -18,6 +18,15 @@
     <section class="content">
         <input type="hidden" id="vehicle_id" value="{{ $id }}">
         <div class="row">
+            <div class="col-md-4 col-xs-12 mt-15 pull-right">
+                {!! Form::select('cars_id', $cars, $id, [
+                    'class' => 'form-control select2',
+                    'id' => 'cars_id',
+                ]) !!}
+            </div>
+        </div>
+        <br>
+        <div class="row">
             <div class="col-md-3">
                 <!-- Profile Image -->
                 <div class="box box-primary">
@@ -278,6 +287,11 @@
                     }
                 });
             });
+            $('#cars_id').change(function() {
+                if ($(this).val()) {
+                    window.location = "{{ url('/products/bills/') }}/" + $(this).val();
+                }
+            });    
         });
     </script>
 @endsection

@@ -48,7 +48,7 @@
                 <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
                     <div class="info-box info-box-new-style">
                         <a href="{{ action('ProductController@showByItem', ['type' => 0]) }}" class="view-cars">
-                            <span class="info-box-icon bg-green"><i class="fa fa-car"></i></span>
+                            <span class="info-box-icon bg-transparent"><img src="/images/logo_car.png" alt="Logo de la Empresa"></i></span>
                         </a>
                         <div class="info-box-content">
                             <span class="info-box-text">{{ __('Exhibición') }}</span>
@@ -142,7 +142,7 @@
                     {!! $widget !!}
                 @endforeach
             @endif
-            {{-- @if (!empty($all_locations))
+            @if (!empty($all_locations))
                 <div class="row">
                     <div class="col-sm-12">
                         @component('components.widget', ['class' => 'box-primary', 'title' => __('home.sells_current_fy')])
@@ -150,7 +150,7 @@
                         @endcomponent
                     </div>
                 </div>
-            @endif --}}
+            @endif
             <!-- sales chart end -->
             @if (!empty($widgets['after_sales_current_fy']))
                 @foreach ($widgets['after_sales_current_fy'] as $widget)

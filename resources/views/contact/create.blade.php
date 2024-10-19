@@ -93,7 +93,7 @@
 
 
 
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('city', 'Cantón:') !!}
                         <input class="form-control featured-field" placeholder="Cantón" name="city" type="text"
@@ -114,7 +114,7 @@
                         <input class="form-control featured-field" placeholder="Barrio" name="rua" type="text"
                             id="rua">
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="col-md-12">
                     <div class="form-group">

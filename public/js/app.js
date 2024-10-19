@@ -626,6 +626,45 @@ $(document).ready(function () {
         });
     });
 
+    $('form#contact_add_form, form#contact_edit_form_receive')
+        .submit(function (e) {
+            e.preventDefault();
+            var data = $('form#contact_edit_form_receive').serialize();
+            console.log(data);
+            $.ajax({
+                method: 'POST',
+                url: $('form#contact_edit_form_receive').attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function (result) {
+                    if (result.success == true) {
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+    $('form#plan_venta_edit_form')
+        .submit(function (e) {
+            e.preventDefault();
+            var data = $('form#plan_venta_edit_form').serialize();
+            console.log(data);
+            $.ajax({
+                method: 'PUT',
+                url: $('form#plan_venta_edit_form').attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function (result) {
+                    if (result.success == true) {
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+
     //Start: CRUD for product variations
     //Variations table
     var variation_table = $('#variation_table').DataTable({

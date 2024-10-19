@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use App\Models\DetailTransaction;
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\VehicleBill;
 use Carbon\Carbon;
@@ -28,7 +29,19 @@ class BillVehicleController extends Controller
      */
     public function indexBill($id)
     {
+
         $business_id = request()->session()->get('user.business_id');
+        $all_cars = Product::where('products.business_id', $business_id)
+            ->join('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
+            ->select(
+                'products.id',
+                DB::raw("CONCAT(products.name, ' (', products.model, ')') as name")
+            )
+            ->groupBy('products.id', 'products.name', 'products.model')
+            ->get();
+
+        $cars = $all_cars->pluck('name', 'id');
+
         $bills = VehicleBill::where('vehicle_bills.business_id', $business_id)
             ->where('vehicle_bills.product_id', $id)
             ->join('products', 'vehicle_bills.product_id', '=', 'products.id')
@@ -63,7 +76,7 @@ class BillVehicleController extends Controller
                 )
                 ->editColumn('fecha_compra', function ($row) {
                     return \Carbon\Carbon::parse($row->created_at)->format('Y/m/d g:i A');
-                })        
+                })
                 ->editColumn('monto', '{{"₡ ". number_format($monto, 2, ".", ",") }}')
                 ->rawColumns(['action', 'name'])
                 ->make(true);
@@ -71,7 +84,7 @@ class BillVehicleController extends Controller
         $totalMonto = (clone $bills)->sum('vehicle_bills.monto');
         $cant_gastos = (clone $bills)->count();
 
-        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'cant_gastos'));
+        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'cant_gastos', 'cars'));
     }
     /**
      * Show the form for creating a new resource.

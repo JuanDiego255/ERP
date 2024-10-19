@@ -58,6 +58,11 @@
                         </div>
                     </div>
                 @endcomponent
+                {!! Form::open([
+                    'url' => action('PlanVentaController@update', [$item->plan_venta_id]),
+                    'method' => 'PUT',
+                    'id' => 'plan_venta_edit_form',
+                ]) !!}
                 @component('components.widget-accordion', [
                     'title' => __('Información Cuenta Por Cobrar'),
                     'id' => 'accordionCXC',
@@ -110,7 +115,6 @@
                             {!! Form::text('tasa', $item->tasa, [
                                 'class' => 'form-control',
                                 'id' => 'tasa',
-                                'readonly',
                                 'required',
                             ]) !!}
                         </div>
@@ -152,7 +156,16 @@
                         {!! Form::label('detalle', __('Detalle') . '') !!}
                         {!! Form::textarea('detalle', $item->detalle, ['class' => 'form-control', 'required', 'readonly', 'rows' => 3]) !!}
                     </div>
+                    <div class="col-md-12" style="margin-top: 5px;">
+                        <button type="submit" class="btn btn-primary mt-2">@lang('messages.update')</button>
+                    </div>
                 @endcomponent
+                {!! Form::close() !!}
+                {!! Form::open([
+                    'url' => action('ContactController@update', [$item->cliente_id]),
+                    'method' => 'PUT',
+                    'id' => 'contact_edit_form_receive',
+                ]) !!}
                 @component('components.widget-accordion', [
                     'title' => __('Información del cliente'),
                     'id' => 'accordionCliente',
@@ -175,7 +188,6 @@
                                 {!! Form::text('identificacion', $item->identificacion, [
                                     'class' => 'form-control',
                                     'id' => 'identificacion',
-                                    'readonly',
                                     'required',
                                 ]) !!}
                             </div>
@@ -194,10 +206,9 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 {!! Form::label('telephone', __('Teléfono')) !!}
-                                {!! Form::text('telephone', $item->telephone, [
+                                {!! Form::text('landline', $item->telephone, [
                                     'class' => 'form-control',
                                     'id' => 'telephone',
-                                    'readonly',
                                     'required',
                                 ]) !!}
                             </div>
@@ -205,10 +216,9 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 {!! Form::label('celular', __('Celular')) !!}
-                                {!! Form::text('celular', $item->celular, [
+                                {!! Form::text('mobile', $item->celular, [
                                     'class' => 'form-control',
                                     'id' => 'celular',
-                                    'readonly',
                                     'required',
                                 ]) !!}
                             </div>
@@ -219,7 +229,6 @@
                                 {!! Form::text('email', $item->email, [
                                     'class' => 'form-control',
                                     'id' => 'email',
-                                    'readonly',
                                     'required',
                                 ]) !!}
                             </div>
@@ -229,15 +238,20 @@
                     <div class="row">
                         <div class="col-md-6">
                             {!! Form::label('direccion', __('Dirección Exacta') . '') !!}
-                            {!! Form::textarea('direccion', $item->direccion, [
+                            {!! Form::textarea('landmark', $item->direccion, [
                                 'class' => 'form-control',
                                 'required',
-                                'readonly',
                                 'rows' => 3,
                             ]) !!}
                         </div>
                     </div>
+                    <div class="row" style="margin-top: 5px;">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary mt-2">@lang('messages.update')</button>
+                        </div>
+                    </div>
                 @endcomponent
+                {!! Form::close() !!}
                 <div class="row">
                     <div class="col-md-12">
                         @component('components.filters', ['title' => __('report.filters'), 'id' => 'expenseFilter'])

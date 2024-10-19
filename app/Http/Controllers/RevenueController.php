@@ -295,6 +295,7 @@ class RevenueController extends Controller
                 'vv.model as modelo',
                 'vv.placa as placa',
                 'rev.id as id',
+                'rev.plan_venta_id as plan_venta_id',
                 'rev.created_at as created_at',
                 'rev.tipo_prestamo as tipo_prestamo',
                 'rev.moneda as moneda',

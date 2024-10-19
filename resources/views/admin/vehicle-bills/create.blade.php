@@ -181,7 +181,6 @@
                         });
                     }
                 });
-
                 $('.number').on('input', function() {
                     let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
 

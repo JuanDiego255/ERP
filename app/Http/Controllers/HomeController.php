@@ -90,8 +90,7 @@ class HomeController extends Controller
             $values = [];
             foreach ($dates as $date) {
                 $sell = $sells_by_location->first(function ($item) use ($loc_id, $date) {
-                    return $item->date == $date &&
-                        $item->location_id == $loc_id;
+                    return $item->date == $date;
                 });
                 
                 if (!empty($sell)) {
@@ -151,19 +150,17 @@ class HomeController extends Controller
             }
         } while ($month_year != $last);
 
-        $fy_sells_by_location = $this->transactionUtil->getSellsCurrentFy($business_id, $fy['start'], $fy['end'], true);
+        $fy_sells_by_location = $this->transactionUtil->getSellsCurrentFy($business_id, $fy['start'], $fy['end']);
         $fy_sells_by_location_data = [];
-
         foreach ($all_locations as $loc_id => $loc_name) {
             $values_data = [];
             foreach ($fy_months as $month) {
                 $sell = $fy_sells_by_location->first(function ($item) use ($loc_id, $month) {
-                    return $item->yearmonth == $month &&
-                        $item->location_id == $loc_id;
+                    return $item->yearmonth == $month;
                 });
                 
                 if (!empty($sell)) {
-                    $values_data[] = (float) $sell->total_sells;
+                    $values_data[] = (int) $sell->total_sells;
                 } else {
                     $values_data[] = 0;
                 }
@@ -171,7 +168,6 @@ class HomeController extends Controller
             $fy_sells_by_location_data[$loc_id]['loc_label'] = $loc_name;
             $fy_sells_by_location_data[$loc_id]['values'] = $values_data;
         }
-
         $sells_chart_2 = new CommonChart;
         $sells_chart_2->labels($labels)
                     ->options($this->__chartOptions(__(

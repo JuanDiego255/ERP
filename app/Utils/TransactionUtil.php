@@ -1800,7 +1800,7 @@ class TransactionUtil extends Util
     public function getInvoiceNumber($business_id, $status, $location_id, $invoice_scheme_id = null)
     {
         if ($status == 'final') {
-            $scheme = InvoiceScheme::where('business_id', $business_id)->where('name','Referencia')->first();
+            $scheme = InvoiceScheme::where('business_id', $business_id)->where('name', 'Referencia')->first();
             if ($scheme->scheme_type == 'blank') {
                 $prefix = $scheme->prefix;
             } else {
@@ -2241,36 +2241,14 @@ class TransactionUtil extends Util
      */
     public function getSellsLast30Days($business_id, $group_by_location = false)
     {
-        $query = Transaction::leftjoin('transactions as SR', function ($join) {
-            $join->on('SR.return_parent_id', '=', 'transactions.id')
-                ->where('SR.type', 'sell_return');
-        })
-            ->where('transactions.business_id', $business_id)
-            ->where('transactions.type', 'sell')
-            ->where('transactions.status', 'final')
-            ->whereBetween(DB::raw('date(transactions.transaction_date)'), [\Carbon::now()->subDays(30), \Carbon::now()]);
-
-        //Check for permitted locations of a user
-        $permitted_locations = auth()->user()->permitted_locations();
-        if ($permitted_locations != 'all') {
-            $query->whereIn('transactions.location_id', $permitted_locations);
-        }
-
+        $query = Revenue::where('business_id', $business_id)
+            ->whereBetween(DB::raw('date(created_at)'), [\Carbon::now()->subDays(30), \Carbon::now()]);
         $query->select(
-            DB::raw("DATE_FORMAT(transactions.transaction_date, '%Y-%m-%d') as date"),
-            DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0) ) as total_sells")
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as date"),
+            DB::raw("COUNT(*) as total_sells")
         )
-            ->groupBy(DB::raw('Date(transactions.transaction_date)'));
-
-        if ($group_by_location) {
-            $query->addSelect('transactions.location_id');
-            $query->groupBy('transactions.location_id');
-        }
+            ->groupBy(DB::raw('Date(created_at)'));
         $sells = $query->get();
-
-        if (!$group_by_location) {
-            $sells = $sells->pluck('total_sells', 'date');
-        }
 
         return $sells;
     }
@@ -2286,37 +2264,18 @@ class TransactionUtil extends Util
      */
     public function getSellsCurrentFy($business_id, $start, $end, $group_by_location = false)
     {
-        $query = Transaction::leftjoin('transactions as SR', function ($join) {
-            $join->on('SR.return_parent_id', '=', 'transactions.id')
-                ->where('SR.type', 'sell_return');
-        })
-            ->where('transactions.business_id', $business_id)
-            ->where('transactions.type', 'sell')
-            ->where('transactions.status', 'final')
-            ->whereBetween(DB::raw('date(transactions.transaction_date)'), [$start, $end]);
+        $query = Revenue::where('business_id', $business_id)
+            ->whereBetween(DB::raw('date(created_at)'), [$start, $end]);
 
-        //Check for permitted locations of a user
-        $permitted_locations = auth()->user()->permitted_locations();
-        if ($permitted_locations != 'all') {
-            $query->whereIn('transactions.location_id', $permitted_locations);
-        }
-
-        $query->groupBy(DB::raw("DATE_FORMAT(transactions.transaction_date, '%Y-%m')"))
+        $query->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"))
             ->select(
-                DB::raw("DATE_FORMAT(transactions.transaction_date, '%m-%Y') as yearmonth"),
-                DB::raw("SUM( transactions.final_total - COALESCE(SR.final_total, 0)) as total_sells")
+                DB::raw("DATE_FORMAT(created_at, '%m-%Y') as yearmonth"),
+                DB::raw("COUNT(*) as total_sells")
             );
-        if ($group_by_location) {
-            $query->addSelect('transactions.location_id');
-            $query->groupBy('transactions.location_id');
-        }
 
         $sells = $query->get();
-        if (!$group_by_location) {
-            $sells = $sells->pluck('total_sells', 'yearmonth');
-        }
-
         return $sells;
+       
     }
 
     /**
