@@ -2998,3 +2998,113 @@ $(document).on('click', 'a.update_contact_status', function (e) {
         },
     });
 });
+//Formato de inputs de tipo precio o montos
+$(document).on('input', '.precio', function() {
+    let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
+
+    // Asegúrate de que sólo haya un punto decimal
+    if ((input.match(/\./g) || []).length > 1) {
+        input = input.replace(/\.+$/, ""); // Remueve puntos adicionales
+    }
+
+    if (input) {
+        // Si el número tiene parte decimal, no lo formateamos con comas aún
+        let parts = input.split('.');
+        let formatted = new Intl.NumberFormat('en-US').format(parts[0]); // Formatea los miles
+        if (parts[1] !== undefined) {
+            input = formatted + '.' + parts[1]; // Recompone el número con la parte decimal
+        } else {
+            input = formatted;
+        }
+        $(this).val(input);
+    }
+});
+// Actualizar el campo total_recibido en plan de ventas
+var vehiculosSeleccionados = {};
+var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id'];
+
+function actualizarTotalRecibido(tipo) {
+    var montoEfectivo = parseFloat($('#monto_efectivo').val().replace(/,/g, '')) || 0;
+    var montoRecibo = parseFloat($('#monto_recibo').val().replace(/,/g, '')) || 0;
+    var montoFormat = Intl.NumberFormat('en-US').format(montoEfectivo + montoRecibo);
+    $('#total_recibido').val(montoFormat);
+    totalRecibido = parseFloat($('#total_recibido').val().replace(/,/g, '')) || 0;
+    ventaSinRebajos = parseFloat($('#venta_sin_rebajos').val().replace(/,/g, '')) || 0;
+    if (ventaSinRebajos > totalRecibido) {
+        montoFormat = Intl.NumberFormat('en-US').format(ventaSinRebajos - totalRecibido);
+        $('#total_financiado').val(montoFormat);
+    }
+}
+// Función para sumar/restar montos de efectivo/recibo en plan de ventas
+function sumarRestarMonto(tipo, monto) {
+    var montoActual;
+    if (tipo === 'venta') {
+        montoVenta = parseFloat($('#monto_venta').val().replace(/,/g, '')) || 0;
+        var montoFormat = Intl.NumberFormat('en-US').format(monto);
+        $('#monto_efectivo').val(montoFormat);
+        if (montoVenta > monto) {
+            montoFormat = Intl.NumberFormat('en-US').format(montoVenta);
+            $('#venta_sin_rebajos').val(montoFormat);
+            montoFormat = Intl.NumberFormat('en-US').format(montoVenta - monto);
+            $('#total_financiado').val(montoFormat);
+        }
+    } else {
+        montoFormat = Intl.NumberFormat('en-US').format(monto);
+        $('#monto_recibo').val(montoFormat);
+    }
+    // Actualizar el total recibido
+    actualizarTotalRecibido(tipo);
+}
+// Guardar el vehículo seleccionado en plan de ventas
+$(document).on('click', '.save_vehicle', function() {
+    var selectedVehicleId = $('#vehiculo_id').val();
+    var monto = 0;
+
+    // Determinar si es "recibido" o "venta" para obtener el monto correcto
+    if (currentInput.includes('recibido')) {
+        monto = parseFloat($('#monto_recibo_modal').val().replace(/,/g, '')) || 0;
+    } else {
+        monto = parseFloat($('#efectivo').val().replace(/,/g, '')) || 0;
+    }
+
+    if (selectedVehicleId !== "" && monto > 0) {
+        var selectedVehicleName = $('#vehiculo_id option:selected').text();
+
+        // Si ya había un vehículo en el input actual, restar su monto
+        if (vehiculosSeleccionados[currentInput]) {
+            var vehiculoAnteriorMonto = vehiculosSeleccionados[currentInput].monto;
+            sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, -vehiculoAnteriorMonto);
+        }
+
+        // Asignar el nuevo vehículo y su monto
+        $('#' + currentInput).val(selectedVehicleName);
+        $('#' + currentInput + '_hidden').val(selectedVehicleId);
+
+        vehiculosSeleccionados[currentInput] = {
+            id: selectedVehicleId,
+            monto: monto,
+            tipo: currentInput.includes('recibido') ? 'recibido' : 'venta'
+        };
+
+        sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, monto);
+
+        $('.car_modal').modal('hide');
+    } else {
+        toastr.error("Debe seleccionar un vehículo y llenar los montos correspondientes.");
+    }
+});
+// Verificar si un vehículo ya está seleccionado en plan de ventas
+function vehiculoSeleccionado(vehiculoId) {
+    return Object.values(vehiculosSeleccionados).some(function(vehiculo) {
+        return vehiculo.id === vehiculoId;
+    });
+}
+//Remover carros del plan de ventas
+$(document).on('click', '.remove_cars', function() {
+    $('#total_financiado').val(0);
+    $('#total_recibido').val(0);
+    $('#monto_recibo').val(0);
+    $('#monto_efectivo').val(0);
+    $('#vehiculo_venta_id').val("");
+    $('#vehiculo_recibido_id').val("");
+});

@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('product.edit_product')</h1>
         <!-- <ol class="breadcrumb">
-                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                            <li class="active">Here</li>
-                          </ol> -->
+                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                <li class="active">Here</li>
+                              </ol> -->
     </section>
 
     <!-- Main content -->
@@ -216,8 +216,8 @@
                 <div class="col-sm-4">
                     <div class="form-group">
                         {!! Form::label('monto_venta', __('Monto venta') . ':') !!}
-                        {!! Form::text('monto_venta', $product->monto_venta, [
-                            'class' => 'form-control',
+                        {!! Form::text('monto_venta', number_format($product->monto_venta, 2, '.', ','), [
+                            'class' => 'form-control precio',
                             'placeholder' => __('motor'),
                         ]) !!}
                     </div>

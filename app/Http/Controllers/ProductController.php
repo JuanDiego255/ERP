@@ -415,8 +415,8 @@ class ProductController extends Controller
         $column = $request->input('column');
         $value = $request->input('value');
         $price = isset($value)
-        ? floatval(str_replace(',', '', $value))
-        : null;
+            ? floatval(str_replace(',', '', $value))
+            : null;
         $product_detalle[$column] = $price;
         $product->update($product_detalle);
 
@@ -487,6 +487,9 @@ class ProductController extends Controller
             }
 
             $product_details = $request->only($form_fields);
+            $product_details['monto_venta'] = isset($request->monto_venta)
+                ? floatval(str_replace(',', '', $request->monto_venta))
+                : null;
             $product_details['business_id'] = $business_id;
             $product_details['created_by'] = $request->session()->get('user.id');
             $product_details['valor_ecommerce'] = isset($product_details['valor_ecommerce']) ? str_replace(",", ".", $product_details['valor_ecommerce']) : 0;
@@ -926,7 +929,9 @@ class ProductController extends Controller
             $product->bin = $request->bin;
             $product->placa = $request->placa;
             $product->motor = $request->motor;
-            $product->monto_venta = $request->monto_venta;
+            $product->monto_venta = isset($request->monto_venta)
+                ? floatval(str_replace(',', '', $request->monto_venta))
+                : null;
             if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
                 $product->is_show = 1;
             } else {
@@ -978,6 +983,7 @@ class ProductController extends Controller
                     $product->woocommerce_media_id = null;
                 }
             }
+
 
             $product->save();
             $product->touch();

@@ -142,8 +142,8 @@
                     <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('monto_venta', __('Monto venta') . ':') !!}
-                            {!! Form::number('monto_venta', !empty($duplicate_product->monto_venta) ? $duplicate_product->monto_venta : null, [
-                                'class' => 'form-control',
+                            {!! Form::text('monto_venta', !empty($duplicate_product->monto_venta) ? $duplicate_product->monto_venta : null, [
+                                'class' => 'form-control precio',
                                 'placeholder' => __('Monto'),
                             ]) !!}
                         </div>

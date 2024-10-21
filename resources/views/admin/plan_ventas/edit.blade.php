@@ -165,7 +165,7 @@
                         <div class="form-group">
                             {!! Form::label('monto_recibo', __('Vehículo recibido')) !!}
                             {!! Form::text('monto_recibo', number_format($plan->monto_recibo, 2, '.', ','), [
-                                'class' => 'form-control',
+                                'class' => 'form-control precio',
                                 'id' => 'monto_recibo',
                                 'required',
                                 'min' => 0,
@@ -176,7 +176,7 @@
                         <div class="form-group">
                             {!! Form::label('monto_efectivo', __('Total efectivo')) !!}
                             {!! Form::text('monto_efectivo', number_format($plan->monto_efectivo, 2, '.', ','), [
-                                'class' => 'form-control',
+                                'class' => 'form-control precio',
                                 'id' => 'monto_efectivo',
                                 'required',
                                 'min' => 0,
@@ -187,7 +187,7 @@
                         <div class="form-group">
                             {!! Form::label('total_recibido', __('Total recibido')) !!}
                             {!! Form::text('total_recibido', number_format($plan->total_recibido, 2, '.', ','), [
-                                'class' => 'form-control',
+                                'class' => 'form-control precio',
                                 'id' => 'total_recibido',
                                 'required',
                                 'min' => 0,
@@ -198,7 +198,7 @@
                         <div class="form-group">
                             {!! Form::label('total_financiado', __('Total financiado')) !!}
                             {!! Form::text('total_financiado', number_format($plan->total_financiado, 2, '.', ','), [
-                                'class' => 'form-control display_currency',
+                                'class' => 'form-control display_currency precio',
                                 'id' => 'total_financiado',
                                 'required',
                                 'min' => 0,
@@ -250,7 +250,7 @@
                         <div class="form-group">
                             {!! Form::label('cuota', __('Cuota mensual') . ':*') !!}
                             {!! Form::text('cuota', number_format($plan->cuota, 2, '.', ','), [
-                                'class' => 'form-control',
+                                'class' => 'form-control precio',
                                 'required',
                             ]) !!}
                         </div>
@@ -612,77 +612,8 @@
                 limpiarModal();
                 $('.car_modal').modal('show');
             });
-            // Verificar si un vehículo ya está seleccionado
-            function vehiculoSeleccionado(vehiculoId) {
-                return Object.values(vehiculosSeleccionados).some(function(vehiculo) {
-                    return vehiculo.id === vehiculoId;
-                });
-            }
-            // Guardar el vehículo seleccionado
-            $(document).on('click', '.save_vehicle', function() {
-                var selectedVehicleId = $('#vehiculo_id').val();
-                var monto = 0;
-
-                // Determinar si es "recibido" o "venta" para obtener el monto correcto
-                if (currentInput.includes('recibido')) {
-                    monto = parseFloat($('#monto_recibo_modal').val()) || 0;
-                } else {
-                    monto = parseFloat($('#efectivo').val()) || 0;
-                }
-
-                if (selectedVehicleId !== "" && monto > 0) {
-                    var selectedVehicleName = $('#vehiculo_id option:selected').text();
-
-                    // Si ya había un vehículo en el input actual, restar su monto
-                    if (vehiculosSeleccionados[currentInput]) {
-                        var vehiculoAnteriorMonto = vehiculosSeleccionados[currentInput].monto;
-                        sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, -vehiculoAnteriorMonto);
-                    }
-
-                    // Asignar el nuevo vehículo y su monto
-                    $('#' + currentInput).val(selectedVehicleName);
-                    $('#' + currentInput + '_hidden').val(selectedVehicleId);
-
-                    vehiculosSeleccionados[currentInput] = {
-                        id: selectedVehicleId,
-                        monto: monto,
-                        tipo: currentInput.includes('recibido') ? 'recibido' : 'venta'
-                    };
-
-                    sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, monto);
-
-                    $('.car_modal').modal('hide');
-                } else {
-                    toastr.error("Debe seleccionar un vehículo y llenar los montos correspondientes.");
-                }
-            });
-            // Función para sumar/restar montos de efectivo/recibo
-            function sumarRestarMonto(tipo, monto) {
-                var montoActual;
-                if (tipo === 'venta') {
-                    montoVenta = parseFloat($('#monto_venta').val()) || 0;
-                    $('#monto_efectivo').val(monto);
-                    if (montoVenta > monto) {
-                        $('#venta_sin_rebajos').val(montoVenta);
-                        $('#total_financiado').val(montoVenta - monto);
-                    }
-                } else {
-                    $('#monto_recibo').val(monto);
-                }
-                // Actualizar el total recibido
-                actualizarTotalRecibido(tipo);
-            }
-            // Actualizar el campo total_recibido
-            function actualizarTotalRecibido(tipo) {
-                var montoEfectivo = parseFloat($('#monto_efectivo').val()) || 0;
-                var montoRecibo = parseFloat($('#monto_recibo').val()) || 0;
-                $('#total_recibido').val(montoEfectivo + montoRecibo);
-                totalRecibido = parseFloat($('#total_recibido').val()) || 0;
-                ventaSinRebajos = parseFloat($('#venta_sin_rebajos').val()) || 0;
-                if (ventaSinRebajos > totalRecibido) {
-                    $('#total_financiado').val(ventaSinRebajos - totalRecibido);
-                }
-            }
+            
+            
             // Recalcular montos si se cambia el valor de efectivo o recibo manualmente
             $('#monto_efectivo, #monto_recibo').on('input', function() {
                 actualizarTotalRecibido();
@@ -708,14 +639,6 @@
                         console.log(xhr.responseText); // Para depuración
                     },
                 });
-            });
-            $(document).on('click', '.remove_cars', function() {
-                $('#total_financiado').val(0);
-                $('#total_recibido').val(0);
-                $('#monto_recibo').val(0);
-                $('#monto_efectivo').val(0);
-                $('#vehiculo_venta_id').val("");
-                $('#vehiculo_recibido_id').val("");
             });
         });
     </script>

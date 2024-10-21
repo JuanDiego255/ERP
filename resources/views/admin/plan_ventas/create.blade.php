@@ -150,15 +150,16 @@
                         </div>
                     </div>
                     <div class="col-sm-12">
-                        <button type="button" class="btn btn-default bg-red btn-flat remove_cars" data-name="">Eliminar Vehículos</button>
+                        <button type="button" class="btn btn-default bg-red btn-flat remove_cars" data-name="">Eliminar
+                            Vehículos</button>
                     </div>
                 @endcomponent
                 @component('components.widget', ['title' => __('Otros datos')])
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('monto_recibo', __('Vehículo recibido')) !!}
-                            {!! Form::number('monto_recibo', 0, [
-                                'class' => 'form-control',
+                            {!! Form::text('monto_recibo', 0, [
+                                'class' => 'form-control precio',
                                 'id' => 'monto_recibo',
                                 'required',
                                 'min' => 0,
@@ -168,8 +169,8 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('monto_efectivo', __('Total efectivo')) !!}
-                            {!! Form::number('monto_efectivo', 0, [
-                                'class' => 'form-control',
+                            {!! Form::text('monto_efectivo', 0, [
+                                'class' => 'form-control precio',
                                 'id' => 'monto_efectivo',
                                 'required',
                                 'min' => 0,
@@ -179,8 +180,8 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('total_recibido', __('Total recibido')) !!}
-                            {!! Form::number('total_recibido', 0, [
-                                'class' => 'form-control',
+                            {!! Form::text('total_recibido', 0, [
+                                'class' => 'form-control precio',
                                 'id' => 'total_recibido',
                                 'required',
                                 'min' => 0,
@@ -190,8 +191,8 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('total_financiado', __('Total financiado')) !!}
-                            {!! Form::number('total_financiado', 0, [
-                                'class' => 'form-control',
+                            {!! Form::text('total_financiado', 0, [
+                                'class' => 'form-control precio',
                                 'id' => 'total_financiado',
                                 'required',
                                 'min' => 0,
@@ -235,15 +236,15 @@
                             {!! Form::number('tasa', null, [
                                 'class' => 'form-control',
                                 'required',
-                                'step' => '0.01'
+                                'step' => '0.01',
                             ]) !!}
                         </div>
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('cuota', __('Cuota mensual') . ':*') !!}
-                            {!! Form::number('cuota', null, [
-                                'class' => 'form-control',
+                            {!! Form::text('cuota', null, [
+                                'class' => 'form-control precio',
                                 'required',
                             ]) !!}
                         </div>
@@ -493,6 +494,7 @@
                 $('#color').val(data.color);
                 $('#gastos').val(__currency_trans_from_en(data.gastos, true, true));
             });
+
             function limpiarModal() {
                 // Limpiar el campo de selección de vehículos
                 $('#vehiculo_id').val(null).trigger('change'); // Limpiar select2
@@ -510,9 +512,7 @@
                 $('#efectivo').val(0);
                 $('#monto_recibo_modal').val(0);
             }
-            var vehiculosSeleccionados = {};
-            var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id'];
-
+           
             // Manejar selección de vehículo
             $('.vehiculo-input').on('click', function() {
                 currentInput = $(this).data('target');
@@ -533,93 +533,13 @@
                 limpiarModal();
                 $('.car_modal').modal('show');
             });
-
-            // Verificar si un vehículo ya está seleccionado
-            function vehiculoSeleccionado(vehiculoId) {
-                return Object.values(vehiculosSeleccionados).some(function(vehiculo) {
-                    return vehiculo.id === vehiculoId;
-                });
-            }
-
-            // Guardar el vehículo seleccionado
-            $(document).on('click', '.save_vehicle', function() {
-                var selectedVehicleId = $('#vehiculo_id').val();
-                var monto = 0;
-
-                // Determinar si es "recibido" o "venta" para obtener el monto correcto
-                if (currentInput.includes('recibido')) {
-                    monto = parseFloat($('#monto_recibo_modal').val()) || 0;
-                } else {
-                    monto = parseFloat($('#efectivo').val()) || 0;
-                }
-
-                if (selectedVehicleId !== "" && monto > 0) {
-                    var selectedVehicleName = $('#vehiculo_id option:selected').text();
-
-                    // Si ya había un vehículo en el input actual, restar su monto
-                    if (vehiculosSeleccionados[currentInput]) {
-                        var vehiculoAnteriorMonto = vehiculosSeleccionados[currentInput].monto;
-                        sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, -vehiculoAnteriorMonto);
-                    }
-
-                    // Asignar el nuevo vehículo y su monto
-                    $('#' + currentInput).val(selectedVehicleName);
-                    $('#' + currentInput + '_hidden').val(selectedVehicleId);
-
-                    vehiculosSeleccionados[currentInput] = {
-                        id: selectedVehicleId,
-                        monto: monto,
-                        tipo: currentInput.includes('recibido') ? 'recibido' : 'venta'
-                    };
-
-                    sumarRestarMonto(vehiculosSeleccionados[currentInput].tipo, monto);
-
-                    $('.car_modal').modal('hide');
-                } else {
-                    toastr.error("Debe seleccionar un vehículo y llenar los montos correspondientes.");
-                }
-            });
-            $(document).on('click', '.remove_cars', function() {
-                $('#total_financiado').val(0);
-                $('#total_recibido').val(0);
-                $('#monto_recibo').val(0);
-                $('#monto_efectivo').val(0);
-                $('#vehiculo_venta_id').val("");
-                $('#vehiculo_recibido_id').val("");
-            });
-
-            // Función para sumar/restar montos de efectivo/recibo
-            function sumarRestarMonto(tipo, monto) {
-                var montoActual;
-                if (tipo === 'venta') {
-                    montoVenta = parseFloat($('#monto_venta').val()) || 0;                  
-                    $('#monto_efectivo').val(monto);
-                    if (montoVenta > monto) {
-                        $('#venta_sin_rebajos').val(montoVenta);
-                        $('#total_financiado').val(montoVenta - monto);
-                    }
-                } else {
-                    $('#monto_recibo').val(monto);
-                }
-                // Actualizar el total recibido
-                actualizarTotalRecibido(tipo);
-            }
-            // Actualizar el campo total_recibido
-            function actualizarTotalRecibido(tipo) {
-                var montoEfectivo = parseFloat($('#monto_efectivo').val()) || 0;
-                var montoRecibo = parseFloat($('#monto_recibo').val()) || 0;
-                $('#total_recibido').val(montoEfectivo + montoRecibo);
-                totalRecibido = parseFloat($('#total_recibido').val()) || 0;
-                ventaSinRebajos = parseFloat($('#venta_sin_rebajos').val()) || 0;
-                if(ventaSinRebajos > totalRecibido){
-                    $('#total_financiado').val(ventaSinRebajos - totalRecibido);
-                }        
-            }
-
+            
+           
             // Recalcular montos si se cambia el valor de efectivo o recibo manualmente
             $('#monto_efectivo, #monto_recibo').on('input', function() {
                 actualizarTotalRecibido();
             });
+            
             $(document).on('submit', 'form#product_add_form', function(e) {
                 e.preventDefault();
                 var data = $(this).serialize();

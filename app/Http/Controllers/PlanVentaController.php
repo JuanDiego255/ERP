@@ -301,9 +301,28 @@ class PlanVentaController extends Controller
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden ?? null;
+            //Formatear montos
+            $plan_details['total_recibido'] = isset($plan_details['total_recibido'])
+                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
+                : null;
 
+            $plan_details['total_financiado'] = isset($plan_details['total_financiado'])
+                ? floatval(str_replace(',', '', $plan_details['total_financiado']))
+                : null;
+
+            $plan_details['monto_recibo'] = isset($plan_details['monto_recibo'])
+                ? floatval(str_replace(',', '', $plan_details['monto_recibo']))
+                : null;
+
+            $plan_details['monto_efectivo'] = isset($plan_details['monto_efectivo'])
+                ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
+                : null;
+            //Formatear montos
             //Create the employee
             $plan = PlanVenta::create($plan_details);
+            $cuota =  isset($request->cuota)
+            ? floatval(str_replace(',', '', $request->cuota))
+            : null;
 
             //Crear CxC
             $cxc['business_id'] = $business_id;
@@ -314,7 +333,7 @@ class PlanVentaController extends Controller
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
             $cxc['tasa'] = $request->tasa;
-            $cxc['cuota'] = $request->cuota;
+            $cxc['cuota'] = $cuota;
             $cxc['tipo_prestamo'] = $request->tipo_prestamo;
             $cxc['moneda'] = $request->moneda;
             $cxc['plan_venta_id'] = $plan->id;

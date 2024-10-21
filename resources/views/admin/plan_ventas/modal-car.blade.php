@@ -164,7 +164,7 @@
                         {!! Form::label('monto_venta', __('Monto venta')) !!}
                         <div class="input-group">
                             {!! Form::text('monto_venta', 0, [
-                                'class' => 'form-control number',
+                                'class' => 'form-control number precio',
                                 'id' => 'monto_venta',
                             ]) !!}
                         </div>
@@ -175,7 +175,7 @@
                         {!! Form::label('efectivo', __('Efectivo')) !!}
                         <div class="input-group">
                             {!! Form::text('efectivo', 0, [
-                                'class' => 'form-control number',
+                                'class' => 'form-control number precio',
                                 'id' => 'efectivo',
                                 'required',
                                 'min' => 0,
@@ -188,7 +188,7 @@
                         {!! Form::label('monto_recibo_modal', __('Monto Recibo')) !!}
                         <div class="input-group">
                             {!! Form::text('monto_recibo_modal', 0, [
-                                'class' => 'form-control number',
+                                'class' => 'form-control number precio',
                                 'id' => 'monto_recibo_modal',
                                 'required',
                                 'min' => 0,
