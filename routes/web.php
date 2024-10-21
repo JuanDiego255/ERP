@@ -510,7 +510,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/send-payment-report', 'RevenueController@sendReportToClient');
     Route::delete('/payment-row-delete/{id}', 'RevenueController@destroyRow');
     Route::get('/payment-row-view/{id}/{revenue_id}', 'RevenueController@viewPayment');
-    Route::get('/payment-send-whats-id/{id}/{revenue_id}/{type}', 'RevenueController@sendPaymentsWhatsDetallado');
+    Route::get('/payment-send-whats-id/{id}/{revenue_id}/{type}/{email}', 'RevenueController@sendPaymentsWhatsDetallado');
     //Rutas para los planes de ventas
 
     Route::resource('group-taxes', 'GroupTaxController');

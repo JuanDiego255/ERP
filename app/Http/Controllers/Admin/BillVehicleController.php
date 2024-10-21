@@ -35,7 +35,7 @@ class BillVehicleController extends Controller
             ->join('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
             ->select(
                 'products.id',
-                DB::raw("CONCAT(products.name, ' (', products.model, ')') as name")
+                DB::raw("CONCAT(products.name, ' (', products.bin, ')') as name")
             )
             ->groupBy('products.id', 'products.name', 'products.model')
             ->get();
@@ -75,7 +75,7 @@ class BillVehicleController extends Controller
                 @endcan'
                 )
                 ->editColumn('fecha_compra', function ($row) {
-                    return \Carbon\Carbon::parse($row->created_at)->format('Y/m/d g:i A');
+                    return \Carbon\Carbon::parse($row->fecha_compra)->format('Y/m/d g:i A');
                 })
                 ->editColumn('monto', '{{"₡ ". number_format($monto, 2, ".", ",") }}')
                 ->rawColumns(['action', 'name'])
@@ -123,11 +123,21 @@ class BillVehicleController extends Controller
                 'product_id',
                 'proveedor_id'
             ]);
+            $fechaFormateada = Carbon::createFromFormat('m/d/Y', $request->fecha_compra);
+            if ($fechaFormateada && $fechaFormateada->format('m/d/Y') === $request->fecha_compra) {
+                return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto(dd/MM/yyyy ó dd/MM/yy)']);
+            }
+            if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $request->fecha_compra)) {
+                $fechaFormateada = Carbon::createFromFormat('d/m/y', $request->fecha_compra);
+            } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $request->fecha_compra)) {
+                $fechaFormateada = Carbon::createFromFormat('d/m/Y',$request->fecha_compra);
+            }
             $monto =  isset($request->monto)
                 ? floatval(str_replace(',', '', $request->monto))
                 : null;
             $business_id = $request->session()->get('user.business_id');
             $bill_details['business_id'] = $business_id;
+            $bill_details['fecha_compra'] = $fechaFormateada;
             $bill_details['monto'] = $monto;
             $bill_details['is_cxp'] = 0;
             if ($request->is_cxp) {
@@ -148,7 +158,7 @@ class BillVehicleController extends Controller
                 $transaction_data['payment_status'] = "due";
                 $transaction_data['contact_id'] = $request->proveedor_id;
                 $transaction_data['ref_no'] = $request->factura;
-                $transaction_data['transaction_date'] = $request->fecha_compra;
+                $transaction_data['transaction_date'] = $fechaFormateada;
                 $transaction_data['fecha_vence'] = $request->fecha_vence;
                 $transaction_data['additional_notes'] = $request->descripcion;
                 $transaction_data['final_total'] = $monto;
@@ -269,7 +279,16 @@ class BillVehicleController extends Controller
                 'product_id',
                 'proveedor_id'
             ]);
-
+            $fechaFormateada = Carbon::createFromFormat('m/d/Y', $request->fecha_compra);
+            if ($fechaFormateada && $fechaFormateada->format('m/d/Y') === $request->fecha_compra) {
+                return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto(dd/MM/yyyy ó dd/MM/yy)']);
+            }
+            if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $request->fecha_compra)) {
+                $fechaFormateada = Carbon::createFromFormat('d/m/y', $request->fecha_compra);
+            } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $request->fecha_compra)) {
+                $fechaFormateada = Carbon::createFromFormat('d/m/Y',$request->fecha_compra);
+            }
+            $bill_details['fecha_compra'] = $fechaFormateada;
             $business_id = $request->session()->get('user.business_id');
             $bill_details['business_id'] = $business_id;
             $monto = isset($request['monto']) ? floatval(str_replace(',', '', $request['monto'])) : 0;
@@ -287,7 +306,7 @@ class BillVehicleController extends Controller
                     'total_before_tax' => $monto,
                     'final_total' => $monto,
                     'additional_notes' => $request->descripcion,
-                    'transaction_date' => $request->fecha_compra
+                    'transaction_date' => $fechaFormateada
                 ];
                 $factura->update($data);
             }

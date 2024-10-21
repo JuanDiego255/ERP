@@ -318,7 +318,7 @@ class RevenueController extends Controller
 
         $contact = Contact::where('business_id', $business_id)
             ->find($item->cliente_id);
-        $contacts = Contact::contactDropdownCustomer($business_id, false);
+        $contacts = Contact::contactDropdownCustomer($business_id, true);
 
         $canUpdate = true;
         if (!auth()->user()->can('cxc.update')) {
@@ -336,6 +336,7 @@ class RevenueController extends Controller
                     'payment_revenues.paga as paga',
                     'payment_revenues.amortiza as amortiza',
                     DB::raw('null as empty'),
+                    DB::raw('null as empty_email'),
                     'payment_revenues.interes_c as interes_c',
                     'payment_revenues.monto_general as monto_general',
                     'payment_revenues.revenue_id as rev_id'
@@ -581,7 +582,7 @@ class RevenueController extends Controller
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
         }
     }
-    public function sendPaymentsWhatsDetallado($id, $revenue_id, $type)
+    public function sendPaymentsWhatsDetallado($id, $revenue_id, $type, $email)
     {
         try {
             // Obtener los datos necesarios
@@ -650,9 +651,9 @@ class RevenueController extends Controller
                 $whatsappNumber = $item->celular;
                 $whatsappLink = "https://wa.me/{$whatsappNumber}?text={$whatsappMessage}";
             } else {
-                if ($item->email != "") {
+                if ($item->email != "" && $email) {
                     $data = [
-                        'to_email' => $item->email,
+                        'to_email' => $email != "" ? $email : $item->email,
                         'subject' => "Recibo de dinero del día " . $item->fecha_pago . " - " . $item->name,
                         'email_body' => 'Adjunto encuentra el PDF del recibo de pago'
                     ];

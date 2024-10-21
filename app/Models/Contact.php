@@ -122,22 +122,32 @@ class Contact extends Authenticatable
      *
      * @return array users
      */
-    public static function contactDropdownCustomer($business_id, $exclude_default = false, $prepend_none = true, $append_id = true)
+    public static function contactDropdownCustomer($business_id, $revenue = false, $prepend_none = true, $append_id = true)
     {
         $query = Contact::where('contacts.business_id', $business_id)
-            ->join('revenues as rev', 'contacts.id', '=', 'rev.contact_id')
             ->where('type', 'customer')
             ->active();
+
+        // Si $revenue es true, agregar el join con la tabla revenues
+        if ($revenue) {
+            $query->join('revenues as rev', function ($join) {
+                $join->on('contacts.id', '=', 'rev.contact_id')
+                    ->where('rev.status', 0); // Asegurando que el status sea 0
+            })
+                ->groupBy('contacts.id'); // Agrupando por cliente
+        }
+
+        // Seleccionar las columnas
         $query->select(
             DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' - ', COALESCE(supplier_business_name, ''), '(', contacts.contact_id, ')')) AS contact"),
-            'rev.id as rev_id',
+            $revenue ? DB::raw('MAX(rev.id) as rev_id') : DB::raw('NULL as rev_id'), // Solo agregar rev_id si $revenue es true
             'contacts.id as contact_id'
         );
 
+        // Obtener los resultados como lista de valores
+        $contacts = $query->pluck('contact', 'contact_id');
 
-        $contacts = $query->pluck('contact', 'contact_id', 'rev_id');
-
-        //Prepend none
+        // Prepend none
         if ($prepend_none) {
             $contacts = $contacts->prepend(__('lang_v1.none'), '');
         }

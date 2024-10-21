@@ -26,7 +26,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('fecha_compra', __('Fecha Compra') . ':*') !!}
-                            {!! Form::date('fecha_compra', $bill->fecha_compra, ['class' => 'form-control', 'required']) !!}
+                            {!! Form::text('fecha_compra', \Carbon\Carbon::parse($bill->fecha_compra)->format('d/m/y'), ['class' => 'form-control fecha', 'required']) !!}
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -154,6 +154,16 @@
                             input = formatted;
                         }
                         $(this).val(input);
+                    }
+                });
+                $('.fecha').on('input', function() {
+                    let input = $(this).val().replace(/\D/g, ''); // Elimina todo lo que no sea un número
+                    if (input.length <= 2) {
+                        $(this).val(input);
+                    } else if (input.length <= 4) {
+                        $(this).val(`${input.slice(0, 2)}/${input.slice(2)}`);
+                    } else {
+                        $(this).val(`${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4, 8)}`);
                     }
                 });
             });

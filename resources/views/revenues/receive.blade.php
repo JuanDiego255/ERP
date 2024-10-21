@@ -274,17 +274,15 @@
                         'title' => __('Gestión de pagos en esta cuenta'),
                         'id' => 'accordionPagos',
                     ])
-                        @slot('tool')
-                            <div class="box-tools">
-
-                            </div>
-                        @endslot
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-info sendReport no-print" aria-label="Print" id="report">
-                                <i class="fa fa-envelope"></i> Enviar Reporte
-                            </button>
+                            <div class="form-group">
+                                {!! Form::label('email', __('Correo electrónico para envíos')) !!}
+                                {!! Form::text('opc_email', $item->email, [
+                                    'class' => 'form-control',
+                                    'id' => 'opc_email'
+                                ]) !!}
+                            </div>
                         </div>
-
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped" id="payments">
@@ -304,6 +302,12 @@
                                             <th class="text-center"><a class="btn btn-primary btn_add_row"
                                                     href="{{ action('RevenueController@storeRow', [$item->id]) }}">
                                                     <i class="fa fa-plus"></i> @lang('messages.add')</a></th>
+                                            <th class="text-center">
+                                                <button type="button" class="btn btn-info sendReport no-print"
+                                                    aria-label="Print" id="report">
+                                                    <i class="fa fa-envelope"></i> Enviar EC
+                                                </button>
+                                            </th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -427,6 +431,10 @@
                     },
                     {
                         "data": "empty",
+                        orderable: false
+                    },
+                    {
+                        "data": "empty_email",
                         orderable: false
                     }
                 ],
@@ -950,6 +958,7 @@
             $(document).on('click', 'button.sendReport', function(e) {
                 e.preventDefault();
                 var htmlContentWithoutImage = htmlContent.replace(/<img[^>]*>/g, '');
+                var opc_email = $('#opc_email').val();
                 console.log(htmlContentWithoutImage);
                 if (htmlContent == "") {
                     toastr.warning("Debe generar el *ESTADO DE CUENTA* para que se cargue la plantilla");
@@ -966,7 +975,7 @@
                         vehiculo: vehiculo,
                         modelo: modelo,
                         placa: placa,
-                        email: email
+                        email: opc_email
                     },
                     success: function(response) {
                         toastr.success(
@@ -1019,10 +1028,11 @@
                 var buttonId = $(this).attr('id');
                 var data = $(this).serialize();
                 var pay_id = $('#payment_id').val();
+                var opc_email = $('#opc_email').val();
 
                 $.ajax({
                     method: 'get',
-                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id + '/' + buttonId,
+                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id + '/' + buttonId + '/' + opc_email,
                     dataType: 'json',
                     data: data,
                     success: function(result) {
