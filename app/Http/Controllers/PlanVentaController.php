@@ -301,35 +301,43 @@ class PlanVentaController extends Controller
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden ?? null;
-            //Formatear montos
-            $plan_details['total_recibido'] = isset($plan_details['total_recibido'])
-                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
-                : null;
 
-            $plan_details['total_financiado'] = isset($plan_details['total_financiado'])
+
+            //Formatear montos
+            $total_financiado_format = isset($plan_details['total_financiado'])
                 ? floatval(str_replace(',', '', $plan_details['total_financiado']))
                 : null;
-
-            $plan_details['monto_recibo'] = isset($plan_details['monto_recibo'])
+            $total_recibido_format = isset($plan_details['total_recibido'])
+                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
+                : null;
+            $monto_rec_format = isset($plan_details['monto_recibo'])
                 ? floatval(str_replace(',', '', $plan_details['monto_recibo']))
                 : null;
-
-            $plan_details['monto_efectivo'] = isset($plan_details['monto_efectivo'])
+            $monto_efect_format = isset($plan_details['monto_efectivo'])
                 ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
                 : null;
+            $monto_vent_format = isset($plan_details['venta_sin_rebajos'])
+                ? floatval(str_replace(',', '', $plan_details['venta_sin_rebajos']))
+                : null;
+
+            $plan_details['total_recibido'] = $total_recibido_format;
+            $plan_details['total_financiado'] = $total_financiado_format;
+            $plan_details['monto_recibo'] = $monto_rec_format;
+            $plan_details['monto_efectivo'] = $monto_efect_format;
+            $plan_details['venta_sin_rebajos'] = $monto_vent_format;
             //Formatear montos
             //Create the employee
             $plan = PlanVenta::create($plan_details);
             $cuota =  isset($request->cuota)
-            ? floatval(str_replace(',', '', $request->cuota))
-            : null;
+                ? floatval(str_replace(',', '', $request->cuota))
+                : null;
 
             //Crear CxC
             $cxc['business_id'] = $business_id;
             $cxc['sucursal'] = "GRECIA";
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
-            $cxc['valor_total'] = $request->total_financiado;
+            $cxc['valor_total'] = $total_financiado_format;
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
             $cxc['tasa'] = $request->tasa;
@@ -343,8 +351,8 @@ class PlanVentaController extends Controller
             //Primer linea de pago CxC
             $cxc_pay['referencia'] = $this->transactionUtil->getInvoiceNumber($business_id, 'final', "");
             $cxc_pay['revenue_id'] = $cxc_reg->id;
-            $cxc_pay['cuota'] = $request->cuota;
-            $cxc_pay['monto_general'] = $request->total_financiado;
+            $cxc_pay['cuota'] = $cuota;
+            $cxc_pay['monto_general'] = $total_financiado_format;
             $cxc_pay['paga'] = 0;
             $cxc_pay['interes_c'] = 0;
             $cxc_pay['amortiza'] = 0;
@@ -353,7 +361,7 @@ class PlanVentaController extends Controller
                 ->where('id', $request->vehiculo_venta_id_hidden)
                 ->firstOrFail();
             $vendido['is_inactive'] = 1;
-            $vendido['monto_venta'] = $request->venta_sin_rebajos;
+            $vendido['monto_venta'] = $monto_vent_format;
             $vehicle->update($vendido);
             DB::commit();
             $output = [
@@ -435,21 +443,27 @@ class PlanVentaController extends Controller
             ]);
 
             //Formatear montos
-            $plan_details['total_recibido'] = isset($plan_details['total_recibido'])
-                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
-                : null;
-
-            $plan_details['total_financiado'] = isset($plan_details['total_financiado'])
+            $total_financiado_format = isset($plan_details['total_financiado'])
                 ? floatval(str_replace(',', '', $plan_details['total_financiado']))
                 : null;
-
-            $plan_details['monto_recibo'] = isset($plan_details['monto_recibo'])
+            $total_recibido_format = isset($plan_details['total_recibido'])
+                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
+                : null;
+            $monto_rec_format = isset($plan_details['monto_recibo'])
                 ? floatval(str_replace(',', '', $plan_details['monto_recibo']))
                 : null;
-
-            $plan_details['monto_efectivo'] = isset($plan_details['monto_efectivo'])
+            $monto_efect_format = isset($plan_details['monto_efectivo'])
                 ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
                 : null;
+            $monto_vent_format = isset($plan_details['venta_sin_rebajos'])
+                ? floatval(str_replace(',', '', $plan_details['venta_sin_rebajos']))
+                : null;
+
+            $plan_details['total_recibido'] = $total_recibido_format;
+            $plan_details['total_financiado'] = $total_financiado_format;
+            $plan_details['monto_recibo'] = $monto_rec_format;
+            $plan_details['monto_efectivo'] = $monto_efect_format;
+            $plan_details['venta_sin_rebajos'] = $monto_vent_format;
             //Formatear montos
 
             $plan_details['business_id'] = $business_id;
@@ -468,7 +482,7 @@ class PlanVentaController extends Controller
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
             $cxc['sucursal'] = "GRECIA";
-            $cxc['valor_total'] = $plan_details['total_financiado'];
+            $cxc['valor_total'] = $total_financiado_format;
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
             $cxc['tasa'] = $request->tasa;
@@ -483,7 +497,7 @@ class PlanVentaController extends Controller
             $pay = PaymentRevenue::where('revenue_id', $cxc_item->id)
                 ->firstOrFail();
             $cxc_pay['cuota'] = $cuota;
-            $cxc_pay['monto_general'] = $plan_details['total_financiado'];
+            $cxc_pay['monto_general'] = $total_financiado_format;
             $cxc_pay['paga'] = 0;
             $cxc_pay['interes_c'] = 0;
             $cxc_pay['amortiza'] = 0;
@@ -491,7 +505,7 @@ class PlanVentaController extends Controller
             $vehicle = Product::where('business_id', $business_id)
                 ->where('id', $request->vehiculo_venta_id_hidden)
                 ->firstOrFail();
-            $vendido['monto_venta'] = $request->venta_sin_rebajos;
+            $vendido['monto_venta'] = $monto_vent_format;
             $vehicle->update($vendido);
             DB::commit();
             $output = [
