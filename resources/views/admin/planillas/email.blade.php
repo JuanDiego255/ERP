@@ -1,8 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <style>
     .text-blue {
@@ -82,74 +83,94 @@
     }
 </style>
 <div class="row">
-    <h4 class="text-blue">{{ $detalle->name }} - COMPROBANTE DE PAGO DEL {{$detalle->fecha_desde}} AL {{$detalle->fecha_hasta}}</h4>
+    <h4 class="text-blue">{{ $detalle->name }} - COMPROBANTE DE PAGO DEL {{ $detalle->fecha_desde }} AL
+        {{ $detalle->fecha_hasta }}</h4>
 </div>
 <div class="row">
     <div class="col-sm-4 invoice-col">
         <h4 class="text-blue text-uppercase">Ingresos</h4>
         @if ($detalle->salario_base > 0)
             <b>@lang('Salario base'):</b>
-            {{ number_format($detalle->salario_base) }}<br>
+            ₡{{ number_format($detalle->salario_base) }}<br>
         @endif
         @if ($detalle->bonificacion > 0)
             <b>@lang('Bonificación'):</b>
-            {{ number_format($detalle->bonificacion) }}<br>
+            ₡{{ number_format($detalle->bonificacion) }}<br>
         @endif
         @if ($detalle->comisiones > 0)
             <b>@lang('Comisiones'):</b>
-            {{ number_format($detalle->comisiones) }}<br>
+            ₡{{ number_format($detalle->comisiones) }}<br>
         @endif
         @if ($detalle->cant_hora_extra > 0)
             <b>@lang('Cant. Horas'):</b>
             {{ $detalle->cant_hora_extra }}<br>
             <b>@lang('Hora Extra. Emp'):</b>
-            {{ number_format($detalle->hora_extra) }}<br>
+            ₡{{ number_format($detalle->hora_extra) }}<br>
             <b>@lang('Monto Hora Extra'):</b>
-            {{ number_format($detalle->monto_hora_extra) }}<br>
+            ₡{{ number_format($detalle->monto_hora_extra) }}<br>
         @endif
     </div>
     <div class="col-sm-4 invoice-col">
         <h4 class="text-blue text-uppercase">Deducciones</h4>
         @if ($detalle->adelantos > 0)
             <b>@lang('Adelantos'):</b>
-            {{ number_format($detalle->adelantos) }}<br>
+            ₡{{ number_format($detalle->adelantos) }}<br>
         @endif
         @if ($detalle->prestamos > 0)
             <b>@lang('Prestamos'):</b>
-            {{ number_format($detalle->prestamos) }}<br>
+            ₡{{ number_format($detalle->prestamos) }}<br>
         @endif
         @if ($detalle->deudas > 0)
             <b>@lang('Deudas'):</b>
-            {{ number_format($detalle->deudas) }}<br>
+            ₡{{ number_format($detalle->deudas) }}<br>
         @endif
         @if ($detalle->rebajados > 0)
             <b>@lang('Rebajos'):</b>
-            {{ number_format($detalle->rebajados) }}<br>
+            ₡{{ number_format($detalle->rebajados) }}<br>
         @endif
         @if ($detalle->total_ccss > 0)
             <b>@lang('C.C.S.S'):</b>
-            {{ number_format($detalle->total_ccss) }}<br>
+            ₡{{ number_format($detalle->total_ccss) }}<br>
         @endif
 
     </div>
+    @if ($detalle->aguinaldo > 0)
+        <div class="col-sm-4 invoice-col">
+            <h4 class="text-blue text-uppercase">Aguinaldo</h4>
+            <b>@lang('Aguinaldo'):</b>
+            ₡{{ number_format($detalle->aguinaldo) }}<br>
+        </div>
+    @endif
 </div>
 <div class="row">
     <div class="col-sm-12">
         <hr>
     </div>
-    <div class="col-sm-6 invoice-col">
+    <div class="col-sm-4 invoice-col">
         <b>Total Ingresos:
-        </b>{{ number_format($detalle->salario_base + $detalle->bonificacion + $detalle->comisiones + $detalle->monto_hora_extra) }}
+        </b>₡{{ number_format($detalle->salario_base + $detalle->bonificacion + $detalle->comisiones + $detalle->monto_hora_extra) }}
     </div>
 
-    <div class="col-sm-6 invoice-col">
+    <div class="col-sm-4 invoice-col">
         <b>Total Deducciones:
-        </b>{{ number_format($detalle->adelantos + $detalle->prestamos + $detalle->deudas + $detalle->rebajados + $detalle->total_ccss) }}
+        </b>₡{{ number_format($detalle->adelantos + $detalle->prestamos + $detalle->deudas + $detalle->rebajados + $detalle->total_ccss) }}
     </div>
 </div>
 <div class="row">
     <div class="col-sm-12">
         <hr>
-        <b class=" text-green">Total a pagar:</b> {{ number_format($detalle->total) }}
     </div>
+    <div class="col-sm-4 invoice-col">
+
+        <b class=" text-green">Total a pagar:</b>
+        ₡{{ number_format($detalle->total - $detalle->aguinaldo) }}
+    </div>
+    <div class="col-sm-4 invoice-col">
+
+    </div>
+    @if ($detalle->aguinaldo > 0)
+        <div class="col-sm-4 invoice-col">
+            <b class=" text-green">Aguinaldo:</b> ₡{{ number_format($detalle->aguinaldo) }}
+        </div>
+    @endif
 </div>

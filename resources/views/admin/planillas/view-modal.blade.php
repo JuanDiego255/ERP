@@ -55,17 +55,24 @@
                     @endif
 
                 </div>
+                @if ($detalle->aguinaldo > 0)
+                    <div class="col-sm-4 invoice-col">
+                        <h4 class="text-blue text-uppercase">Aguinaldo</h4>
+                        <b>@lang('Aguinaldo'):</b>
+                        ₡{{ number_format($detalle->aguinaldo) }}<br>
+                    </div>
+                @endif
             </div>
             <div class="row">
                 <div class="col-sm-12">
                     <hr>
                 </div>
-                <div class="col-sm-6 invoice-col">
+                <div class="col-sm-4 invoice-col">
                     <b>Total Ingresos:
                     </b>₡{{ number_format($detalle->salario_base + $detalle->bonificacion + $detalle->comisiones + $detalle->monto_hora_extra) }}
                 </div>
 
-                <div class="col-sm-6 invoice-col">
+                <div class="col-sm-4 invoice-col">
                     <b>Total Deducciones:
                     </b>₡{{ number_format($detalle->adelantos + $detalle->prestamos + $detalle->deudas + $detalle->rebajados + $detalle->total_ccss) }}
                 </div>
@@ -73,8 +80,21 @@
             <div class="row">
                 <div class="col-sm-12">
                     <hr>
-                    <b class=" text-green">Total a pagar:</b> ₡{{ number_format($detalle->total) }}
                 </div>
+                <div class="col-sm-4 invoice-col">
+
+                    <b class=" text-green">Total a pagar:</b>
+                    ₡{{ number_format($detalle->total - $detalle->aguinaldo) }}
+                </div>
+                <div class="col-sm-4 invoice-col">
+
+                </div>
+                @if ($detalle->aguinaldo > 0)
+                    <div class="col-sm-4 invoice-col">
+                        <b class=" text-green">Aguinaldo:</b> ₡{{ number_format($detalle->aguinaldo) }}
+                    </div>
+                @endif
+
             </div>
         </div>
         <div class="modal-footer">
@@ -82,7 +102,8 @@
                 onclick="$(this).closest('div.modal').printThis();">
                 <i class="fa fa-print"></i> @lang('messages.print')
             </button>
-            <button type="button" class="btn btn-info sendPaymentDetail no-print" aria-label="Print" id="sendPaymentDetail">
+            <button type="button" class="btn btn-info sendPaymentDetail no-print" aria-label="Print"
+                id="sendPaymentDetail">
                 <i class="fa fa-envelope"></i> @lang('Enviar comprobante')
             </button>
             <button type="button" class="btn btn-default no-print" data-dismiss="modal">@lang('messages.close')</button>

@@ -408,11 +408,12 @@
                 if (value == 0.00) {
                     value = 0;
                 }
+                
                 // Solo procede si el valor cambió
                 if (value != initialValue && value >= 0 && canUpdate && aprobada != 1) {
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud
                     $('input[type="text"]').prop('disabled', true);
-
+                    var currentInputIndex = input.closest('td').index() - 3;
                     $.ajax({
                         url: '/planilla-detalle-update/' + row_id,
                         method: 'POST',
@@ -423,7 +424,24 @@
                         },
                         success: function(response) {
                             if (response.success) {
-                                users_table.ajax.reload();
+                                //users_table.ajax.reload();
+                                users_table.ajax.reload(function() {
+                                    // Buscar la fila por el 'row_id' después de recargar la tabla
+                                    var updatedRow = $('#planillas tbody tr').filter(
+                                        function() {
+                                            return $(this).find('td').eq(1)
+                                                .text() === row_id;
+                                        });
+
+                                    // Encontrar el siguiente input dentro de esa fila
+                                    var nextInput = updatedRow.find('td input').eq(
+                                        currentInputIndex);
+
+                                    // Si existe el siguiente input, aplicar el foco y seleccionar el texto
+                                    if (nextInput.length > 0) {
+                                        nextInput.focus().select();
+                                    }
+                                });
                             }
                         },
                         error: function(xhr) {

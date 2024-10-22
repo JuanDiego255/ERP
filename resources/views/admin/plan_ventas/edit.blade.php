@@ -618,28 +618,7 @@
             $('#monto_efectivo, #monto_recibo').on('input', function() {
                 actualizarTotalRecibido();
             });
-            $(document).on('submit', 'form#product_add_form', function(e) {
-                e.preventDefault();
-                var data = $(this).serialize();
-                $.ajax({
-                    method: 'post',
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(response) {
-                        // Manejar la respuesta exitosa
-                        toastr.success('El vehículo ha sido guardado con éxito');
-                        $('#vehiculo_recibido_id').val(response.name);
-                        $('#vehiculo_recibido_id_hidden').val(response.product_id);
-                        $('.car_new_modal').modal('hide');
-                    },
-                    error: function(xhr, status, error) {
-                        // Manejar errores
-                        alert('Ocurrió un error. Por favor intenta nuevamente.');
-                        console.log(xhr.responseText); // Para depuración
-                    },
-                });
-            });
+            
         });
     </script>
 @endsection

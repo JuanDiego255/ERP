@@ -2999,7 +2999,7 @@ $(document).on('click', 'a.update_contact_status', function (e) {
     });
 });
 //Formato de inputs de tipo precio o montos
-$(document).on('input', '.precio', function() {
+$(document).on('input', '.precio', function () {
     let input = $(this).val().replace(/[^0-9.]/g, ''); // Permite números y un punto decimal
 
     // Asegúrate de que sólo haya un punto decimal
@@ -3056,7 +3056,7 @@ function sumarRestarMonto(tipo, monto) {
     actualizarTotalRecibido(tipo);
 }
 // Guardar el vehículo seleccionado en plan de ventas
-$(document).on('click', '.save_vehicle', function() {
+$(document).on('click', '.save_vehicle', function () {
     var selectedVehicleId = $('#vehiculo_id').val();
     var monto = 0;
 
@@ -3095,16 +3095,44 @@ $(document).on('click', '.save_vehicle', function() {
 });
 // Verificar si un vehículo ya está seleccionado en plan de ventas
 function vehiculoSeleccionado(vehiculoId) {
-    return Object.values(vehiculosSeleccionados).some(function(vehiculo) {
+    return Object.values(vehiculosSeleccionados).some(function (vehiculo) {
         return vehiculo.id === vehiculoId;
     });
 }
 //Remover carros del plan de ventas
-$(document).on('click', '.remove_cars', function() {
+$(document).on('click', '.remove_cars', function () {
     $('#total_financiado').val(0);
     $('#total_recibido').val(0);
     $('#monto_recibo').val(0);
     $('#monto_efectivo').val(0);
     $('#vehiculo_venta_id').val("");
     $('#vehiculo_recibido_id').val("");
+});
+//Boton para guardar carro desde plan de ventas
+$(document).on('submit', 'form#product_add_form', function (e) {
+    e.preventDefault();
+    var data = $(this).serialize();
+    $.ajax({
+        method: 'post',
+        url: $(this).attr('action'),
+        dataType: 'json',
+        data: data,
+        success: function (response) {
+            // Manejar la respuesta exitosa
+            toastr.success('El vehículo ha sido guardado con éxito');
+            $('#vehiculo_recibido_id').val(response.name);
+            $('#vehiculo_recibido_id_hidden').val(response.product_id);
+            $('.car_new_modal').modal('hide');
+        },
+        error: function (xhr, status, error) {
+            // Manejar errores
+            alert('Ocurrió un error. Por favor intenta nuevamente.');
+            console.log(xhr.responseText); // Para depuración
+        },
+    });
+});
+
+// Recalcular montos si se cambia el valor de efectivo o recibo manualmente desde plan de ventas
+$('#monto_efectivo, #monto_recibo').on('input', function () {
+    actualizarTotalRecibido();
 });
