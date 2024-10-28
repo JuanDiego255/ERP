@@ -1492,24 +1492,14 @@ $(document).ready(function () {
                     // Unir facturas con comas
                     var invoices = data.invoices.join(', ');
                     // Formato de monto
-                    var totalAmount = data.totalAmount.toFixed(2);
-                    var formattedAmount = new Intl.NumberFormat('es-ES', {
-                        minimumFractionDigits: 3,
-                        maximumFractionDigits: 3
-                    }).format(totalAmount);
-                    formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
+                    formattedAmount = __currency_trans_from_en(data.totalAmount, true, true);
 
                     // Agregar la fila a la tabla solo con proveedor, facturas y monto total
                     body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>' + formattedAmount + '</td><td> ' + '' + '</td></tr>');
                 });
 
                 // Formatear el monto total general
-                grandTotal = grandTotal.toFixed(2);
-                var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
-                    minimumFractionDigits: 3,
-                    maximumFractionDigits: 3
-                }).format(grandTotal);
-                formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
+                formattedGrandTotal = __currency_trans_from_en(grandTotal, true, true);
                 // Añadir un div al final de la tabla con el monto total general
                 $(win.document.body).append(
                     '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
@@ -1571,32 +1561,18 @@ $(document).ready(function () {
                 $.each(groupedData, function (provider, data) {
 
                     var acumulado = 0;
+                    var acumuladoSinMil = 0;
                     // Agregar nombre del proveedor
                     body.append('<tr><td colspan="7" style="font-weight: bold; text-align: left;">' + provider + '</td></tr>');
 
                     // Agregar las facturas del proveedor
                     data.rows.forEach(function (row) {
-                        acumulado += row.saldo;
+                        acumulado += parseFloat(row.saldo);   
+                        console.log(acumulado);     
                         // Formatear los montos
-                        var rowAmount = row.amount.toFixed(2);
-                        var formattedAmount = new Intl.NumberFormat('es-ES', {
-                            minimumFractionDigits: 3,
-                            maximumFractionDigits: 3
-                        }).format(rowAmount);
-                        formattedAmount = __currency_trans_from_en(formattedAmount, true, true);
-                        var saldoAmount = row.saldo.toFixed(2);
-                        var formattedSaldo = new Intl.NumberFormat('es-ES', {
-                            minimumFractionDigits: 3,
-                            maximumFractionDigits: 3
-                        }).format(saldoAmount);
-                        formattedSaldo = __currency_trans_from_en(formattedSaldo, true, true);
-                        var rowAcumulado = acumulado.toFixed(2);
-                        var formattedAcumulado = new Intl.NumberFormat('es-ES', {
-                            minimumFractionDigits: 3,
-                            maximumFractionDigits: 3
-                        }).format(rowAcumulado);
-                        formattedAcumulado = __currency_trans_from_en(formattedAcumulado, true, true);
-
+                        formattedAmount = __currency_trans_from_en(row.amount, true, true);                      
+                        formattedSaldo = __currency_trans_from_en(row.saldo, true, true);
+                        formattedAcumulado =  __currency_trans_from_en(acumulado, true, true);
                         // Agregar la fila a la tabla con los datos formateados
                         body.append(
                             '<tr>' +
@@ -1610,22 +1586,12 @@ $(document).ready(function () {
                             '</tr>'
                         );
                     });
-                    var rowSubtotal = data.subtotal.toFixed(2);
-                    var formattedSubtotal = new Intl.NumberFormat('es-ES', {
-                        minimumFractionDigits: 3,
-                        maximumFractionDigits: 3
-                    }).format(rowSubtotal);
-                    formattedSubtotal = __currency_trans_from_en(formattedSubtotal, true, true);
+                    formattedSubtotal = __currency_trans_from_en(data.subtotal, true, true);
                     body.append('<tr><td colspan="7" style="text-align: right; font-weight: bold;">Subtotales ' + formattedSubtotal + '</td></tr>');
                 });
 
                 // Formatear el monto total general
-                var rowGrandTotal = grandTotal.toFixed(2);
-                var formattedGrandTotal = new Intl.NumberFormat('es-ES', {
-                    minimumFractionDigits: 3,
-                    maximumFractionDigits: 3
-                }).format(rowGrandTotal);
-                formattedGrandTotal = __currency_trans_from_en(formattedGrandTotal, true, true);
+                formattedGrandTotal = __currency_trans_from_en(grandTotal, true, true);
                 // Añadir un div al final de la tabla con el monto total general
                 $(win.document.body).append(
                     '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
@@ -1797,7 +1763,7 @@ $(document).ready(function () {
             var row = $(this).closest('tr');
             var provider = row.find('td:eq(2)').text();
             var invoice = row.find('td:eq(3)').text();
-            var amount = parseFloat(row.find('td:eq(8)').text().replace(/[^\d.-]/g, ''));
+            var amount = parseFloat(row.find('td:eq(8)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
 
             // Puedes almacenar el valor del proveedor si lo necesitas
             selected_rows[i++] = {
@@ -1809,7 +1775,10 @@ $(document).ready(function () {
 
         return selected_rows;
     }
-
+    function hasThousandsSeparator(text) {
+        // Verifica si hay un punto como separador de miles seguido de tres dígitos
+        return /\.\d{3}(,|$)/.test(text);
+    }
     function getSelectedRows() {
         var selected_rows = [];
         var i = 0;
@@ -1819,8 +1788,10 @@ $(document).ready(function () {
             var row = $(this).closest('tr');
             var provider = row.find('td:eq(2)').text();
             var invoice = row.find('td:eq(3)').text();
-            var amount = parseFloat(row.find('td:eq(7)').text().replace(/[^\d.-]/g, ''));
-            var saldo = parseFloat(row.find('td:eq(8)').text().replace(/[^\d.-]/g, '')); // Asumiendo que saldo es igual al monto
+            var isFormatAmount = hasThousandsSeparator(row.find('td:eq(7)').text()) ? true : false;
+            var isFormatSaldo = hasThousandsSeparator(row.find('td:eq(8)').text()) ? true : false;
+            var amount = parseFloat(row.find('td:eq(7)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
+            var saldo = parseFloat(row.find('td:eq(8)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
             var fechaVence = row.find('td:eq(5)').text();
             var detalle = row.find('td:eq(9)').text();
 
@@ -1831,7 +1802,9 @@ $(document).ready(function () {
                 saldo: saldo,
                 montoAdelanto: 0, // Valor quemado en 0
                 fechaVence: fechaVence.trim(),
-                detalle: detalle.trim()
+                detalle: detalle.trim(),
+                isFormatAmount: isFormatAmount,
+                isFormatSaldo: isFormatSaldo
             };
         });
 
