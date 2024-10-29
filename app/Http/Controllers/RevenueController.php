@@ -480,7 +480,7 @@ class RevenueController extends Controller
                     $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
                     $interes = round($monto_general * ($record->tasa / 100), 2);
                     $cxc_pay['monto_general'] = $es_cero != 1 ? round($monto_general - ($value - $interes), 2) : $monto_general;
-                    $cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
+                    //$cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
                     $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
                     $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
