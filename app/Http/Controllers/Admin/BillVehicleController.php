@@ -123,15 +123,25 @@ class BillVehicleController extends Controller
                 'product_id',
                 'proveedor_id'
             ]);
-            $fechaFormateada = Carbon::createFromFormat('m/d/Y', $request->fecha_compra);
-            if ($fechaFormateada && $fechaFormateada->format('m/d/Y') === $request->fecha_compra) {
-                return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto(dd/MM/yyyy ó dd/MM/yy)']);
-            }
-            if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $request->fecha_compra)) {
+            $fechaFormateada = null;
+            if (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $request->fecha_compra)) {
+                // Formato dd/MM/yyyy
+                $fechaFormateada = Carbon::createFromFormat('d/m/Y', $request->fecha_compra);
+            } elseif (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $request->fecha_compra)) {
+                // Formato dd/MM/yy
                 $fechaFormateada = Carbon::createFromFormat('d/m/y', $request->fecha_compra);
-            } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $request->fecha_compra)) {
-                $fechaFormateada = Carbon::createFromFormat('d/m/Y',$request->fecha_compra);
+            } else {
+                return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto (dd/MM/yyyy o dd/MM/yy)']);
             }
+
+            // Verifica si el formato es correcto y que la fecha formateada coincida con la entrada
+            if ($fechaFormateada && $fechaFormateada->format('d/m/Y') === $request->fecha_compra || $fechaFormateada->format('d/m/y') === $request->fecha_compra) {
+                // Formato válido
+                // Aquí puedes continuar con la lógica deseada
+            } else {
+                return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido']);
+            }
+
             $monto =  isset($request->monto)
                 ? floatval(str_replace(',', '', $request->monto))
                 : null;
@@ -286,7 +296,7 @@ class BillVehicleController extends Controller
             if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $request->fecha_compra)) {
                 $fechaFormateada = Carbon::createFromFormat('d/m/y', $request->fecha_compra);
             } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $request->fecha_compra)) {
-                $fechaFormateada = Carbon::createFromFormat('d/m/Y',$request->fecha_compra);
+                $fechaFormateada = Carbon::createFromFormat('d/m/Y', $request->fecha_compra);
             }
             $bill_details['fecha_compra'] = $fechaFormateada;
             $business_id = $request->session()->get('user.business_id');

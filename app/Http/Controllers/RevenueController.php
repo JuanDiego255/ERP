@@ -449,15 +449,26 @@ class RevenueController extends Controller
             $fecha_interes_cero = $request->input('fecha_interes_cero');
             $detalle[$column] = $value;
             if ($column == "created_at" || $column == "fecha_interes") {
-                $fechaFormateada = Carbon::createFromFormat('m/d/Y', $value);
-                if ($fechaFormateada && $fechaFormateada->format('m/d/Y') === $value) {
-                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto(dd/MM/yyyy ó dd/MM/yy)']);
-                }
-                if (preg_match('/\d{2}\/\d{2}\/\d{2}$/', $value)) {
-                    $fechaFormateada = Carbon::createFromFormat('d/m/y', $value);
-                } elseif (preg_match('/\d{2}\/\d{2}\/\d{4}$/', $value)) {
+                $fechaFormateada = null;
+
+                if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
+                    // Formato dd/MM/yyyy
                     $fechaFormateada = Carbon::createFromFormat('d/m/Y', $value);
+                } elseif (preg_match('/^\d{2}\/\d{2}\/\d{2}$/', $value)) {
+                    // Formato dd/MM/yy
+                    $fechaFormateada = Carbon::createFromFormat('d/m/y', $value);
+                } else {
+                    // Si no coincide con ninguno de los formatos esperados
+                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto (dd/MM/yyyy o dd/MM/yy)']);
                 }
+
+                // Verifica que la fecha formateada coincide exactamente con el valor ingresado
+                if ($fechaFormateada && ($fechaFormateada->format('d/m/Y') === $value || $fechaFormateada->format('d/m/y') === $value)) {
+                    // Aquí puedes continuar con la lógica deseada si el formato es válido
+                } else {
+                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido']);
+                }
+
                 $detalle[$column] = $fechaFormateada;
             }
             $detalle_planilla->update($detalle);
