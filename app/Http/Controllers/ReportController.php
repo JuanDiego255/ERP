@@ -3151,7 +3151,7 @@ class ReportController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
         $audits->whereDate('audits.created_at', '>=', $startOfMonth)
             ->whereDate('audits.created_at', '<=', $endOfMonth)
-            ->orderBy('audits.created_at', 'asc'); 
+            ->orderBy('audits.created_at', 'asc');
 
 
         if (request()->has('payment_status')) {
@@ -3177,5 +3177,14 @@ class ReportController extends Controller
                 ->make(true);
         }
         return view('admin.audits.index');
+    }
+    public function destroyAudit()
+    {
+        Audit::truncate();
+        $output = [
+            'success' => 1,
+            'msg' => __('Auditorías eliminadas con éxito')
+        ];
+        return redirect('audits')->with('status', $output);
     }
 }

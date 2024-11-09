@@ -33,9 +33,10 @@
             </div>
 
             <div class="row no-print">
-                
+
                 <div class="col-md-12">
-                    <!-- Custom Tabs -->
+                    <!-- Custom Tabs -->                  
+
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
                             <li class="active">
@@ -45,6 +46,13 @@
                         </ul>
 
                         <div class="tab-content">
+                            <div class="row mb-4" style="margin-bottom: 20px;">
+                                <div class="col-md-3">
+                                    <a class="btn btn-block btn-danger" href="{{ url('/report-destroy-audit/') }}">
+                                        <i class="fa fa-trash"></i> @lang('Eliminar Auditorias')</a>
+                                </div>
+                            </div>
+                           
                             <div class="tab-pane active" id="profit_by_products">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="audits_table">
@@ -61,6 +69,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -145,7 +154,7 @@
                             $(win.document.body).find('table thead tr').html(
                                 '<th>Cambios</th>' +
                                 '<th>Actualizado por</th>' +
-                                '<th>Fecha de modificación</th>' + 
+                                '<th>Fecha de modificación</th>' +
                                 '<th>Transacción</th>'
                             );
 
