@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\AccountTransaction;
+use App\Models\Audit;
 use App\Models\BusinessLocation;
 use App\Models\ExpenseCategory;
 use App\Models\TaxRate;
@@ -14,6 +15,7 @@ use App\Models\Pais;
 use App\Models\User;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Mpdf\Tag\Details;
@@ -478,7 +480,46 @@ class ExpenseController extends Controller
                     'descripcion' => $descripcion,
                 ]);
             }
+            // Registrar la auditoría de los datos guardados
+            $cambios = [];
+            $transaction_audit = $request->only([
+                'ref_no',
+                'final_total',
+                'transaction_date',
+                'additional_notes',
+                'fecha_vence',
+                'plazo'
+            ]);
+            foreach ($transaction_audit as $campo => $valor) {
+                switch ($campo) {
+                    case "ref_no":
+                        $campo = "factura";
+                        break;
+                    case "final_total":
+                        $campo = "total";
+                        break;
+                    case "transaction_date":
+                        $campo = "fecha";
+                        break;
+                    case "additional_notes":
+                        $campo = "notas";
+                        break;
+                    case "contact_id":
+                        $campo = "número de cliente";
+                        break;
+                }
+                $campo_formateado = str_replace('_', ' ', $campo);
+                // Agregar el campo y su valor al arreglo de cambios
+                $cambios[] = "$campo_formateado => $valor *.*";
+            }
 
+            // Guardar los cambios en la tabla de auditoría
+            $user_id = $request->session()->get('user.id');
+            $audit['type'] = "cxp";
+            $audit['type_transaction'] = "creación";
+            $audit['change'] = implode("\n", $cambios); // Cada cambio en una nueva línea
+            $audit['update_by'] = $user_id;
+            Audit::create($audit);
             //add expense payment
             //$this->transactionUtil->createOrUpdatePaymentLines($transaction, $request->input('payment'), $business_id);
 
@@ -623,8 +664,56 @@ class ExpenseController extends Controller
             }
 
             $transaction = Transaction::where('business_id', $business_id)
-                ->where('id', $id)
-                ->update($transaction_data);
+                ->where('id', $id)->first();
+
+            $cambios = [];
+            $transaction_audit = $request->only([
+                'ref_no',
+                'final_total',
+                'transaction_date',
+                'additional_notes',
+                'fecha_vence',
+                'plazo'
+            ]);
+
+            foreach ($transaction_audit as $campo => $nuevo_valor) {
+                $valor_antiguo = $transaction->$campo;
+                if ($nuevo_valor != $valor_antiguo) {
+                    switch ($campo) {
+                        case "ref_no":
+                            $campo = "factura";
+                            break;
+                        case "final_total":
+                            $campo = "total";
+                            break;
+                        case "transaction_date":
+                            $campo = "fecha";
+                            break;
+                        case "additional_notes":
+                            $campo = "notas";
+                            break;
+                        case "contact_id":
+                            $campo = "número de cliente";
+                            break;
+                    }
+                    // Reemplazar guiones bajos por espacios en el nombre del campo
+                    $campo_formateado = str_replace('_', ' ', $campo);
+
+                    // Agregar el cambio al arreglo de auditoría
+                    $cambios[] = "$campo_formateado => Se cambió el valor: $valor_antiguo por el valor: $nuevo_valor";
+                }
+            }
+
+            $transaction->update($transaction_data);
+            $user_id = $request->session()->get('user.id');
+            if (!empty($cambios)) {
+                $audit = new Audit();
+                $audit->type = "cxp";
+                $audit->type_transaction = "modificación";
+                $audit->change = implode("*.*\n", $cambios);
+                $audit->update_by = $user_id;
+                $audit->save();
+            }
 
             $descripciones = $request->input('descripcion');
             $precios = $request->input('precio');
@@ -687,7 +776,7 @@ class ExpenseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         if (!auth()->user()->can('expense.access')) {
             abort(403, 'Unauthorized action.');
@@ -696,6 +785,7 @@ class ExpenseController extends Controller
         if (request()->ajax()) {
             try {
                 $business_id = request()->session()->get('user.business_id');
+                $user_id = $request->session()->get('user.id');
 
                 $expense = Transaction::where('business_id', $business_id)
                     ->where('type', 'expense')
@@ -703,6 +793,13 @@ class ExpenseController extends Controller
                     ->first();
                 $expense->delete();
 
+                 // Guardar auditoría antes de eliminar el registro
+                 $audit = new Audit();
+                 $audit->type = "cxp";
+                 $audit->type_transaction = "eliminación";
+                 $audit->change = "Cuenta eliminada, factura: {$expense->ref_no} eliminada el día: " . Carbon::now()->format('Y-m-d H:i:s');
+                 $audit->update_by = $user_id;
+                 $audit->save();
                 //Delete account transactions
                 AccountTransaction::where('transaction_id', $expense->id)->delete();
 

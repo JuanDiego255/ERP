@@ -8,6 +8,7 @@ use App\Models\CashRegister;
 use App\Models\Category;
 
 use App\Charts\CommonChart;
+use App\Models\Audit;
 use App\Models\Contact;
 
 use App\Models\CustomerGroup;
@@ -28,6 +29,7 @@ use App\Utils\TransactionUtil;
 use App\Models\Variation;
 use App\Models\VariationLocationDetails;
 use App\Models\VehicleBill;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
@@ -3126,5 +3128,54 @@ class ReportController extends Controller
             'potential_profit' => $potential_profit,
             'profit_margin' => $profit_margin
         ];
+    }
+    /**
+     * Shows profit\loss of a business
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexAudit(Request $request)
+    {
+        if (!auth()->user()->can('report.audit')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+        $audits = Audit::leftJoin('users AS usr', 'audits.update_by', '=', 'usr.id')
+            ->select([
+                'audits.*',
+                DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as updated_by_name")
+            ]);
+
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+        $audits->whereDate('audits.created_at', '>=', $startOfMonth)
+            ->whereDate('audits.created_at', '<=', $endOfMonth)
+            ->orderBy('audits.created_at', 'asc'); 
+
+
+        if (request()->has('payment_status')) {
+            $payment_status = request()->get('payment_status');
+            if (!empty($payment_status)) {
+                $audits->where('audits.type', $payment_status == 1 ? "cxp" : "gastos");
+            }
+        }
+        if (request()->ajax()) {
+
+            return Datatables::of($audits)
+                ->addColumn(
+                    'action',
+                    ''
+                )
+                ->editColumn('updated_at', function ($row) {
+                    return \Carbon\Carbon::parse($row->updated_at)->format('Y/m/d g:i A');
+                })->editColumn('change', function ($row) {
+                    // Reemplazar cada punto por un salto de línea y eliminar el punto
+                    return nl2br(str_replace('*.*', '', $row->change));
+                })
+                ->rawColumns(['action', 'change'])
+                ->make(true);
+        }
+        return view('admin.audits.index');
     }
 }

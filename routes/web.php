@@ -497,6 +497,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     //Rutas para los planes de ventas
     Route::get('/plan-ventas-index', 'PlanVentaController@index');
     Route::get('/expense-report', 'ExpenseController@index');
+    Route::get('/audits', 'ReportController@indexAudit');
     Route::get('/plan-ventas-create', 'PlanVentaController@create');
     Route::get('/plan-ventas-edit/{id}', 'PlanVentaController@edit');
     Route::post('/plan-ventas-store', 'PlanVentaController@store');

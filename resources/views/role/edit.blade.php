@@ -617,6 +617,13 @@
                             </label>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                {!! Form::checkbox('permissions[]', 'report.audit',  in_array('report.audit', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('Reporte Auditoria') }}
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr>
