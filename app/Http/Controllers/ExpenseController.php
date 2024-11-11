@@ -173,7 +173,7 @@ class ExpenseController extends Controller
             if (request()->has('payment_status')) {
                 $payment_status = request()->get('payment_status');
                 if (!empty($payment_status)) {
-                    $expenses->where('transactions.payment_status', $payment_status);
+                    $payment_status == "paid" ? $expenses->where('transactions.payment_status', "paid") : $expenses->where('transactions.payment_status', "!=", "paid");
                 }
             }
 
@@ -220,7 +220,7 @@ class ExpenseController extends Controller
                     return $action;
                 })
                 ->addColumn('mass_check', function ($row) {
-                    return  '<input type="checkbox" checked  class="row-select" value="' . $row->id . '">';
+                    return  '<input type="checkbox" checked  class="row-select selected" value="' . $row->id . '">';
                 })
                 ->removeColumn('id')
                 ->editColumn(
@@ -793,13 +793,13 @@ class ExpenseController extends Controller
                     ->first();
                 $expense->delete();
 
-                 // Guardar auditoría antes de eliminar el registro
-                 $audit = new Audit();
-                 $audit->type = "cxp";
-                 $audit->type_transaction = "eliminación";
-                 $audit->change = "Cuenta eliminada, factura: {$expense->ref_no} eliminada el día: " . Carbon::now()->format('Y-m-d H:i:s');
-                 $audit->update_by = $user_id;
-                 $audit->save();
+                // Guardar auditoría antes de eliminar el registro
+                $audit = new Audit();
+                $audit->type = "cxp";
+                $audit->type_transaction = "eliminación";
+                $audit->change = "Cuenta eliminada, factura: {$expense->ref_no} eliminada el día: " . Carbon::now()->format('Y-m-d H:i:s');
+                $audit->update_by = $user_id;
+                $audit->save();
                 //Delete account transactions
                 AccountTransaction::where('transaction_id', $expense->id)->delete();
 
