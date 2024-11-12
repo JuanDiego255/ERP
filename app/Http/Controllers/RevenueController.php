@@ -495,9 +495,9 @@ class RevenueController extends Controller
                     ->orderBy('id', 'desc')->first();
 
                 //Validar si el siguiente pago lleva meses atrasados
-                $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior);
+                $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior)->startOfDay();
                 if ($record && Carbon::parse($lastRecord->fecha_interes)->greaterThan($fechaAnteriorRequest)) {
-                    $fechaActual = Carbon::parse($lastRecord->fecha_interes);
+                    $fechaActual = Carbon::parse($lastRecord->fecha_interes)->startOfDay();
                 } else {
                     $fechaActual = Carbon::now();
                 }
@@ -524,7 +524,7 @@ class RevenueController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'msg' => $th->getMessage()]);
         }
-        return response()->json(['success' => true, 'msg' => "Fecha Anterior: " . $fechaAnteriorRequest . " - Fecha act: " . $fechaActual]);
+        return response()->json(['success' => true, 'msg' => "Actualizado con éxito"]);
     }
     public function calcDiasInteres($saldo_anterior, $tasa, $paga, $fecha_interes_anterior)
     {
@@ -545,10 +545,10 @@ class RevenueController extends Controller
         //Se validan fechas anteriores
         $fecha_interes_anterior = $request->input('fecha_anterior_int');
         $fecha_actual = $request->input('fecha_actual');       
-        $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior);
-        $fecha_actual = Carbon::createFromFormat('d/m/Y', $fecha_actual);
+        $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior)->startOfDay();;
+        $fecha_actual = Carbon::createFromFormat('d/m/Y', $fecha_actual)->startOfDay();;
         if (Carbon::parse($fecha_actual)->greaterThan($fechaAnteriorRequest)) {
-            $fechaActual = Carbon::parse($fecha_actual);
+            $fechaActual = Carbon::parse($fecha_actual)->startOfDay();
         } else {
             $fechaActual = Carbon::now();
         }
