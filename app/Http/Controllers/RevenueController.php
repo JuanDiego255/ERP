@@ -451,6 +451,7 @@ class RevenueController extends Controller
             $es_cero = $request->input('es_cero');
             $fecha_interes_cero = $request->input('fecha_interes_cero');
             $detalle[$column] = $value;
+            $fecha_interes_anterior = $request->input('fecha_pago_anterior');
             if ($column == "created_at" || $column == "fecha_interes") {
                 $fechaFormateada = null;
 
@@ -482,6 +483,7 @@ class RevenueController extends Controller
                     ->select(
                         'payment_revenues.id',
                         'payment_revenues.created_at',
+                        'payment_revenues.fecha_interes',
                         'payment_revenues.monto_general',
                         'revenues.tasa',
                         'revenues.valor_total as monto_general_first',
@@ -489,8 +491,23 @@ class RevenueController extends Controller
                     )
                     ->orderBy('payment_revenues.monto_general', 'asc')
                     ->first();
-                $lastRecord = PaymentRevenue::orderBy('id', 'desc')->first();
-                $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
+                $lastRecord = PaymentRevenue::where('payment_revenues.revenue_id', $revenue_id)
+                    ->orderBy('id', 'desc')->first();
+
+                //Validar si el siguiente pago lleva meses atrasados
+                $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior);
+                if ($record && Carbon::parse($lastRecord->fecha_interes)->greaterThan($fechaAnteriorRequest)) {
+                    $fechaActual = Carbon::parse($lastRecord->fecha_interes);
+                } else {
+                    $fechaActual = Carbon::now();
+                }
+                if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
+                    $fecha_vencida = true;
+                    $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
+                } else {
+                    $diasCalc = 30;
+                }
+                //Validar si el siguiente pago lleva meses atrasados   
                 $calc_tasa = ($record->tasa / 100) / 30;
                 if ($id == $lastRecord->id) {
                     //$monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
@@ -500,14 +517,14 @@ class RevenueController extends Controller
                     $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
                     $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
-                }                
+                }
             }
             DB::commit();
         } catch (Exception $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'msg' => $th->getMessage()]);
         }
-        return response()->json(['success' => true, 'msg' => "Exito"]);
+        return response()->json(['success' => true, 'msg' => "Fecha Anterior: " . $fechaAnteriorRequest . " - Fecha act: " . $fechaActual]);
     }
     public function calcDiasInteres($saldo_anterior, $tasa, $paga, $fecha_interes_anterior)
     {
@@ -522,8 +539,29 @@ class RevenueController extends Controller
     {
         $detalle_planilla = PaymentRevenue::findOrFail($id);
         $saldo = isset($request->saldo) ? floatval(str_replace(',', '', $request->saldo)) : 0;
-        $amortiza = isset($request['amortiza']) ? floatval(str_replace(',', '', $request['amortiza'])) : 0;
-        $detalle["monto_general"] = $saldo - $amortiza;
+        $paga = isset($request['paga']) ? floatval(str_replace(',', '', $request['paga'])) : 0;
+        $tasa = $request->input('tasa');
+        $calc_tasa = ($tasa / 100) / 30;
+        //Se validan fechas anteriores
+        $fecha_interes_anterior = $request->input('fecha_anterior_int');
+        $fecha_actual = $request->input('fecha_actual');       
+        $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior);
+        $fecha_actual = Carbon::createFromFormat('d/m/Y', $fecha_actual);
+        if (Carbon::parse($fecha_actual)->greaterThan($fechaAnteriorRequest)) {
+            $fechaActual = Carbon::parse($fecha_actual);
+        } else {
+            $fechaActual = Carbon::now();
+        }
+        if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
+            $diasCalc = $this->calcDiasInteres($saldo, $tasa, $paga, $fecha_interes_anterior);
+        } else {
+            $diasCalc = 30;
+        }
+        $interes = round(($saldo * $calc_tasa) * $diasCalc, 2);
+        $detalle['monto_general'] =  round($saldo - ($paga - $interes), 2);
+        $detalle['interes_c'] = round($interes, 2);
+        $detalle['amortiza'] =  round($paga - $interes, 2);
+        //Se validan fechas anteriores
         $detalle_planilla->update($detalle);
 
         return response()->json(['success' => true, 'request' => $saldo]);

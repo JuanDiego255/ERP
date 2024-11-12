@@ -759,6 +759,7 @@
                         },
                         success: function(response) {
                             if (response.success) {
+                                console.log(response.msg)
                                 htmlContent = "";
                                 payment_table.ajax.reload(function() {
                                     // Buscar la fila por el 'row_id' después de recargar la tabla
@@ -790,7 +791,6 @@
                     });
                 }
             });
-
             $('#payments').on('input', '.fecha', function() {
                 let input = $(this).val().replace(/\D/g, ''); // Elimina todo lo que no sea un número
                 if (input.length <= 2) {
@@ -821,7 +821,6 @@
                     $(this).val(input);
                 }
             });
-
             $(document).on('click', '.btn_add_row', function(event) {
                 event.preventDefault(); // Evita que el enlace siga el href de forma predeterminada
 
@@ -896,8 +895,11 @@
 
                 // Obtén los valores de las celdas de la fila actual y de la penúltima fila
                 var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val();
-                var amortiza = currentRow.find('td').eq(7).find('input[type="text"]').val();
+                var paga = currentRow.find('td').eq(6).find('input[type="text"]').val();
+                var fecha_anterior_int = penultimaFila.find('td').eq(3).find('input[type="text"]').val();
+                var fecha_actual = currentRow.find('td').eq(3).find('input[type="text"]').val();
                 var interes = currentRow.find('td').eq(8).find('input[type="text"]').val();
+                var tasa = $('#tasa').val();
 
                 swal({
                     title: LANG.sure,
@@ -912,8 +914,11 @@
                         // Incluye los valores en el objeto data que se envía en la solicitud
                         var data = {
                             saldo: saldo,
-                            amortiza: amortiza,
+                            paga: paga,
                             interes: interes,
+                            fecha_anterior_int: fecha_anterior_int,
+                            fecha_actual: fecha_actual,
+                            tasa: tasa,
                             _token: $('meta[name="csrf-token"]').attr(
                                 'content')
                         };
@@ -979,7 +984,6 @@
                     }
                 });
             });
-
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
                 htmlContent = "";
