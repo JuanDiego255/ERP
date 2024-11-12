@@ -279,7 +279,7 @@
                                 {!! Form::label('email', __('Correo electrónico para envíos')) !!}
                                 {!! Form::text('opc_email', $item->email, [
                                     'class' => 'form-control',
-                                    'id' => 'opc_email'
+                                    'id' => 'opc_email',
                                 ]) !!}
                             </div>
                         </div>
@@ -652,14 +652,14 @@
                 var bOk = true;
                 var value = input.val().replace(/,/g, '');
                 var initialValue = input.data('initialValue');
-                console.log(initialValue + ' - ' + value);
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var fecha_pago = input.closest('tr').find('td').eq(2).find('input').val();
                 var totalColumns = input.closest('tr').find('td').length;
                 var allRows = input.closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
-                var saldo = penultimaFila.find('td').eq(10).find('input').val();
+                var saldo_anterior = penultimaFila.find('td').eq(10).find('input').val();
+                var fecha_pago_interes_ant = penultimaFila.find('td').eq(3).find('input').val();
                 var tasa = $('#tasa').val();
                 var cuota = $('#cuota').val().replace(/,/g, '').replace(/\.\d+$/, '');
                 var inputType = input.attr('type'); // Obtiene el tipo de input
@@ -676,7 +676,7 @@
                 }
 
                 // Solo procede si el valor cambió, la entrada es válida y se pueden hacer actualizaciones
-                if (value != initialValue && isValid && saldo != 0) {
+                if (value != initialValue && isValid && saldo_anterior != 0) {
                     var pagoDiario = cuota / 30;
                     var diasCubiertos = Math.floor(value / pagoDiario);
                     var partesFecha = fecha_pago.split('/');
@@ -694,9 +694,9 @@
                     var nuevoAnio = fechaInicial.getFullYear();
                     var nuevaFechaPago = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
                     fecha_interes_cero = nuevaFechaPago;
-                    if (column_name === "paga" && parseFloat(value) < parseFloat(cuota)) {
-                        saldo = saldo.replace(/,/g, '').replace(/\.\d+$/, '');
-                        var interes_calc = parseFloat(saldo * (tasa / 100));
+                    if (column_name === "paga") {
+                        saldo_anterior = saldo_anterior.replace(/,/g, '');
+                        var interes_calc = parseFloat(saldo_anterior * (tasa / 100));
                         var amortiza = parseFloat(value - interes_calc);
                         if (amortiza < 0) {
                             swal({
@@ -740,7 +740,6 @@
 
                 function ejecutarAjax(es_cero, pfecha_interes_cero) {
                     // Deshabilita todos los campos de entrada mientras se procesa la solicitud
-                    console.log(es_cero);
                     $('input[type="text"], input[type="number"]').prop('disabled', true);
 
                     // Guardar la posición del siguiente input antes de la recarga
@@ -754,10 +753,11 @@
                             column: column_name,
                             value: value,
                             es_cero: es_cero,
-                            fecha_interes_cero: pfecha_interes_cero
+                            fecha_interes_cero: pfecha_interes_cero,
+                            saldo_anterior: saldo_anterior,
+                            fecha_pago_anterior: fecha_pago_interes_ant
                         },
                         success: function(response) {
-                            console.log(response);
                             if (response.success) {
                                 htmlContent = "";
                                 payment_table.ajax.reload(function() {
@@ -834,7 +834,6 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        console.log(response);
                         if (response.success) {
                             payment_table.ajax.reload();
                             setTimeout(function() {
@@ -879,12 +878,10 @@
                             data: data,
                             success: function(result) {
                                 if (result.success == true) {
-                                    console.log(result)
                                     toastr.success(result.msg);
                                     payment_table.ajax.reload();
                                     toggleInputs();
                                 } else {
-                                    console.log(result)
                                     toastr.error(result.msg);
                                 }
                             }
@@ -928,12 +925,10 @@
                             data: data,
                             success: function(result) {
                                 if (result.success == true) {
-                                    console.log(result);
                                     toastr.success(result.msg);
                                     payment_table.ajax.reload();
                                     htmlContent = "";
                                 } else {
-                                    console.log(result);
                                     toastr.error(result.msg);
                                 }
                             }
@@ -943,7 +938,6 @@
             });
             $(document).on('click', 'a.view-payment', function(e) {
                 e.preventDefault();
-                console.log(htmlContent);
                 $.ajax({
                     url: $(this).attr('href'),
                     dataType: 'html',
@@ -959,7 +953,6 @@
                 e.preventDefault();
                 var htmlContentWithoutImage = htmlContent.replace(/<img[^>]*>/g, '');
                 var opc_email = $('#opc_email').val();
-                console.log(htmlContentWithoutImage);
                 if (htmlContent == "") {
                     toastr.warning("Debe generar el *ESTADO DE CUENTA* para que se cargue la plantilla");
                     return;
@@ -982,7 +975,6 @@
                             'El estado de cuenta se ha enviado por correo al cliente.');
                     },
                     error: function(xhr) {
-                        console.log(xhr)
                         alert('Ocurrió un error al enviar el estado de cuenta.');
                     }
                 });
@@ -998,7 +990,6 @@
                 var totalRows = allRows.length; // Contar el número de filas visibles
 
                 if (totalRows === 0) {
-                    console.log("No hay filas en la tabla.");
                     return; // Si no hay filas, salir de la función
                 }
 
@@ -1032,7 +1023,8 @@
 
                 $.ajax({
                     method: 'get',
-                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id + '/' + buttonId + '/' + opc_email,
+                    url: '/payment-send-whats-id/' + pay_id + '/' + revenue_id + '/' + buttonId +
+                        '/' + opc_email,
                     dataType: 'json',
                     data: data,
                     success: function(result) {

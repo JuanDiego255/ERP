@@ -442,9 +442,12 @@ class RevenueController extends Controller
     public function updatePayment(Request $request, $id, $revenue_id)
     {
         try {
+            DB::beginTransaction();
             $detalle_planilla = PaymentRevenue::findOrFail($id);
             $column = $request->input('column');
             $value = $request->input('value');
+            $saldo_anterior = $request->input('saldo_anterior');
+            $fecha_interes_anterior = $request->input('fecha_pago_anterior');
             $es_cero = $request->input('es_cero');
             $fecha_interes_cero = $request->input('fecha_interes_cero');
             $detalle[$column] = $value;
@@ -487,20 +490,33 @@ class RevenueController extends Controller
                     ->orderBy('payment_revenues.monto_general', 'asc')
                     ->first();
                 $lastRecord = PaymentRevenue::orderBy('id', 'desc')->first();
+                $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
+                $calc_tasa = ($record->tasa / 100) / 30;
                 if ($id == $lastRecord->id) {
-                    $monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
-                    $interes = round($monto_general * ($record->tasa / 100), 2);
-                    $cxc_pay['monto_general'] = $es_cero != 1 ? round($monto_general - ($value - $interes), 2) : $monto_general;
+                    //$monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
+                    $interes = round(($saldo_anterior * $calc_tasa) * $diasCalc, 2);
+                    $cxc_pay['monto_general'] = $es_cero != 1 ? round($saldo_anterior - ($value - $interes), 2) : $saldo_anterior;
                     //$cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
                     $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
                     $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
-                }
+                }                
             }
+            DB::commit();
         } catch (Exception $th) {
+            DB::rollBack();
             return response()->json(['success' => false, 'msg' => $th->getMessage()]);
         }
-        return response()->json(['success' => true, 'msg' => $column]);
+        return response()->json(['success' => true, 'msg' => "Exito"]);
+    }
+    public function calcDiasInteres($saldo_anterior, $tasa, $paga, $fecha_interes_anterior)
+    {
+        $mes_dias = 30;
+        $calc_tasa = $saldo_anterior * ($tasa / 100);
+        $calc_tasa_mensual = $calc_tasa / $mes_dias;
+        $calc_diff_dias_paga = $paga - $calc_tasa;
+        $dias_calculados = ($calc_diff_dias_paga / $calc_tasa_mensual) + $mes_dias;
+        return floor($dias_calculados / 10) * 10;
     }
     public function updateCalc(Request $request, $id)
     {
