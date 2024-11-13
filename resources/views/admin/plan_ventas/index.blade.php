@@ -69,7 +69,8 @@
                         "data": "numero"
                     },
                     {
-                        "data": "name"
+                        data: 'name',
+                        name: 'contacts.name'
                     },
                     {
                         data: 'vehiculo',
