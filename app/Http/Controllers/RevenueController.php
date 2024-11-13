@@ -156,7 +156,7 @@ class RevenueController extends Controller
 
 
 
-                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->cliente_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
+                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->cliente_id,$row->rev_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
 
                         $html .= '<li>
                     <a data-href="' . action('RevenueController@destroy', [$row->rev_id]) . '" class="delete_revenue"><i class="glyphicon glyphicon-trash"></i> Eliminar</a>
@@ -283,7 +283,7 @@ class RevenueController extends Controller
             return $output;
         }
     }
-    public function receive($id, Request $request)
+    public function receive($id,$rev_id, Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
         $item = DB::table('revenues as rev')
@@ -314,6 +314,7 @@ class RevenueController extends Controller
                 'cli.landmark as direccion'
             )
             ->where('cli.id', $id)
+            ->where('rev.id',$rev_id)
             ->first();
 
         $contact = Contact::where('business_id', $business_id)

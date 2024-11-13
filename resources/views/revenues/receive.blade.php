@@ -325,10 +325,7 @@
 
 @section('javascript')
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('#contact_id').change(function() {
-                window.location = "{{ url('/revenues/receive/') }}/" + $(this).val();
-            });
+        $(document).ready(function() {           
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
@@ -338,11 +335,14 @@
             var htmlContent = "";
             var modelo = $('#modelo').val();
             var can_update = $('#can_update').val();
+            $('#contact_id').change(function() {
+                window.location = "{{ url('/revenues/receive/') }}/" + $(this).val() + '/' + revenue_id;
+            });
             var payment_table = $('#payments').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '/payments/revenues/' + $('#contact_id').val(),
+                    url: '/payments/revenues/' + $('#contact_id').val() + '/' + revenue_id,
                     data: function(d) {
                         d.start_date = $('input#expense_date_range')
                             .data('daterangepicker')

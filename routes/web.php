@@ -505,7 +505,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::put('/plan-ventas-update/{id}', 'PlanVentaController@update');
     Route::delete('/plan-ventas-delete/{id}', 'PlanVentaController@destroy');
     Route::get('/report-destroy-audit/', 'ReportController@destroyAudit');
-    Route::get('/payments/revenues/{id}', 'RevenueController@receive');
+    Route::get('/payments/revenues/{id}/{rev_id}', 'RevenueController@receive');
     Route::post('/payment-revenue-update/{id}/{revenue_id}', 'RevenueController@updatePayment');
     Route::post('/payment-calc-update/{id}/', 'RevenueController@updateCalc');
     Route::post('/payment-add-row/{id}', 'RevenueController@storeRow');
@@ -591,7 +591,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::resource('expenses', 'ExpenseController');
     Route::resource('revenues', 'RevenueController');
 
-    Route::get('/revenues/receive/{id}', 'RevenueController@receive')->name('revenue.receive');
+    Route::get('/revenues/receive/{id}/{rev_id}', 'RevenueController@receive')->name('revenue.receive');
     Route::put('/revenues/{id}/receivePut', 'RevenueController@receivePut')->name('revenue.receivePut');
 
 
