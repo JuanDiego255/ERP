@@ -501,11 +501,12 @@ class RevenueController extends Controller
                 } else {
                     $fechaActual = Carbon::now();
                 }
-                if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
-                    $fecha_vencida = true;
-                    $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
-                } else {
+                if ($fechaAnteriorRequest->diffInDays($fechaActual) < 28) {
+                    $diasCalc = $fechaAnteriorRequest->diffInDays($fechaActual);
+                } else if ($fechaAnteriorRequest->diffInDays($fechaActual) > 28 && $fechaAnteriorRequest->diffInDays($fechaActual) <= 31) {
                     $diasCalc = 30;
+                } else if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
+                    $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
                 }
                 //Validar si el siguiente pago lleva meses atrasados   
                 $calc_tasa = ($record->tasa / 100) / 30;
@@ -533,7 +534,8 @@ class RevenueController extends Controller
         $calc_tasa_mensual = $calc_tasa / $mes_dias;
         $calc_diff_dias_paga = $paga - $calc_tasa;
         $dias_calculados = ($calc_diff_dias_paga / $calc_tasa_mensual) + $mes_dias;
-        return floor($dias_calculados / 10) * 10;
+        $dias_calculados = $dias_calculados >= 10 ? floor($dias_calculados / 10) * 10 : floor($dias_calculados);
+        return $dias_calculados;
     }
     public function updateCalc(Request $request, $id)
     {
@@ -542,9 +544,10 @@ class RevenueController extends Controller
         $paga = isset($request['paga']) ? floatval(str_replace(',', '', $request['paga'])) : 0;
         $tasa = $request->input('tasa');
         $calc_tasa = ($tasa / 100) / 30;
-        //Se validan fechas anteriores
+        $es_cero = $request->input('es_cero');
+        //Se validan fechas anteriores        
         $fecha_interes_anterior = $request->input('fecha_anterior_int');
-        $fecha_actual = $request->input('fecha_actual');       
+        $fecha_actual = $request->input('fecha_actual');
         $fechaAnteriorRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior)->startOfDay();;
         $fecha_actual = Carbon::createFromFormat('d/m/Y', $fecha_actual)->startOfDay();;
         if (Carbon::parse($fecha_actual)->greaterThan($fechaAnteriorRequest)) {
@@ -552,16 +555,19 @@ class RevenueController extends Controller
         } else {
             $fechaActual = Carbon::now();
         }
-        if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
-            $diasCalc = $this->calcDiasInteres($saldo, $tasa, $paga, $fecha_interes_anterior);
-        } else {
+        if ($fechaAnteriorRequest->diffInDays($fechaActual) < 28) {
+            $diasCalc = $fechaAnteriorRequest->diffInDays($fechaActual);
+        } else if ($fechaAnteriorRequest->diffInDays($fechaActual) > 28 && $fechaAnteriorRequest->diffInDays($fechaActual) <= 31) {
             $diasCalc = 30;
+        } else if ($fechaAnteriorRequest->diffInMonths($fechaActual) > 1) {
+            $diasCalc = $this->calcDiasInteres($saldo, $tasa, $paga, $fecha_interes_anterior);
         }
+        //Se validan fechas anteriores
         $interes = round(($saldo * $calc_tasa) * $diasCalc, 2);
         $detalle['monto_general'] =  round($saldo - ($paga - $interes), 2);
-        $detalle['interes_c'] = round($interes, 2);
-        $detalle['amortiza'] =  round($paga - $interes, 2);
-        //Se validan fechas anteriores
+        $detalle['interes_c'] = $es_cero == 1 ? $paga : round($interes, 2);
+        $detalle['amortiza'] =  $es_cero == 1 ? 0 : round($paga - $interes, 2);
+        
         $detalle_planilla->update($detalle);
 
         return response()->json(['success' => true, 'request' => $saldo]);

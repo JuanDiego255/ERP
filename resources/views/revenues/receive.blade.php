@@ -655,6 +655,7 @@
                 var column_name = input.attr('name');
                 var row_id = input.closest('tr').find('td').eq(1).text();
                 var fecha_pago = input.closest('tr').find('td').eq(2).find('input').val();
+                var fecha_interes_act = input.closest('tr').find('td').eq(3).find('input').val();
                 var totalColumns = input.closest('tr').find('td').length;
                 var allRows = input.closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
@@ -664,7 +665,6 @@
                 var cuota = $('#cuota').val().replace(/,/g, '').replace(/\.\d+$/, '');
                 var inputType = input.attr('type'); // Obtiene el tipo de input
                 var fecha_interes_cero = "";
-
                 // Verificar si es un input de tipo "text" o "number" y realizar las validaciones correspondientes
                 var isValid = false;
                 if (inputType === 'text') {
@@ -677,32 +677,35 @@
 
                 // Solo procede si el valor cambió, la entrada es válida y se pueden hacer actualizaciones
                 if (value != initialValue && isValid && saldo_anterior != 0) {
-                    var pagoDiario = cuota / 30;
-                    var diasCubiertos = Math.floor(value / pagoDiario);
-                    var partesFecha = fecha_pago.split('/');
-                    var dia = parseInt(partesFecha[0], 10);
-                    var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-11
-                    var anio = parseInt(partesFecha[2], 10);
-                    var fechaInicial = new Date(anio, mes, dia);
-                    // Sumar los días cubiertos a la fecha de pago
-                    fechaInicial.setDate(fechaInicial.getDate() + diasCubiertos);
-
-                    // Formatear la nueva fecha a formato dd/MM/yyyy
-                    var nuevoDia = fechaInicial.getDate().toString().padStart(2, '0');
-                    var nuevoMes = (fechaInicial.getMonth() + 1).toString().padStart(2,
-                        '0'); // Ajustar el mes
-                    var nuevoAnio = fechaInicial.getFullYear();
-                    var nuevaFechaPago = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
-                    fecha_interes_cero = nuevaFechaPago;
                     if (column_name === "paga") {
                         saldo_anterior = saldo_anterior.replace(/,/g, '');
                         var interes_calc = parseFloat(saldo_anterior * (tasa / 100));
                         var amortiza = parseFloat(value - interes_calc);
-                        if (amortiza < 0) {
+                        var diasCalcPorSaldo = calcDiasInteres(saldo_anterior, tasa, value);
+                        var diasCalcEntreFechas = diferenciaEnDias(fecha_pago_interes_ant,
+                            fecha_interes_act);
+                        if (diasCalcPorSaldo < diasCalcEntreFechas) {
+                            //Calcular nueva fecha
+                            var diasCubiertos = diasCalcPorSaldo;
+                            var partesFecha = fecha_pago_interes_ant.split('/');
+                            var dia = parseInt(partesFecha[0], 10);
+                            var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-11
+                            var anio = parseInt(partesFecha[2], 10);
+                            var fechaInicial = new Date(anio, mes, dia);
+                            // Sumar los días cubiertos a la fecha de pago
+                            fechaInicial.setDate(fechaInicial.getDate() + diasCubiertos);
+
+                            // Formatear la nueva fecha a formato dd/MM/yyyy
+                            var nuevoDia = fechaInicial.getDate().toString().padStart(2, '0');
+                            var nuevoMes = (fechaInicial.getMonth() + 1).toString().padStart(2,
+                                '0'); // Ajustar el mes
+                            var nuevoAnio = fechaInicial.getFullYear();
+                            var nuevaFechaPago = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
+                            fecha_interes_cero = nuevaFechaPago;
+                            //Calcular nueva fecha
                             swal({
                                 title: LANG.sure,
-                                text: 'La cuota pagada solo cubre ' + diasCubiertos +
-                                    ' días, nueva fecha de interés: ' + nuevaFechaPago +
+                                text: 'La cuota pagada solo cubre hasta el día ' + nuevaFechaPago +
                                     ',¿Desea continuar?',
                                 icon: "warning",
                                 buttons: true,
@@ -894,53 +897,90 @@
                 var penultimaFila = allRows.eq(allRows.length - 2);
 
                 // Obtén los valores de las celdas de la fila actual y de la penúltima fila
-                var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val();
-                var paga = currentRow.find('td').eq(6).find('input[type="text"]').val();
+                var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val().replace(/,/g,
+                    '');
+                var paga = currentRow.find('td').eq(6).find('input[type="text"]').val().replace(/,/g, '');
                 var fecha_anterior_int = penultimaFila.find('td').eq(3).find('input[type="text"]').val();
                 var fecha_actual = currentRow.find('td').eq(3).find('input[type="text"]').val();
-                var interes = currentRow.find('td').eq(8).find('input[type="text"]').val();
+                var interes = parseFloat(currentRow.find('td').eq(8).find('input[type="text"]').val());
                 var tasa = $('#tasa').val();
+                var es_cero = 0;
+                var fecha_interes_cero = "";
+                var href = $(this).data('href');
 
-                swal({
-                    title: LANG.sure,
-                    text: 'Desea realizar el cálculo para esta linea?',
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
+                // Realiza el cálculo de interés y amortización
+                var interes_calc = parseFloat(saldo * (tasa / 100));
+                var amortiza = parseFloat(paga - interes_calc);
 
-                        // Incluye los valores en el objeto data que se envía en la solicitud
-                        var data = {
-                            saldo: saldo,
-                            paga: paga,
-                            interes: interes,
-                            fecha_anterior_int: fecha_anterior_int,
-                            fecha_actual: fecha_actual,
-                            tasa: tasa,
-                            _token: $('meta[name="csrf-token"]').attr(
-                                'content')
-                        };
+                // Calcula la cantidad de días por saldo y entre fechas
+                var diasCalcPorSaldo = calcDiasInteres(saldo, tasa, paga);
+                var diasCalcEntreFechas = diferenciaEnDias(fecha_anterior_int, fecha_actual);
 
-                        $.ajax({
-                            method: "POST",
-                            url: href,
-                            dataType: "json",
-                            data: data,
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    payment_table.ajax.reload();
-                                    htmlContent = "";
-                                } else {
-                                    toastr.error(result.msg);
-                                }
+                if (diasCalcPorSaldo < diasCalcEntreFechas) {
+                    // Calcula la nueva fecha de pago cuando el saldo no cubre todos los días
+                    var diasCubiertos = diasCalcPorSaldo;
+                    var partesFecha = fecha_anterior_int.split('/');
+                    var dia = parseInt(partesFecha[0], 10);
+                    var mes = parseInt(partesFecha[1], 10) - 1;
+                    var anio = parseInt(partesFecha[2], 10);
+                    var fechaInicial = new Date(anio, mes, dia);
+                    fechaInicial.setDate(fechaInicial.getDate() + diasCubiertos);
+
+                    var nuevoDia = fechaInicial.getDate().toString().padStart(2, '0');
+                    var nuevoMes = (fechaInicial.getMonth() + 1).toString().padStart(2, '0');
+                    var nuevoAnio = fechaInicial.getFullYear();
+                    fecha_interes_cero = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
+                    es_cero = 1; // Marca que el saldo no cubre el total
+
+                    // Mensaje de confirmación
+                    swal({
+                        title: LANG.sure,
+                        text: 'La cuota pagada solo cubre hasta el día ' + fecha_interes_cero +
+                            ',¿Desea continuar?',
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            realizarAjax(href);
+                        }
+                    });
+                } else {
+                    realizarAjax(href); // Si no hay problemas, ejecuta el AJAX sin mensaje
+                }
+
+                function realizarAjax(href) {
+                   
+                    var data = {
+                        saldo: saldo,
+                        paga: paga,
+                        interes: interes,
+                        fecha_anterior_int: fecha_anterior_int,
+                        fecha_actual: fecha_actual,
+                        tasa: tasa,
+                        es_cero: es_cero,
+                        fecha_interes_cero: fecha_interes_cero,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    };
+
+                    $.ajax({
+                        method: "POST",
+                        url: href,
+                        dataType: "json",
+                        data: data,
+                        success: function(result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                payment_table.ajax.reload();
+                                htmlContent = "";
+                            } else {
+                                toastr.error(result.msg);
                             }
-                        });
-                    }
-                });
+                        }
+                    });
+                }
             });
+
             $(document).on('click', 'a.view-payment', function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -984,6 +1024,7 @@
                     }
                 });
             });
+
             function toggleInputs() {
                 // Usar la API de DataTables para obtener las filas visibles
                 htmlContent = "";
@@ -1017,6 +1058,29 @@
                         }
                     }
                 });
+            }
+
+            function calcDiasInteres(saldo_anterior, tasa, paga) {
+                var mes_dias = 30;
+                var calc_tasa = saldo_anterior * (tasa / 100);
+                var calc_tasa_mensual = calc_tasa / mes_dias;
+                var calc_diff_dias_paga = paga - calc_tasa;
+                var dias_calculados = (calc_diff_dias_paga / calc_tasa_mensual) + mes_dias;
+                dias_calculados = dias_calculados >= 10 ? Math.floor(dias_calculados / 10) * 10 : Math.floor(
+                    dias_calculados);
+                return dias_calculados;
+            }
+
+            function diferenciaEnDias(fechaInicio, fechaFin) {
+                const [diaInicio, mesInicio, anioInicio] = fechaInicio.split('/').map(Number);
+                const [diaFin, mesFin, anioFin] = fechaFin.split('/').map(Number);
+
+                const fechaInicioObj = new Date(anioInicio, mesInicio - 1, diaInicio);
+                const fechaFinObj = new Date(anioFin, mesFin - 1, diaFin);
+                const diferenciaMilisegundos = fechaFinObj - fechaInicioObj;
+                const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+
+                return diferenciaDias;
             }
             toggleInputs();
             $(document).on('click', 'button.sendPaymentWhats, button.sendPaymentDetail', function() {
