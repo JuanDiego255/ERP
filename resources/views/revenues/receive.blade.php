@@ -7,11 +7,17 @@
     <section class="content-header">
         <h1></h1>
         <div class="col-md-4 col-xs-12 mt-15 pull-right mb-10">
-            {!! Form::select('contact_id', $contacts, $contact->id, [
-                'class' => 'form-control select2',
-                'id' => 'contact_id',
-            ]) !!}
+            <select name="contact_id" class="form-control select2" id="contact_id">
+                <option selected value="{{ $contact->id }}">{{ $contact->name . ' - (' . $contact->contact_id . ')' }}
+                </option>
+                @foreach ($contacts as $contact_id => $contact_data)                    
+                    <option value="{{ $contact_data['rev_id'] }}">
+                        {{ $contact_data['contact'] }}
+                    </option>
+                @endforeach
+            </select>
         </div>
+
     </section>
 
     <!-- Main content -->
@@ -325,7 +331,7 @@
 
 @section('javascript')
     <script type="text/javascript">
-        $(document).ready(function() {           
+        $(document).ready(function() {
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
@@ -336,7 +342,11 @@
             var modelo = $('#modelo').val();
             var can_update = $('#can_update').val();
             $('#contact_id').change(function() {
-                window.location = "{{ url('/revenues/receive/') }}/" + $(this).val() + '/' + revenue_id;
+                var selectedOption = $(this).find('option:selected');
+                var contactId = $(this).val();
+                var revId = selectedOption.data('rev-id');
+                var urlContact = "{{ url('/revenues/receive') }}/" + contactId;
+                window.location = urlContact;
             });
             var payment_table = $('#payments').DataTable({
                 processing: true,
@@ -950,7 +960,7 @@
                 }
 
                 function realizarAjax(href) {
-                   
+
                     var data = {
                         saldo: saldo,
                         paga: paga,

@@ -144,16 +144,25 @@ class Contact extends Authenticatable
             'contacts.id as contact_id'
         );
 
-        // Obtener los resultados como lista de valores
-        $contacts = $query->pluck('contact', 'contact_id');
+        // Obtener los resultados
+        $contacts = $query->get();
+
+        // Convertir a una estructura de datos con contacto y rev_id
+        $result = $contacts->mapWithKeys(function ($item) {
+            return [$item->contact_id => [
+                'contact' => $item->contact,
+                'rev_id' => $item->contact_id . '/' . $item->rev_id
+            ]];
+        });
 
         // Prepend none
         if ($prepend_none) {
-            $contacts = $contacts->prepend(__('lang_v1.none'), '');
+            $result = collect(['' => ['contact' => __('lang_v1.none'), 'rev_id' => null]])->merge($result);
         }
 
-        return $contacts;
+        return $result;
     }
+
 
     /**
      * Return list of suppliers dropdown for a business
