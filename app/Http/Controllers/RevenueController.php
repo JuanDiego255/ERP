@@ -156,7 +156,7 @@ class RevenueController extends Controller
 
 
 
-                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->cliente_id,$row->rev_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
+                        $html .= '<li><a href="' . action('RevenueController@receive', [$row->cliente_id, $row->rev_id]) . '"><i class="fa fa-eye"></i> Detallar</a></li>';
 
                         $html .= '<li>
                     <a data-href="' . action('RevenueController@destroy', [$row->rev_id]) . '" class="delete_revenue"><i class="glyphicon glyphicon-trash"></i> Eliminar</a>
@@ -239,7 +239,12 @@ class RevenueController extends Controller
             $cxc_pay['interes_c'] = round($interes, 2);
             $cxc_pay['paga'] = 0;
             $cxc_pay['amortiza'] = round($record->cuota - $interes, 2);
-            PaymentRevenue::create($cxc_pay);
+            $payment_do = PaymentRevenue::create($cxc_pay);
+            if ($payment_do->monto_general == 0) {
+                $revenue_to_update = Revenue::findOrFail($id);
+                $status["status"] = 1;
+                $revenue_to_update->update($status);
+            }
             DB::commit();
             return response()->json(['success' => true, 'msg' => $monto_general]);
         } catch (Exception $th) {
@@ -283,7 +288,7 @@ class RevenueController extends Controller
             return $output;
         }
     }
-    public function receive($id,$rev_id, Request $request)
+    public function receive($id, $rev_id, Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
         $item = DB::table('revenues as rev')
@@ -314,7 +319,7 @@ class RevenueController extends Controller
                 'cli.landmark as direccion'
             )
             ->where('cli.id', $id)
-            ->where('rev.id',$rev_id)
+            ->where('rev.id', $rev_id)
             ->first();
 
         $contact = Contact::where('business_id', $business_id)
@@ -488,7 +493,8 @@ class RevenueController extends Controller
                         'payment_revenues.monto_general',
                         'revenues.tasa',
                         'revenues.valor_total as monto_general_first',
-                        'revenues.cuota'
+                        'revenues.cuota',
+                        'revenues.status'
                     )
                     ->orderBy('payment_revenues.monto_general', 'asc')
                     ->first();
@@ -510,7 +516,7 @@ class RevenueController extends Controller
                     $diasCalc = $this->calcDiasInteres($saldo_anterior, $record->tasa, $value, $fecha_interes_anterior);
                 }
                 //Validar si el siguiente pago lleva meses atrasados   
-                $calc_tasa = ($record->tasa / 100) / 30;
+                $calc_tasa = $record->tasa == 0 ? 0 : (($record->tasa / 100) / 30);
                 if ($id == $lastRecord->id) {
                     //$monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
                     $interes = round(($saldo_anterior * $calc_tasa) * $diasCalc, 2);
@@ -519,6 +525,13 @@ class RevenueController extends Controller
                     $cxc_pay['interes_c'] = $es_cero == 1 ? $value : round($interes, 2);
                     $cxc_pay['amortiza'] = $es_cero == 1 ? 0 : round($value - $interes, 2);
                     $detalle_planilla->update($cxc_pay);
+                    //Actualizar estado de la cuenta por cobrar
+                    $status["status"] = $detalle_planilla['monto_general'] == 0 ? 1 : 0;
+                    if ($status["status"] != $record->status) {
+                        $revenue_to_update = Revenue::findOrFail($revenue_id);
+                        $revenue_to_update->update($status);
+                    }
+                    //Actualizar estado de la cuenta por cobrar            
                 }
             }
             DB::commit();
@@ -531,7 +544,7 @@ class RevenueController extends Controller
     public function calcDiasInteres($saldo_anterior, $tasa, $paga, $fecha_interes_anterior)
     {
         $mes_dias = 30;
-        $calc_tasa = $saldo_anterior * ($tasa / 100);
+        $calc_tasa = $tasa == 0 ? $saldo_anterior : $saldo_anterior * ($tasa / 100);
         $calc_tasa_mensual = $calc_tasa / $mes_dias;
         $calc_diff_dias_paga = $paga - $calc_tasa;
         $dias_calculados = ($calc_diff_dias_paga / $calc_tasa_mensual) + $mes_dias;
@@ -544,7 +557,7 @@ class RevenueController extends Controller
         $saldo = isset($request->saldo) ? floatval(str_replace(',', '', $request->saldo)) : 0;
         $paga = isset($request['paga']) ? floatval(str_replace(',', '', $request['paga'])) : 0;
         $tasa = $request->input('tasa');
-        $calc_tasa = ($tasa / 100) / 30;
+        $calc_tasa = $tasa == 0 ? 0 : ($tasa / 100) / 30;
         $es_cero = $request->input('es_cero');
         //Se validan fechas anteriores        
         $fecha_interes_anterior = $request->input('fecha_anterior_int');
@@ -568,7 +581,7 @@ class RevenueController extends Controller
         $detalle['monto_general'] =  round($saldo - ($paga - $interes), 2);
         $detalle['interes_c'] = $es_cero == 1 ? $paga : round($interes, 2);
         $detalle['amortiza'] =  $es_cero == 1 ? 0 : round($paga - $interes, 2);
-        
+
         $detalle_planilla->update($detalle);
 
         return response()->json(['success' => true, 'request' => $saldo]);
@@ -578,6 +591,7 @@ class RevenueController extends Controller
         if (request()->ajax()) {
             try {
                 $payment = PaymentRevenue::where('id', $id)->first();
+                $rev_id = $payment->revenue_id;
                 $count = PaymentRevenue::where('revenue_id', $payment->revenue_id)->count();
                 if ($count == 1) {
                     $output = [
@@ -587,6 +601,19 @@ class RevenueController extends Controller
                     return $output;
                 }
                 $payment->delete();
+                $queryPayment = PaymentRevenue::where('revenue_id', $rev_id)
+                ->join('revenues', 'payment_revenues.revenue_id', '=', 'revenues.id')
+                ->select(
+                    'payment_revenues.id',
+                    'payment_revenues.monto_general',
+                    'revenues.status'
+                )
+                ->orderBy('id', 'desc')->first();
+                $status["status"] = 0;
+                if ($queryPayment->monto_general != 0 && $status["status"] != $queryPayment->status) {
+                    $revenue_to_update = Revenue::findOrFail($rev_id);
+                    $revenue_to_update->update($status);
+                }
                 $output = [
                     'success' => true,
                     'msg' => 'Linea eliminada con éxito'
