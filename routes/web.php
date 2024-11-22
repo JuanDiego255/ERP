@@ -15,6 +15,7 @@ include_once('install_r.php');
 
 use App\Http\Controllers\Admin\BillVehicleController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
 use App\Models\Transaction;
 use App\Models\Test;
 use Illuminate\Support\Facades\Auth;
@@ -427,7 +428,8 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::put('/bill/update/{id}', 'Admin\BillVehicleController@update');
     Route::delete('/bill/delete/{id}', [BillVehicleController::class, 'destroy'])->name('bill.delete');
     //Rutas para gastos de vehiculos
-
+    Route::post('/expenses/generate-report', [ExpenseController::class, 'generateReport'])->name('expenses.generateReport');
+    Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
     Route::get('/purchases/get_products', 'PurchaseController@getProducts');
     Route::get('/purchases/get_suppliers', 'PurchaseController@getSuppliers');

@@ -1461,7 +1461,6 @@ $(document).ready(function () {
         }
     });
     //Filtro segun la fecha seleccionada
-
     if ($('#expense_date_vence').length == 1) {
         $('#expense_date_vence').daterangepicker(
             dateRangeSettings,
@@ -1478,176 +1477,12 @@ $(document).ready(function () {
             expense_table.ajax.reload();
         });
     }
-
     //Expense table
     var buttonsConfig = [{
             extend: 'pageLength',
             text: 'Mostrando 25',
             titleAttr: 'Mostrar registros'
-        },
-        {
-            extend: 'print',
-            text: 'Rep. CUEPAG',
-            customize: function (win) {
-                // Obtener el cuerpo de la tabla
-                $(win.document.body).find('h1').remove();
-                $(win.document.body).find('div.printHeader').remove();
-                var body = $(win.document.body).find('table tbody');
-
-                var selectedRows = getSelectedRowsCuepag();
-                var groupedData = {};
-                var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
-
-                // Recorrer los resultados y acceder al proveedor
-                selectedRows.forEach(function (row) {
-                    if (!groupedData[row.provider]) {
-                        groupedData[row.provider] = {
-                            invoices: [],
-                            totalAmount: 0
-                        };
-                    }
-
-                    // Agregar la factura y sumar el monto total al proveedor correspondiente
-                    groupedData[row.provider].invoices.push(row.invoice);
-                    groupedData[row.provider].totalAmount += row.amount;
-                    grandTotal += row.amount;
-                });
-
-                body.empty();
-
-                // Insertar las filas agrupadas en el reporte
-                $.each(groupedData, function (provider, data) {
-                    // Unir facturas con comas
-                    var invoices = data.invoices.join(', ');
-                    // Formato de monto
-                    formattedAmount = __currency_trans_from_en(data.totalAmount, true, true);
-
-                    // Agregar la fila a la tabla solo con proveedor, facturas y monto total
-                    body.append('<tr><td><strong>' + provider + '</strong></td><td>' + invoices + '</td><td>' + formattedAmount + '</td><td> ' + '' + '</td></tr>');
-                });
-
-                // Formatear el monto total general
-                formattedGrandTotal = __currency_trans_from_en(grandTotal, true, true);
-                // Añadir un div al final de la tabla con el monto total general
-                $(win.document.body).append(
-                    '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
-                    'Monto Total de Facturas Procesadas: ' + formattedGrandTotal +
-                    '</div>'
-                );
-
-                // Ajustar encabezados de la tabla para mostrar solo las columnas necesarias
-                $(win.document.body).find('table thead tr').html('<th>Proveedor</th><th>Facturas</th><th>Total</th><th>Método de Pago</th>');
-                var rangeDate = $('#expense_date_vence').val();
-
-                // Personalizar el cuerpo del documento
-                $(win.document.body)
-                    .css('font-size', '10pt')
-                    .prepend(
-                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                        '<div style="text-align: center; margin-bottom: 10px;">' +
-                        '<h3 style="margin: 0;">Reporte de Cuentas por Pagar (CUEPAG)</h3>' +
-                        '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + rangeDate + '</p>' +
-                        '</div>'
-                    );
-
-                $(win.document.body).find('table')
-                    .addClass('display')
-                    .css('font-size', 'inherit');
-            }
-        },
-        {
-            extend: 'print',
-            text: 'Cuentas por Pagar (AG)',
-            customize: function (win) {
-                // Obtener el cuerpo de la tabla
-                $(win.document.body).find('h1').remove();
-                $(win.document.body).find('div.printHeader').remove();
-                var body = $(win.document.body).find('table tbody');
-
-                var selectedRows = getSelectedRows();
-                var groupedData = {};
-                var grandTotal = 0; // Variable para almacenar el monto total de todas las facturas
-
-                // Recorrer los resultados y agrupar por proveedor
-                selectedRows.forEach(function (row) {
-                    if (!groupedData[row.provider]) {
-                        groupedData[row.provider] = {
-                            rows: [],
-                            subtotal: 0
-                        };
-                    }
-
-                    // Agregar la fila al proveedor correspondiente
-                    groupedData[row.provider].rows.push(row);
-                    groupedData[row.provider].subtotal += row.saldo;
-                    grandTotal += row.saldo;
-                });
-
-                body.empty();
-
-                // Insertar las filas agrupadas en el reporte
-                $.each(groupedData, function (provider, data) {
-
-                    var acumulado = 0;
-                    var acumuladoSinMil = 0;
-                    // Agregar nombre del proveedor
-                    body.append('<tr><td colspan="7" style="font-weight: bold; text-align: left;">' + provider + '</td></tr>');
-
-                    // Agregar las facturas del proveedor
-                    data.rows.forEach(function (row) {
-                        acumulado += parseFloat(row.saldo);
-                        console.log(acumulado);
-                        // Formatear los montos
-                        formattedAmount = __currency_trans_from_en(row.amount, true, true);
-                        formattedSaldo = __currency_trans_from_en(row.saldo, true, true);
-                        formattedAcumulado = __currency_trans_from_en(acumulado, true, true);
-                        // Agregar la fila a la tabla con los datos formateados
-                        body.append(
-                            '<tr>' +
-                            '<td>' + row.invoice + '</td>' +
-                            '<td>' + formattedAmount + '</td>' +
-                            '<td>' + formattedSaldo + '</td>' +
-                            '<td>' + row.montoAdelanto.toFixed(2) + '</td>' +
-                            '<td>' + row.fechaVence + '</td>' +
-                            '<td>' + row.detalle + '</td>' +
-                            '<td>' + formattedAcumulado + '</td>' +
-                            '</tr>'
-                        );
-                    });
-                    formattedSubtotal = __currency_trans_from_en(data.subtotal, true, true);
-                    body.append('<tr><td colspan="7" style="text-align: right; font-weight: bold;">Subtotales ' + formattedSubtotal + '</td></tr>');
-                });
-
-                // Formatear el monto total general
-                formattedGrandTotal = __currency_trans_from_en(grandTotal, true, true);
-                // Añadir un div al final de la tabla con el monto total general
-                $(win.document.body).append(
-                    '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' +
-                    'Monto Total de Facturas a pagar: ' + formattedGrandTotal +
-                    '</div>'
-                );
-
-                // Ajustar encabezados de la tabla para mostrar las columnas necesarias
-                $(win.document.body).find('table thead tr').html(
-                    '<th>Factura</th><th>Total</th><th>Saldo</th><th>Monto Adelantos</th><th>Fecha Vence</th><th>Detalle</th><th>Acumulado</th>'
-                );
-
-                // Personalizar el cuerpo del documento
-                $(win.document.body)
-                    .css('font-size', '10pt')
-                    .prepend(
-                        '<img src="' + window.location.origin + '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                        '<div style="text-align: center; margin-bottom: 10px;">' +
-                        '<h3 style="margin: 0;">Reporte de Cuentas por Pagar Autos Grecia (S.R.L)</h3>' +
-                        '<p style="margin-top: 5px; text-align:center;">Rango de Fechas: ' + $('#expense_date_vence').val() + '</p>' +
-                        '</div>'
-                    );
-
-                $(win.document.body).find('table')
-                    .addClass('display')
-                    .css('font-size', 'inherit');
-            }
-        },
+        },   
         {
             extend: 'colvis',
             text: 'Visibilidad de columna'
@@ -1670,7 +1505,6 @@ $(document).ready(function () {
         ajax: {
             url: url,
             data: function (d) {
-
                 d.expense_for = $('select#expense_for').val();
                 d.location_id = $('select#location_id').val();
                 d.expense_category_id = $('select#expense_category_id').val();
@@ -1793,6 +1627,125 @@ $(document).ready(function () {
             });
         }
     });
+
+    //Generar CUEPAG
+    $(document).on('click', '#generate_report', function () {
+        let url = '/expenses/generate-report'; // Actualiza esta ruta
+        let dataTable = $('#expense_table').DataTable();
+
+        // Captura filtros aplicados en DataTable
+        let tableFilters = {};
+        dataTable.columns().every(function () {
+            if (this.search()) {
+                tableFilters[this.index()] = this.search();
+            }
+        });
+        // Genera los datos combinados de los filtros globales y de columnas
+        let data = {
+            payment_status: $('select#expense_payment_status').val(),
+            location_id: $('select#location_id').val(),
+            expense_category_id: $('select#expense_category_id').val(),
+            // Validar si el rango de fechas vence está visible antes de enviarlo
+            start_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
+                $('input#expense_date_vence')
+                .data('daterangepicker')
+                .startDate.format('YYYY-MM-DD') :
+                null,
+            end_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
+                $('input#expense_date_vence')
+                .data('daterangepicker')
+                .endDate.format('YYYY-MM-DD') :
+                null,
+            // Validar si el rango de fechas está visible antes de enviarlo
+            start_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
+                $('input#expense_date_range')
+                .data('daterangepicker')
+                .startDate.format('YYYY-MM-DD') :
+                null,
+            end_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
+                $('input#expense_date_range')
+                .data('daterangepicker')
+                .endDate.format('YYYY-MM-DD') :
+                null,
+            table_filters: tableFilters, // Incluye los filtros de DataTable
+        };
+        // Envía los datos combinados al backend
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                $('#view_product_modal')
+                    .html(result)
+                    .modal('show');
+                __currency_convert_recursively($('#view_product_modal'));
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al generar el reporte:', error);
+            }
+        });
+    });
+    //Generar CUEPAG 
+    //Generar CXP Detallado
+    $(document).on('click', '#generate_report_detail', function () {
+        let url = '/expenses/generate-report-detail'; // Actualiza esta ruta
+        let dataTable = $('#expense_table').DataTable();
+
+        // Captura filtros aplicados en DataTable
+        let tableFilters = {};
+        dataTable.columns().every(function () {
+            if (this.search()) {
+                tableFilters[this.index()] = this.search();
+            }
+        });
+        // Genera los datos combinados de los filtros globales y de columnas
+        let data = {
+            payment_status: $('select#expense_payment_status').val(),
+            location_id: $('select#location_id').val(),
+            expense_category_id: $('select#expense_category_id').val(),
+            // Validar si el rango de fechas vence está visible antes de enviarlo
+            start_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
+                $('input#expense_date_vence')
+                .data('daterangepicker')
+                .startDate.format('YYYY-MM-DD') :
+                null,
+            end_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
+                $('input#expense_date_vence')
+                .data('daterangepicker')
+                .endDate.format('YYYY-MM-DD') :
+                null,
+            // Validar si el rango de fechas está visible antes de enviarlo
+            start_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
+                $('input#expense_date_range')
+                .data('daterangepicker')
+                .startDate.format('YYYY-MM-DD') :
+                null,
+            end_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
+                $('input#expense_date_range')
+                .data('daterangepicker')
+                .endDate.format('YYYY-MM-DD') :
+                null,
+            table_filters: tableFilters, // Incluye los filtros de DataTable
+        };
+        // Envía los datos combinados al backend
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                $('#view_cxp_detail_modal')
+                    .html(result)
+                    .modal('show');
+                __currency_convert_recursively($('#view_cxp_detail_modal'));
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al generar el reporte:', error);
+            }
+        });
+    });
+    //Generar CXP Detallado    
 
     function getSelectedRowsCuepag() {
         var selected_rows = [];

@@ -269,6 +269,151 @@ class ExpenseController extends Controller
         return view('expense.index')
             ->with(compact('categories', 'business_locations', 'users', 'is_report'));
     }
+    public function generateReport(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+
+        $query = Transaction::join('contacts as ct', 'transactions.contact_id', '=', 'ct.id')
+            ->leftJoin(
+                'transaction_payments AS TP',
+                'transactions.id',
+                '=',
+                'TP.transaction_id'
+            )
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'expense')
+            ->select(
+                'ct.name as provider',
+                DB::raw("GROUP_CONCAT(transactions.ref_no SEPARATOR ', ') as invoices"),
+                DB::raw("SUM(transactions.final_total) as total"),
+                DB::raw("SUM(TP.amount) as amount")
+
+            )
+            ->groupBy('transactions.contact_id')
+            ->orderBy('provider', 'asc');
+
+        // Filtros globales
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('transactions.transaction_date', [$request->start_date, $request->end_date]);
+            $rango = "Rango de fechas (Se filtro por fecha de creación): " . $request->start_date . " al " . $request->end_date;
+        }
+        if ($request->filled('start_vence_date') && $request->filled('end_vence_date')) {
+            $query->whereBetween('transactions.fecha_vence', [$request->start_vence_date, $request->end_vence_date]);
+            $rango = "Rango de fechas (Se filtro por fecha vence): " . $request->start_vence_date . " al " . $request->end_vence_date;
+        }
+        if ($request->filled('location_id')) {
+            $query->where('transactions.location_id', $request->location_id);
+        }
+        if ($request->filled('expense_category_id')) {
+            $query->where('transactions.expense_category_id', $request->expense_category_id);
+        }
+        if (request()->has('payment_status')) {
+            $payment_status = request()->get('payment_status');
+            if (!empty($payment_status)) {
+                $payment_status == "paid" ? $query->where('transactions.payment_status', "paid") : $query->where('transactions.payment_status', "!=", "paid");
+            }
+        }
+
+        // Filtros de DataTable
+        if ($request->filled('table_filters')) {
+            $filters = $request->input('table_filters');
+            foreach ($filters as $index => $value) {
+                switch ($index) {
+                    case '2': // Columna Contact
+                        $query->where('ct.name', 'LIKE', "%$value%");
+                        break;
+                    case '3': // Columna Ref No
+                        $query->where('transactions.ref_no', 'LIKE', "%$value%");
+                        break;
+                        // Agrega casos adicionales según las columnas filtrables
+                }
+            }
+        }
+
+        $report = $query->get();
+
+        return view('expense.view-modal', compact('report', 'rango'));
+    }
+    public function generateReportDetail(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+
+        // Consulta principal
+        $query = Transaction::join('contacts as ct', 'transactions.contact_id', '=', 'ct.id')
+            ->leftJoin('transaction_payments AS TP', 'transactions.id', '=', 'TP.transaction_id')
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'expense')
+            ->select(
+                'ct.name as provider', // Nombre del proveedor
+                'transactions.ref_no as invoice', // Factura
+                'transactions.final_total as total', // Total
+                DB::raw('COALESCE(transactions.final_total - SUM(TP.amount), transactions.final_total) as balance'), // Saldo
+                DB::raw('SUM(TP.amount) as advance_amount'), // Monto adelantado
+                'transactions.fecha_vence as due_date', // Fecha vence
+                'transactions.additional_notes as detail' // Detalle
+            )
+            ->groupBy(
+                'transactions.id',
+                'transactions.contact_id',
+                'ct.name',
+                'transactions.ref_no',
+                'transactions.final_total',
+                'transactions.fecha_vence',
+                'transactions.additional_notes'
+            )
+            ->orderBy('ct.name', 'asc')
+            ->orderBy('transactions.id', 'asc');
+
+        // Filtros globales
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('transactions.transaction_date', [$request->start_date, $request->end_date]);
+            $rango = "Rango de fechas (Se filtro por fecha de creación): " . $request->start_date . " al " . $request->end_date;
+        }
+        if ($request->filled('start_vence_date') && $request->filled('end_vence_date')) {
+            $query->whereBetween('transactions.fecha_vence', [$request->start_vence_date, $request->end_vence_date]);
+            $rango = "Rango de fechas (Se filtro por fecha vence): " . $request->start_vence_date . " al " . $request->end_vence_date;
+        }
+        if ($request->filled('location_id')) {
+            $query->where('transactions.location_id', $request->location_id);
+        }
+        if ($request->filled('expense_category_id')) {
+            $query->where('transactions.expense_category_id', $request->expense_category_id);
+        }
+        if ($request->filled('payment_status')) {
+            $payment_status = $request->get('payment_status');
+            $query->where('transactions.payment_status', $payment_status == 'paid' ? 'paid' : '!=', 'paid');
+        }
+
+        // Filtros de DataTable
+        if ($request->filled('table_filters')) {
+            $filters = $request->input('table_filters');
+            foreach ($filters as $index => $value) {
+                switch ($index) {
+                    case '2': // Columna Contact
+                        $query->where('ct.name', 'LIKE', "%$value%");
+                        break;
+                    case '3': // Columna Ref No
+                        $query->where('transactions.ref_no', 'LIKE', "%$value%");
+                        break;
+                        // Agrega casos adicionales según las columnas filtrables
+                }
+            }
+        }
+
+        // Ejecutar consulta y obtener resultados
+        $report = $query->get();
+        $accumulated_totals = [];
+        foreach ($report as $row) {
+            if (!isset($accumulated_totals[$row->provider])) {
+                $accumulated_totals[$row->provider] = 0;
+            }
+            $accumulated_totals[$row->provider] += $row->total;
+            $row->accumulated = $accumulated_totals[$row->provider];
+        }
+
+
+        return view('expense.view-modal-detail', compact('report', 'rango'));
+    }
 
     /**
      * Show the form for creating a new resource.

@@ -1,0 +1,41 @@
+@media print {
+    .modal-dialog {
+        width: 100%;
+        margin: 0;
+    }
+
+    .modal-content {
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .table-bordered {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .table thead {
+        display: table-header-group; /* Mantén el encabezado visible en cada página */
+    }
+
+    .table tbody {
+        display: table-row-group;
+    }
+
+    .modal-header,
+    .modal-footer,
+    .no-print {
+        display: none; /* Oculta elementos no necesarios en la impresión */
+    }
+
+    tr {
+        page-break-inside: avoid; /* Evita que una fila se divida entre páginas */
+    }
+}

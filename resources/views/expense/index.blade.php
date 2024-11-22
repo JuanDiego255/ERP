@@ -99,6 +99,10 @@
                             @endslot
                         @endcan
                     @endif
+                    <button id="generate_report" class="btn btn-primary">Rep. CUEPAG</button>
+                    <button id="generate_report_detail" class="btn btn-primary">Rep. Cuentas Por Pagar (AG)</button>
+                    <div id="report_container" style="margin-top: 20px;"></div>
+
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="expense_table">
                             <thead>
@@ -141,7 +145,37 @@
 
     <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
+    <div class="modal fade" id="view_product_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+    <div class="modal fade" id="view_cxp_detail_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
 @stop
 @section('javascript')
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
+    <script type="text/javascript">
+        function printThis() {
+            $("#cuepagModal").printThis({
+                importCSS: true, // Importa los estilos de la página
+                importStyle: true, // Importa las hojas de estilo
+                loadCSS: "/public/css/print.css", // Ruta a una hoja de estilo específica para impresión
+                pageTitle: false, // Título de la página
+                removeInline: false,
+                printDelay: 500, // Tiempo de espera antes de imprimir
+                header: false, // Opcional: cabecera en cada página
+                footer: null // Opcional: pie de página
+            });
+        }
+        function printThisDetail() {
+            $("#cxp_detail").printThis({
+                importCSS: true, // Importa los estilos de la página
+                importStyle: true, // Importa las hojas de estilo
+                loadCSS: "/public/css/print.css", // Ruta a una hoja de estilo específica para impresión
+                pageTitle: false, // Título de la página
+                removeInline: false,
+                printDelay: 500, // Tiempo de espera antes de imprimir
+                header: false, // Opcional: cabecera en cada página
+                footer: null // Opcional: pie de página
+            });
+        }
+    </script>
 @endsection

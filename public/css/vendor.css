@@ -9629,6 +9629,9 @@ th {
     thead {
         display: table-header-group
     }
+    table {
+        page-break-inside: auto; /* Permitir dividir la tabla entre páginas */
+    }
     img,
     tr {
         page-break-inside: avoid
@@ -13157,6 +13160,12 @@ fieldset[disabled] .btn-default:hover {
     color: #fff;
     background-color: #337ab7;
     border-color: #2e6da4
+}
+
+.bg-ag {
+    color: #fff;
+    background-color: #023b9d;
+    border-color: #023b9d;
 }
 
 .btn-primary.focus,
