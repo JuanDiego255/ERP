@@ -124,6 +124,7 @@
                                     'id' => 'vehiculo_venta_id',
                                     'placeholder' => __('Seleccione un vehículo'),
                                     'data-target' => 'vehiculo_venta_id',
+                                    'data-url' => 'sold',
                                 ]) !!}
                             </div>
                         </div>
@@ -141,6 +142,7 @@
                                     'id' => 'vehiculo_recibido_id',
                                     'placeholder' => __('Seleccione un vehículo'),
                                     'data-target' => 'vehiculo_recibido_id',
+                                    'data-url' => 'receive',
                                 ]) !!}
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-default bg-white btn-flat add_new_product"
@@ -438,48 +440,6 @@
             $(document).on('click', '.add_new_product', function() {
                 $('.car_new_modal').modal('show');
             });
-            $('#vehiculo_id').select2({
-                ajax: {
-                    url: '/get/vehicles',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            q: params.term,
-                            page: params.page,
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data,
-                        };
-                    },
-                },
-                templateResult: function(data) {
-                    var template = data.text;
-                    return template;
-                },
-                minimumInputLength: 1,
-                language: {
-                    noResults: function() {
-                        var name = $('#vehiculo_id')
-                            .data('select2')
-                            .dropdown.$search.val();
-                        return (
-                            '<button type="button" data-name="' +
-                            name +
-                            '" class="btn btn-link add_new_customer"><i class="fa fa-plus-circle fa-lg" aria-hidden="true"></i>&nbsp; ' +
-                            __translate('add_name_as_new_customer', {
-                                name: name
-                            }) +
-                            '</button>'
-                        );
-                    },
-                },
-                escapeMarkup: function(markup) {
-                    return markup;
-                }
-            });
             $('#vehiculo_id').on('select2:select', function(e) {
                 var data = e.params.data; // Los datos del vehículo seleccionado
 
@@ -513,6 +473,7 @@
             }
             // Manejar selección de vehículo
             $('.vehiculo-input').on('click', function() {
+                var newUrl = $(this).data('url');
                 currentInput = $(this).data('target');
 
                 if (currentInput.includes('recibido')) {
@@ -528,6 +489,48 @@
                     $('#efectivo').closest('.form-group').show();
                     $('#monto_recibo_modal').closest('.form-group').hide();
                 }
+                $('#vehiculo_id').select2({
+                    ajax: {
+                        url: '/get/vehicles/' + newUrl,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term,
+                                page: params.page,
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: data,
+                            };
+                        },
+                    },
+                    templateResult: function(data) {
+                        var template = data.text;
+                        return template;
+                    },
+                    minimumInputLength: 1,
+                    language: {
+                        noResults: function() {
+                            var name = $('#vehiculo_id')
+                                .data('select2')
+                                .dropdown.$search.val();
+                            return (
+                                '<button type="button" data-name="' +
+                                name +
+                                '" class="btn btn-link add_new_customer"><i class="fa fa-plus-circle fa-lg" aria-hidden="true"></i>&nbsp; ' +
+                                __translate('add_name_as_new_customer', {
+                                    name: name
+                                }) +
+                                '</button>'
+                            );
+                        },
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    }
+                });
                 limpiarModal();
                 $('.car_modal').modal('show');
             });

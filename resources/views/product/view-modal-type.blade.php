@@ -22,6 +22,7 @@
                             <th>@lang('vehiculos.dua')</th>
                             <th>@lang('vehiculos.created_at')</th>
                             <th>@lang('Precio')</th>
+                            <th>@lang('Estado')</th>
                         </tr>
                     </thead>
                 </table>
@@ -99,6 +100,10 @@
                 {
                     data: 'price',
                     name: 'products.price'
+                },
+                {
+                    data: 'state',
+                    name: 'state'
                 }
             ],
             dom: '<"text-center"B><"top"p>frtip',
@@ -111,7 +116,8 @@
                 $('.dataTables_paginate').css('margin-top', '15px');
 
                 // Indices de las columnas donde quieres aplicar los filtros
-                var filterableColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9
+                var filterableColumns = [1, 2, 3, 4, 5, 6, 7, 8,
+                    9
                 ]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
                 // Agregar una fila en el encabezado para los filtros de búsqueda
@@ -217,6 +223,35 @@
                 // Formatea el número con comas para los miles
                 let formatted = new Intl.NumberFormat('en-US').format(input);
                 $(this).val(formatted);
+            }
+        });
+        $('#product_table').on('change', '.select-car', function() {
+            var input = $(this);
+            var value = input.val();
+            var row_id = input.closest('tr').find('td').eq(0).text();
+            if (value != -1) {
+                $.ajax({
+                    url: '/vehicle-update-state/' + row_id,
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        value: value
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            product_table.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        // Manejo de error
+                    },
+                    complete: function() {
+                        // Rehabilita los campos de entrada después de que la solicitud se complete
+                        $('input[type="text"], input[type="number"]').prop('disabled',
+                            false);
+                    }
+                });
             }
         });
     });

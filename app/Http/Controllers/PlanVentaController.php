@@ -11,6 +11,7 @@ use App\Models\PlanVenta;
 use App\Models\Product;
 use App\Models\Revenue;
 use App\Utils\TransactionUtil;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -363,6 +364,18 @@ class PlanVentaController extends Controller
             $vendido['is_inactive'] = 1;
             $vendido['monto_venta'] = $monto_vent_format;
             $vehicle->update($vendido);
+            //Vehículo recibido update
+            if ($request->vehiculo_recibido_id_hidden) {
+                $vehicle = Product::where('business_id', $business_id)
+                    ->where('id', $request->vehiculo_recibido_id_hidden)
+                    ->firstOrFail();
+                if ($vehicle->is_inactive == 1) {
+                    $veh_recibido['is_inactive'] = 0;
+                    $veh_recibido['receive_date'] = Carbon::now()->format('Y-m-d');
+                    $vehicle->update($veh_recibido);
+                }
+            }
+            //Vehículo recibido update
             DB::commit();
             $output = [
                 'success' => 1,

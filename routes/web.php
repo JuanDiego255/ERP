@@ -371,10 +371,11 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/expense/check-ref_no', 'ExpenseController@checkFacId');
     Route::post('/modal-car/', 'ProductController@store');
     Route::post('/vehicle-update-price/{id}', 'ProductController@updatePrice');
+    Route::post('/vehicle-update-state/{id}', 'ProductController@updateState');
     Route::get('/contacts/customers', 'ContactController@getCustomers');
     Route::get('/contacts/guarantor', 'ContactController@getGuarantor');
     Route::get('/employees/vendedor', 'EmployeeController@getVendedores');
-    Route::get('/get/vehicles', 'ProductController@getVehicles');
+    Route::get('/get/vehicles/{type}', 'ProductController@getVehicles');
     Route::resource('contacts', 'ContactController');
 
     Route::get('taxonomies-ajax-index-page', 'TaxonomyController@getTaxonomyIndexPage');
@@ -419,7 +420,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::resource('products', 'ProductController');
 
     //Rutas para gastos de vehiculos
-    Route::get('/products/bills/{id}', 'Admin\BillVehicleController@indexBill');
+    Route::get('/products/bills/{id}/{type}', 'Admin\BillVehicleController@indexBill');
     Route::get('/bill/create/{id}', 'Admin\BillVehicleController@create');
     Route::get('/bill/edit/{id}', 'Admin\BillVehicleController@edit');
     Route::post('/bill/store', 'Admin\BillVehicleController@store');

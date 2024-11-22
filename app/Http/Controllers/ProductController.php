@@ -159,7 +159,7 @@ class ProductController extends Controller
                         }
                         //Boton para ver los gastos del vehiculo
                         $html .=
-                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
+                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id,0]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
                         //Boton para ver los gastos del vehiculo
                         if ($row->is_inactive == 1) {
                             $html .=
@@ -271,6 +271,8 @@ class ProductController extends Controller
                 ->where('products.is_inactive', 0)
                 ->where($filter, 1);
 
+            $options = $type == 0 ? '"-1" => __("Exhibición"),"1" => __("Mantenimiento"), "2" => __("Vendido")' : '"-1" => __("Mantenimiento"),"0" => __("Exhibición"), "2" => __("Vendido")';
+
             $products = $query->select(
                 'products.id',
                 'products.name as product',
@@ -287,7 +289,9 @@ class ProductController extends Controller
                 'products.placa',
                 'products.bin',
                 'products.created_at',
-                'products.is_inactive'
+                'products.is_inactive',
+                'products.is_show',
+                'products.is_mant'
 
             )->groupBy('products.id');
             $products->orderBy('created_at', 'desc');
@@ -298,6 +302,13 @@ class ProductController extends Controller
                     '        
                     {!! Form::text("price", number_format($price, 2, ".", ","), array_merge(["class" => "form-control number"])) !!}'
                 )
+                ->editColumn(
+                    'state',
+                    '<div class="form-group">
+                    {!! Form::select("state", [' . $options . '], null,["class" => "form-control select-car"]) !!}
+                    </div>
+                    '
+                )
                 ->editColumn('product', function ($row) {
                     $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->product;
 
@@ -307,7 +318,7 @@ class ProductController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return $this->commonUtil->format_date($row->created_at, true);
                 })
-                ->rawColumns(['image', 'product', 'category', 'price'])
+                ->rawColumns(['image', 'product', 'category', 'price', 'state'])
                 ->make(true);
         }
     }
@@ -399,7 +410,6 @@ class ProductController extends Controller
 
             ->with(compact('categories', 'brands', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
     }
-
     private function product_types()
     {
         //Product types also includes modifier.
@@ -418,6 +428,30 @@ class ProductController extends Controller
             ? floatval(str_replace(',', '', $value))
             : null;
         $product_detalle[$column] = $price;
+        $product->update($product_detalle);
+
+        return response()->json(['success' => true]);
+    }
+    public function updateState(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $value = $request->input('value');
+        switch ($value) {
+            case 0:
+                $column = "is_show";
+                $product_detalle["is_mant"] = 0;
+                break;
+            case 1:
+                $column = "is_mant";
+                $product_detalle["is_show"] = 0;
+                break;
+            case 2:
+                $column = "is_inactive";
+                $product_detalle["is_show"] = 0;
+                $product_detalle["is_mant"] = 0;
+                break;
+        }
+        $product_detalle[$column] = 1;
         $product->update($product_detalle);
 
         return response()->json(['success' => true]);
@@ -2574,15 +2608,18 @@ class ProductController extends Controller
         return redirect()->back()->with('status', $output);
     }
 
-    public function getVehicles()
+    public function getVehicles($type)
     {
         if (request()->ajax()) {
             $term = request()->input('q', '');
+            $type = $type == "receive" ? 1 : 0;
 
             $business_id = request()->session()->get('user.business_id');
 
             $vehicles = Product::where('products.business_id', $business_id)
-                ->where('products.is_inactive', '!=', 1)
+                ->when($type !== 1, function ($query) {
+                    $query->where('products.is_inactive', 0);
+                })
                 ->join('brands', 'products.brand_id', '=', 'brands.id')
                 ->leftJoin('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
                 ->when(!empty($term), function ($query) use ($term) {

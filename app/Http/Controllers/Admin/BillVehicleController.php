@@ -28,9 +28,9 @@ class BillVehicleController extends Controller
 
 
      */
-    public function indexBill($id)
+    public function indexBill($id,$type)
     {
-
+        $was_received = Product::where('id',$id)->first()->receive_date;
         $business_id = request()->session()->get('user.business_id');
         $all_cars = Product::where('products.business_id', $business_id)
             ->join('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
@@ -61,6 +61,14 @@ class BillVehicleController extends Controller
                 'vehicle_bills.created_at',
                 DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
             ]);
+
+        if($was_received != ""){
+            if($type != 1){
+                $bills->whereDate('vehicle_bills.fecha_compra', '<', $was_received);
+            }else{
+                $bills->whereDate('vehicle_bills.fecha_compra', '>=', $was_received);
+            }           
+        }
         if (request()->ajax()) {
 
             return Datatables::of($bills)
@@ -82,10 +90,10 @@ class BillVehicleController extends Controller
                 ->rawColumns(['action', 'name'])
                 ->make(true);
         }
-        $totalMonto = (clone $bills)->sum('vehicle_bills.monto');
+        $totalMonto = (clone $bills)->sum('vehicle_bills.monto');        
         $cant_gastos = (clone $bills)->count();
 
-        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'cant_gastos', 'cars'));
+        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'cant_gastos', 'cars','was_received','type'));
     }
     /**
      * Show the form for creating a new resource.

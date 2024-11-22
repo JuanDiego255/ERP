@@ -1,6 +1,14 @@
 @extends('layouts.app')
 @section('title', $is_report == true ? 'Cuentas Por Pagar - Reportes' : 'Cuentas Por Pagar')
+<style>
+    .d-none {
+        display: none !important;
+    }
 
+    .d-block {
+        display: block !important;
+    }
+</style>
 @section('content')
     <input type="hidden" id="is_report" value="{{ $is_report }}" name="is_report">
     <!-- Content Header (Page header) -->
@@ -37,6 +45,24 @@
                 </div> --}}
                     <div class="col-md-3">
                         <div class="form-group">
+                            {!! Form::label('expense_payment_status', __('purchase.payment_status') . ':') !!}
+                            {!! Form::select('expense_payment_status', ['due' => __('lang_v1.due'), 'paid' => __('lang_v1.paid')], null, [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('type', 'Filtrar fechas por:') !!}
+                            {!! Form::select('type', ['0' => 'Fecha de creación', '1' => 'Fecha vence'], null, [
+                                'class' => 'form-control select2',
+                                'id' => 'type',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div id="div_date" class="col-md-3">
+                        <div class="form-group">
                             {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
                             {!! Form::text('date_range', null, [
                                 'placeholder' => __('lang_v1.select_a_date_range'),
@@ -46,7 +72,7 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div id="div_date_vence" class="col-md-3 d-none">
                         <div class="form-group">
                             {!! Form::label('expense_date_vence', __('Rango de vencimiento') . ':') !!}
                             {!! Form::text('date_range', null, [
@@ -55,17 +81,6 @@
                                 'id' => 'expense_date_vence',
                                 'readonly',
                             ]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('expense_payment_status', __('purchase.payment_status') . ':') !!}
-                            {!! Form::select(
-                                'expense_payment_status',
-                                ['due' => __('lang_v1.due'), 'paid' => __('lang_v1.paid')],
-                                null,
-                                ['class' => 'form-control select2', 'style' => 'width:100%'],
-                            ) !!}
                         </div>
                     </div>
                 @endcomponent

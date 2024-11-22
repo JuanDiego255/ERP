@@ -9,9 +9,9 @@
             <small>@lang('Administrar los gastos por vehículos')</small>
         </h1>
         <!-- <ol class="breadcrumb">
-                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                    <li class="active">Here</li>
-                                </ol> -->
+                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                    <li class="active">Here</li>
+                                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -19,11 +19,26 @@
         <input type="hidden" id="vehicle_id" value="{{ $id }}">
         <div class="row">
             <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                {!! Form::select('cars_id', $cars, $id, [
-                    'class' => 'form-control select2',
-                    'id' => 'cars_id',
-                ]) !!}
+                <div class="form-group">
+                    {!! Form::label('cars_id', 'Vehículos') !!}
+                    {!! Form::select('cars_id', $cars, $id, [
+                        'class' => 'form-control select2',
+                        'id' => 'cars_id',
+                    ]) !!}
+                </div>
             </div>
+
+            @if ($was_received != '')
+                <div class="col-md-4 col-xs-12 mt-15 pull-right">
+                    <div class="form-group">
+                        {!! Form::label('receive_date', 'Tiempo') !!}
+                        {!! Form::select('receive_date', ['0' => 'ANTES DE RECIBIR', '1' => 'DESPUES DE RECIBIR'], $type, [
+                            'class' => 'form-control select2',
+                            'id' => 'receive_date',
+                        ]) !!}
+                    </div>
+                </div>
+            @endif
         </div>
         <br>
         <div class="row">
@@ -47,7 +62,7 @@
                             </li>
                             <li class="list-group-item">
                                 <b>@lang('Total:')</b>
-                                <a class="pull-right">₡{{ number_format($totalMonto, 2, ".", ",") }}</a>
+                                <a class="pull-right">₡{{ number_format($totalMonto, 2, '.', ',') }}</a>
                             </li>
                         </ul>
                     </div>
@@ -57,7 +72,13 @@
             </div>
             <div class="col-md-9">
 
-                @component('components.widget', ['class' => 'box-primary', 'title' => __('Todos los gastos')])
+                @component('components.widget', [
+                    'class' => 'box-primary',
+                    'title' =>
+                        $was_received != ''
+                            ? __('Todos los gastos') . ' (Este vehículo fue vendido, y se recibió nuevamente en un plan de venta)'
+                            : __('Todos los gastos'),
+                ])
                     @can('product.create')
                         @slot('tool')
                             <div class="box-tools">
@@ -100,13 +121,13 @@
         $(document).ready(function() {
             // Obtener el ID del vehículo desde un input oculto o similar
             var vehicle_id = $('#vehicle_id').val();
-
+            var receive_date = $('#receive_date').val();
             // Actualizar la URL de la solicitud AJAX con el ID del vehículo
             var users_table = $('#bills_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '/products/bills/' + vehicle_id, // Incluyendo el ID del vehículo en la URL
+                    url: '/products/bills/' + vehicle_id + '/' + receive_date, // Incluyendo el ID del vehículo en la URL
                     type: 'GET',
                 },
                 columnDefs: [{
@@ -114,8 +135,7 @@
                     "orderable": false,
                     "searchable": false
                 }],
-                "columns": [
-                    {
+                "columns": [{
                         "data": "action"
                     },
                     {
@@ -291,7 +311,12 @@
                 if ($(this).val()) {
                     window.location = "{{ url('/products/bills/') }}/" + $(this).val();
                 }
-            });    
+            });
+            $('#receive_date').change(function() {
+                if ($(this).val()) {
+                    window.location = "{{ url('/products/bills/') }}/" + vehicle_id + "/" + $(this).val();
+                }
+            });
         });
     </script>
 @endsection

@@ -1433,6 +1433,34 @@ $(document).ready(function () {
             expense_table.ajax.reload();
         });
     }
+    //Filtro segun la fecha seleccionada
+    const startOfYear = moment().startOf('year'); // 1 de enero del año actual
+    const endOfYear = moment().endOf('year');
+    $('#type').change(function () {
+        if ($(this).val()) {
+            if ($(this).val() == 0) {
+                $('#div_date').removeClass('d-none');
+                $('#div_date_vence').addClass('d-none');
+                // Setear las fechas predeterminadas en #expense_date_range
+                $('#expense_date_range').data('daterangepicker').setStartDate(startOfYear);
+                $('#expense_date_range').data('daterangepicker').setEndDate(endOfYear);
+                $('#expense_date_range').val(
+                    startOfYear.format(moment_date_format) + ' ~ ' + endOfYear.format(moment_date_format)
+                );
+                expense_table.ajax.reload();
+            } else {
+                $('#div_date').addClass('d-none');
+                $('#div_date_vence').removeClass('d-none');
+                $('#expense_date_vence').data('daterangepicker').setStartDate(startOfYear);
+                $('#expense_date_vence').data('daterangepicker').setEndDate(endOfYear);
+                $('#expense_date_vence').val(
+                    startOfYear.format(moment_date_format) + ' ~ ' + endOfYear.format(moment_date_format)
+                );
+                expense_table.ajax.reload();
+            }
+        }
+    });
+    //Filtro segun la fecha seleccionada
 
     if ($('#expense_date_vence').length == 1) {
         $('#expense_date_vence').daterangepicker(
@@ -1567,12 +1595,12 @@ $(document).ready(function () {
 
                     // Agregar las facturas del proveedor
                     data.rows.forEach(function (row) {
-                        acumulado += parseFloat(row.saldo);   
-                        console.log(acumulado);     
+                        acumulado += parseFloat(row.saldo);
+                        console.log(acumulado);
                         // Formatear los montos
-                        formattedAmount = __currency_trans_from_en(row.amount, true, true);                      
+                        formattedAmount = __currency_trans_from_en(row.amount, true, true);
                         formattedSaldo = __currency_trans_from_en(row.saldo, true, true);
-                        formattedAcumulado =  __currency_trans_from_en(acumulado, true, true);
+                        formattedAcumulado = __currency_trans_from_en(acumulado, true, true);
                         // Agregar la fila a la tabla con los datos formateados
                         body.append(
                             '<tr>' +
@@ -1642,23 +1670,34 @@ $(document).ready(function () {
         ajax: {
             url: url,
             data: function (d) {
-                console.log(d);
+
                 d.expense_for = $('select#expense_for').val();
                 d.location_id = $('select#location_id').val();
                 d.expense_category_id = $('select#expense_category_id').val();
                 d.payment_status = $('select#expense_payment_status').val();
-                d.start_date = $('input#expense_date_range')
-                    .data('daterangepicker')
-                    .startDate.format('YYYY-MM-DD');
-                d.end_date = $('input#expense_date_range')
-                    .data('daterangepicker')
-                    .endDate.format('YYYY-MM-DD');
-                d.start_vence_date = $('input#expense_date_vence')
-                    .data('daterangepicker')
-                    .startDate.format('YYYY-MM-DD');
-                d.end_vence_date = $('input#expense_date_vence')
-                    .data('daterangepicker')
-                    .endDate.format('YYYY-MM-DD');
+                if ($('input#expense_date_range').closest('.form-group').is(':visible')) {
+                    d.start_date = $('input#expense_date_range')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    d.end_date = $('input#expense_date_range')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                } else {
+                    d.start_date = null;
+                    d.end_date = null;
+                }
+                // Validar si el rango de fechas vence está visible antes de enviarlo
+                if ($('input#expense_date_vence').closest('.form-group').is(':visible')) {
+                    d.start_vence_date = $('input#expense_date_vence')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    d.end_vence_date = $('input#expense_date_vence')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                } else {
+                    d.start_vence_date = null;
+                    d.end_vence_date = null;
+                }
                 d.contact = $('input#contact_search').val();
             },
         },
@@ -1763,7 +1802,7 @@ $(document).ready(function () {
             var row = $(this).closest('tr');
             var provider = row.find('td:eq(2)').text();
             var invoice = row.find('td:eq(3)').text();
-            var amount = parseFloat(row.find('td:eq(8)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
+            var amount = parseFloat(row.find('td:eq(8)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
 
             // Puedes almacenar el valor del proveedor si lo necesitas
             selected_rows[i++] = {
@@ -1775,10 +1814,12 @@ $(document).ready(function () {
 
         return selected_rows;
     }
+
     function hasThousandsSeparator(text) {
         // Verifica si hay un punto como separador de miles seguido de tres dígitos
         return /\.\d{3}(,|$)/.test(text);
     }
+
     function getSelectedRows() {
         var selected_rows = [];
         var i = 0;
@@ -1790,8 +1831,8 @@ $(document).ready(function () {
             var invoice = row.find('td:eq(3)').text();
             var isFormatAmount = hasThousandsSeparator(row.find('td:eq(7)').text()) ? true : false;
             var isFormatSaldo = hasThousandsSeparator(row.find('td:eq(8)').text()) ? true : false;
-            var amount = parseFloat(row.find('td:eq(7)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
-            var saldo = parseFloat(row.find('td:eq(8)').text().replace('.','').replace(/[₡\s]/g, '').replace(',', '.'));
+            var amount = parseFloat(row.find('td:eq(7)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
+            var saldo = parseFloat(row.find('td:eq(8)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
             var fechaVence = row.find('td:eq(5)').text();
             var detalle = row.find('td:eq(9)').text();
 
