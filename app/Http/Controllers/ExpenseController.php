@@ -104,6 +104,7 @@ class ExpenseController extends Controller
                     'transactions.fecha_vence',
                     'ref_no',
                     'ct.name as contact_name',
+                    'ct.contact_id as prov_id',
                     'ec.name as category',
                     'payment_status',
                     'transactions.additional_notes',
@@ -291,16 +292,20 @@ class ExpenseController extends Controller
             )
             ->groupBy('transactions.contact_id')
             ->orderBy('provider', 'asc');
-
+        $type = request()->get('type');
         // Filtros globales
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('transactions.transaction_date', [$request->start_date, $request->end_date]);
-            $rango = "Rango de fechas (Se filtro por fecha de creación): " . $request->start_date . " al " . $request->end_date;
+        if ($type == 0) {
+            if ($request->filled('end_date')) {
+                $query->where('transactions.transaction_date', '<=', $request->end_date);
+                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->end_date;
+            }
+        } else {
+            if ($request->filled('end_vence_date')) {
+                $query->where('transactions.fecha_vence', '<=', $request->end_vence_date);
+                $rango = "Reporte al (Se filtro por fecha vence): " . $request->end_vence_date;
+            }
         }
-        if ($request->filled('start_vence_date') && $request->filled('end_vence_date')) {
-            $query->whereBetween('transactions.fecha_vence', [$request->start_vence_date, $request->end_vence_date]);
-            $rango = "Rango de fechas (Se filtro por fecha vence): " . $request->start_vence_date . " al " . $request->end_vence_date;
-        }
+
         if ($request->filled('location_id')) {
             $query->where('transactions.location_id', $request->location_id);
         }
@@ -319,15 +324,28 @@ class ExpenseController extends Controller
             $filters = $request->input('table_filters');
             foreach ($filters as $index => $value) {
                 switch ($index) {
-                    case '2': // Columna Contact
+                    case '3': // Columna Contact
                         $query->where('ct.name', 'LIKE', "%$value%");
                         break;
-                    case '3': // Columna Ref No
+                    case '4': // Columna Ref No
                         $query->where('transactions.ref_no', 'LIKE', "%$value%");
                         break;
                         // Agrega casos adicionales según las columnas filtrables
                 }
             }
+        }
+
+        if ($request->filled('selected_documents')) {
+            $selectedDocuments = $request->input('selected_documents');
+
+            $query->where(function ($subQuery) use ($selectedDocuments) {
+                foreach ($selectedDocuments as $document) {
+                    $subQuery->orWhere(function ($innerQuery) use ($document) {
+                        $innerQuery->where('ct.contact_id', $document['provider'])
+                            ->where('transactions.ref_no', $document['invoice']);
+                    });
+                }
+            });
         }
 
         $report = $query->get();
@@ -365,13 +383,18 @@ class ExpenseController extends Controller
             ->orderBy('transactions.id', 'asc');
 
         // Filtros globales
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('transactions.transaction_date', [$request->start_date, $request->end_date]);
-            $rango = "Rango de fechas (Se filtro por fecha de creación): " . $request->start_date . " al " . $request->end_date;
-        }
-        if ($request->filled('start_vence_date') && $request->filled('end_vence_date')) {
-            $query->whereBetween('transactions.fecha_vence', [$request->start_vence_date, $request->end_vence_date]);
-            $rango = "Rango de fechas (Se filtro por fecha vence): " . $request->start_vence_date . " al " . $request->end_vence_date;
+        $type = request()->get('type');
+        // Filtros globales
+        if ($type == 0) {
+            if ($request->filled('end_date')) {
+                $query->where('transactions.transaction_date', '<=', $request->end_date);
+                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->end_date;
+            }
+        } else {
+            if ($request->filled('end_vence_date')) {
+                $query->where('transactions.fecha_vence', '<=', $request->end_vence_date);
+                $rango = "Reporte al (Se filtro por fecha vence): " . $request->end_vence_date;
+            }
         }
         if ($request->filled('location_id')) {
             $query->where('transactions.location_id', $request->location_id);
@@ -389,15 +412,27 @@ class ExpenseController extends Controller
             $filters = $request->input('table_filters');
             foreach ($filters as $index => $value) {
                 switch ($index) {
-                    case '2': // Columna Contact
+                    case '3': // Columna Contact
                         $query->where('ct.name', 'LIKE', "%$value%");
                         break;
-                    case '3': // Columna Ref No
+                    case '4': // Columna Ref No
                         $query->where('transactions.ref_no', 'LIKE', "%$value%");
                         break;
                         // Agrega casos adicionales según las columnas filtrables
                 }
             }
+        }
+        if ($request->filled('selected_documents')) {
+            $selectedDocuments = $request->input('selected_documents');
+
+            $query->where(function ($subQuery) use ($selectedDocuments) {
+                foreach ($selectedDocuments as $document) {
+                    $subQuery->orWhere(function ($innerQuery) use ($document) {
+                        $innerQuery->where('ct.contact_id', $document['provider'])
+                            ->where('transactions.ref_no', $document['invoice']);
+                    });
+                }
+            });
         }
 
         // Ejecutar consulta y obtener resultados

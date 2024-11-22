@@ -1441,6 +1441,8 @@ $(document).ready(function () {
             if ($(this).val() == 0) {
                 $('#div_date').removeClass('d-none');
                 $('#div_date_vence').addClass('d-none');
+                $('#div_date_report').removeClass('d-none');
+                $('#div_date_vence_report').addClass('d-none');
                 // Setear las fechas predeterminadas en #expense_date_range
                 $('#expense_date_range').data('daterangepicker').setStartDate(startOfYear);
                 $('#expense_date_range').data('daterangepicker').setEndDate(endOfYear);
@@ -1451,6 +1453,8 @@ $(document).ready(function () {
             } else {
                 $('#div_date').addClass('d-none');
                 $('#div_date_vence').removeClass('d-none');
+                $('#div_date_report').addClass('d-none');
+                $('#div_date_vence_report').removeClass('d-none');
                 $('#expense_date_vence').data('daterangepicker').setStartDate(startOfYear);
                 $('#expense_date_vence').data('daterangepicker').setEndDate(endOfYear);
                 $('#expense_date_vence').val(
@@ -1482,7 +1486,7 @@ $(document).ready(function () {
             extend: 'pageLength',
             text: 'Mostrando 25',
             titleAttr: 'Mostrar registros'
-        },   
+        },
         {
             extend: 'colvis',
             text: 'Visibilidad de columna'
@@ -1545,6 +1549,10 @@ $(document).ready(function () {
                 data: 'mass_check'
             },
             {
+                data: 'prov_id',
+                name: 'ct.contact_id'
+            },
+            {
                 data: 'contact',
                 name: 'ct.name'
             },
@@ -1605,7 +1613,7 @@ $(document).ready(function () {
         initComplete: function () {
             $('.dataTables_paginate').css('margin-top', '15px');
             var api = this.api();
-            var filterableColumns = [2, 3];
+            var filterableColumns = [3, 4];
             $('#expense_table thead').append('<tr class="filter-row"></tr>');
             api.columns().every(function (index) {
                 var column = this;
@@ -1630,6 +1638,51 @@ $(document).ready(function () {
 
     //Generar CUEPAG
     $(document).on('click', '#generate_report', function () {
+        if ($('#type').val() == 0) {
+            if ($('#date_report').val() == null || $('#date_report').val() == "") {
+                swal({
+                    title: "Debe seleccionar la fecha del filtro de creación",
+                    icon: 'warning',
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: true,
+                }).then(willDelete => {
+                    if (willDelete) {
+                        $('#date_report').focus();
+                    }
+                });
+                return;
+            }
+        } else {
+            if ($('#date_vence_report').val() == null || $('#date_vence_report').val() == "") {
+                swal({
+                    title: "Debe seleccionar la fecha del filtro de vencimiento",
+                    icon: 'warning',
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: true,
+                }).then(willDelete => {
+                    if (willDelete) {
+                        $('#date_vence_report').focus();
+                    }
+                });
+                return;
+            }
+        }
         let url = '/expenses/generate-report'; // Actualiza esta ruta
         let dataTable = $('#expense_table').DataTable();
 
@@ -1640,34 +1693,32 @@ $(document).ready(function () {
                 tableFilters[this.index()] = this.search();
             }
         });
+        // Captura los documentos seleccionados por Proveedor y Factura
+        let selectedDocuments = [];
+        $('#expense_table tbody tr').each(function () {
+            let $checkbox = $(this).find('td:nth-child(2) input[type="checkbox"]');
+            if ($checkbox.is(':checked')) {
+                let provider = $(this).find('td:nth-child(3)').text().trim();
+                let invoice = $(this).find('td:nth-child(5)').text().trim();
+
+                if (provider && invoice) {
+                    selectedDocuments.push({
+                        provider: provider,
+                        invoice: invoice
+                    });
+                }
+            }
+        });
         // Genera los datos combinados de los filtros globales y de columnas
         let data = {
             payment_status: $('select#expense_payment_status').val(),
             location_id: $('select#location_id').val(),
             expense_category_id: $('select#expense_category_id').val(),
-            // Validar si el rango de fechas vence está visible antes de enviarlo
-            start_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
-                $('input#expense_date_vence')
-                .data('daterangepicker')
-                .startDate.format('YYYY-MM-DD') :
-                null,
-            end_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
-                $('input#expense_date_vence')
-                .data('daterangepicker')
-                .endDate.format('YYYY-MM-DD') :
-                null,
-            // Validar si el rango de fechas está visible antes de enviarlo
-            start_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
-                $('input#expense_date_range')
-                .data('daterangepicker')
-                .startDate.format('YYYY-MM-DD') :
-                null,
-            end_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
-                $('input#expense_date_range')
-                .data('daterangepicker')
-                .endDate.format('YYYY-MM-DD') :
-                null,
+            end_vence_date: $('#date_vence_report').val(),
+            type: $('#type').val(),
+            end_date: $('#date_report').val(),
             table_filters: tableFilters, // Incluye los filtros de DataTable
+            selected_documents: selectedDocuments
         };
         // Envía los datos combinados al backend
         $.ajax({
@@ -1689,6 +1740,51 @@ $(document).ready(function () {
     //Generar CUEPAG 
     //Generar CXP Detallado
     $(document).on('click', '#generate_report_detail', function () {
+        if ($('#type').val() == 0) {
+            if ($('#date_report').val() == null || $('#date_report').val() == "") {
+                swal({
+                    title: "Debe seleccionar la fecha del filtro de creación",
+                    icon: 'warning',
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: true,
+                }).then(willDelete => {
+                    if (willDelete) {
+                        $('#date_report').focus();
+                    }
+                });
+                return;
+            }
+        } else {
+            if ($('#date_vence_report').val() == null || $('#date_vence_report').val() == "") {
+                swal({
+                    title: "Debe seleccionar la fecha del filtro de vencimiento",
+                    icon: 'warning',
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: true,
+                }).then(willDelete => {
+                    if (willDelete) {
+                        $('#date_vence_report').focus();
+                    }
+                });
+                return;
+            }
+        }
         let url = '/expenses/generate-report-detail'; // Actualiza esta ruta
         let dataTable = $('#expense_table').DataTable();
 
@@ -1699,34 +1795,32 @@ $(document).ready(function () {
                 tableFilters[this.index()] = this.search();
             }
         });
+        // Captura los documentos seleccionados por Proveedor y Factura
+        let selectedDocuments = [];
+        $('#expense_table tbody tr').each(function () {
+            let $checkbox = $(this).find('td:nth-child(2) input[type="checkbox"]');
+            if ($checkbox.is(':checked')) {
+                let provider = $(this).find('td:nth-child(3)').text().trim();
+                let invoice = $(this).find('td:nth-child(5)').text().trim();
+
+                if (provider && invoice) {
+                    selectedDocuments.push({
+                        provider: provider,
+                        invoice: invoice
+                    });
+                }
+            }
+        });
         // Genera los datos combinados de los filtros globales y de columnas
         let data = {
             payment_status: $('select#expense_payment_status').val(),
             location_id: $('select#location_id').val(),
             expense_category_id: $('select#expense_category_id').val(),
-            // Validar si el rango de fechas vence está visible antes de enviarlo
-            start_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
-                $('input#expense_date_vence')
-                .data('daterangepicker')
-                .startDate.format('YYYY-MM-DD') :
-                null,
-            end_vence_date: $('input#expense_date_vence').closest('.form-group').is(':visible') ?
-                $('input#expense_date_vence')
-                .data('daterangepicker')
-                .endDate.format('YYYY-MM-DD') :
-                null,
-            // Validar si el rango de fechas está visible antes de enviarlo
-            start_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
-                $('input#expense_date_range')
-                .data('daterangepicker')
-                .startDate.format('YYYY-MM-DD') :
-                null,
-            end_date: $('input#expense_date_range').closest('.form-group').is(':visible') ?
-                $('input#expense_date_range')
-                .data('daterangepicker')
-                .endDate.format('YYYY-MM-DD') :
-                null,
+            end_vence_date: $('#date_vence_report').val(),
+            type: $('#type').val(),
+            end_date: $('#date_report').val(),
             table_filters: tableFilters, // Incluye los filtros de DataTable
+            selected_documents: selectedDocuments
         };
         // Envía los datos combinados al backend
         $.ajax({
@@ -1746,65 +1840,6 @@ $(document).ready(function () {
         });
     });
     //Generar CXP Detallado    
-
-    function getSelectedRowsCuepag() {
-        var selected_rows = [];
-        var i = 0;
-        $('.row-select:checked').each(function () {
-            // Obtener la fila del checkbox seleccionado
-            var row = $(this).closest('tr');
-            var provider = row.find('td:eq(2)').text();
-            var invoice = row.find('td:eq(3)').text();
-            var amount = parseFloat(row.find('td:eq(8)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
-
-            // Puedes almacenar el valor del proveedor si lo necesitas
-            selected_rows[i++] = {
-                provider: provider.trim(),
-                invoice: invoice.trim(),
-                amount: amount
-            };
-        });
-
-        return selected_rows;
-    }
-
-    function hasThousandsSeparator(text) {
-        // Verifica si hay un punto como separador de miles seguido de tres dígitos
-        return /\.\d{3}(,|$)/.test(text);
-    }
-
-    function getSelectedRows() {
-        var selected_rows = [];
-        var i = 0;
-
-        $('.row-select:checked').each(function () {
-            // Obtener la fila del checkbox seleccionado
-            var row = $(this).closest('tr');
-            var provider = row.find('td:eq(2)').text();
-            var invoice = row.find('td:eq(3)').text();
-            var isFormatAmount = hasThousandsSeparator(row.find('td:eq(7)').text()) ? true : false;
-            var isFormatSaldo = hasThousandsSeparator(row.find('td:eq(8)').text()) ? true : false;
-            var amount = parseFloat(row.find('td:eq(7)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
-            var saldo = parseFloat(row.find('td:eq(8)').text().replace('.', '').replace(/[₡\s]/g, '').replace(',', '.'));
-            var fechaVence = row.find('td:eq(5)').text();
-            var detalle = row.find('td:eq(9)').text();
-
-            selected_rows[i++] = {
-                provider: provider.trim(),
-                invoice: invoice.trim(),
-                amount: amount,
-                saldo: saldo,
-                montoAdelanto: 0, // Valor quemado en 0
-                fechaVence: fechaVence.trim(),
-                detalle: detalle.trim(),
-                isFormatAmount: isFormatAmount,
-                isFormatSaldo: isFormatSaldo
-            };
-        });
-
-        return selected_rows;
-    }
-
 
     $('select#location_id, select#expense_for, select#expense_category_id, select#expense_payment_status').on(
         'change',

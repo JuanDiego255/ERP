@@ -83,6 +83,34 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div id="div_date_report" class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('date_report', __('Fecha creación reporte (Imprimir hasta)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_report', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_report',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_date_vence_report" class="col-md-3 d-none">
+                        <div class="form-group">
+                            {!! Form::label('date_vence_report', __('Fecha vence reporte (Imprimir hasta)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_vence_report', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_vence_report',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
                 @endcomponent
             </div>
         </div>
@@ -109,6 +137,7 @@
                                 <tr>
                                     <th>@lang('messages.action')</th>
                                     <th>Incluir</th>
+                                    <th>Prov. ID</th>
                                     <th>Proveedor</th>
                                     <th>@lang('Factura')</th>
                                     <th>@lang('messages.date')</th>
@@ -165,6 +194,7 @@
                 footer: null // Opcional: pie de página
             });
         }
+
         function printThisDetail() {
             $("#cxp_detail").printThis({
                 importCSS: true, // Importa los estilos de la página
