@@ -64,7 +64,7 @@
                             <td>₡{{ number_format($row->total, 2) }}</td>
                             <td>₡{{ number_format($row->balance, 2) }}</td>
                             <td>₡{{ number_format($row->advance_amount, 2) }}</td>
-                            <td>{{ \Carbon\Carbon::parse($row->due_date)->format('d-m-Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($row->fecha_vence)->translatedFormat('d M Y') }}</td>
                             <td>{{ $row->detail }}</td>
                             <td>₡{{ number_format($row->total - $row->advance_amount, 2) }}</td>
                         </tr>

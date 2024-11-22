@@ -335,7 +335,7 @@ class ExpenseController extends Controller
             }
         }
 
-        if ($request->filled('selected_documents')) {
+        /* if ($request->filled('selected_documents')) {
             $selectedDocuments = $request->input('selected_documents');
 
             $query->where(function ($subQuery) use ($selectedDocuments) {
@@ -346,7 +346,7 @@ class ExpenseController extends Controller
                     });
                 }
             });
-        }
+        } */
 
         $report = $query->get();
 
@@ -367,7 +367,7 @@ class ExpenseController extends Controller
                 'transactions.final_total as total', // Total
                 DB::raw('COALESCE(transactions.final_total - SUM(TP.amount), transactions.final_total) as balance'), // Saldo
                 DB::raw('SUM(TP.amount) as advance_amount'), // Monto adelantado
-                'transactions.fecha_vence as due_date', // Fecha vence
+                'transactions.fecha_vence as fecha_vence', // Fecha vence
                 'transactions.additional_notes as detail' // Detalle
             )
             ->groupBy(
@@ -422,7 +422,7 @@ class ExpenseController extends Controller
                 }
             }
         }
-        if ($request->filled('selected_documents')) {
+        /* if ($request->filled('selected_documents')) {
             $selectedDocuments = $request->input('selected_documents');
 
             $query->where(function ($subQuery) use ($selectedDocuments) {
@@ -433,7 +433,7 @@ class ExpenseController extends Controller
                     });
                 }
             });
-        }
+        } */
 
         // Ejecutar consulta y obtener resultados
         $report = $query->get();
@@ -445,7 +445,6 @@ class ExpenseController extends Controller
             $accumulated_totals[$row->provider] += $row->total;
             $row->accumulated = $accumulated_totals[$row->provider];
         }
-
 
         return view('expense.view-modal-detail', compact('report', 'rango'));
     }
