@@ -233,7 +233,7 @@ class BillVehicleController extends Controller
             ];
         }
 
-        return redirect('products/bills/' . $request->product_id)->with('status', $output);
+        return redirect('products/bills/' . $request->product_id . '/0')->with('status', $output);
     }
 
     /**
@@ -431,6 +431,6 @@ class BillVehicleController extends Controller
             ];
         }
 
-        return redirect('products/bills/' . $request->product_id)->with('status', $output);
+        return redirect('products/bills/' . $request->product_id . '/0' )->with('status', $output);
     }
 }
