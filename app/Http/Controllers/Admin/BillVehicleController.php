@@ -125,6 +125,7 @@ class BillVehicleController extends Controller
     {
         try {
             DB::beginTransaction();
+            $user_id = $request->session()->get('user.id');
 
             // Obtener los detalles de la factura del request
             $bill_details = $request->only([
@@ -159,14 +160,14 @@ class BillVehicleController extends Controller
             $bill_details['business_id'] = $business_id;
             $bill_details['fecha_compra'] = $fechaFormateada;
             $bill_details['monto'] = $monto;
+            $bill_details['created_by'] = $user_id;
             $bill_details['is_cxp'] = $request->is_cxp ? 1 : 0;
 
             // Crear el registro en VehicleBill
             $bill = VehicleBill::create($bill_details);
 
             // Ingresar a cuentas por pagar si es CxP
-            if ($request->is_cxp) {
-                $user_id = $request->session()->get('user.id');
+            if ($request->is_cxp) {               
                 $transaction_data = [
                     'business_id' => $business_id,
                     'created_by' => $user_id,
@@ -371,6 +372,7 @@ class BillVehicleController extends Controller
                 'proveedor_id'
             ]);
             $bill_details['fecha_compra'] = $fechaFormateada;
+            $bill_details['created_by'] = $user_id;
             $monto = isset($request['monto']) ? floatval(str_replace(',', '', $request['monto'])) : 0;
             $bill_details['monto'] = $monto;
             // Verificar cambios y agregar al arreglo de auditoría

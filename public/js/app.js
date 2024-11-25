@@ -1437,12 +1437,20 @@ $(document).ready(function () {
     const startOfYear = moment().startOf('year'); // 1 de enero del año actual
     const endOfYear = moment().endOf('year');
     $('#type').change(function () {
+        $('#date_vence_report_start').val('');
+        $('#date_vence_report_end').val('');
+        $('#date_report_start').val('');
+        $('#date_report_end').val('');
         if ($(this).val()) {
             if ($(this).val() == 0) {
                 $('#div_date').removeClass('d-none');
                 $('#div_date_vence').addClass('d-none');
-                $('#div_date_report').removeClass('d-none');
-                $('#div_date_vence_report').addClass('d-none');
+                //Reporte Inicial
+                $('#div_date_report_start').removeClass('d-none');
+                $('#div_date_report_end').removeClass('d-none');
+                //Reporte Final
+                $('#div_date_vence_report_start').addClass('d-none');
+                $('#div_date_vence_report_end').addClass('d-none');
                 // Setear las fechas predeterminadas en #expense_date_range
                 $('#expense_date_range').data('daterangepicker').setStartDate(startOfYear);
                 $('#expense_date_range').data('daterangepicker').setEndDate(endOfYear);
@@ -1453,8 +1461,10 @@ $(document).ready(function () {
             } else {
                 $('#div_date').addClass('d-none');
                 $('#div_date_vence').removeClass('d-none');
-                $('#div_date_report').addClass('d-none');
-                $('#div_date_vence_report').removeClass('d-none');
+                $('#div_date_report_start').addClass('d-none');
+                $('#div_date_vence_report_start').removeClass('d-none');
+                $('#div_date_report_end').addClass('d-none');
+                $('#div_date_vence_report_end').removeClass('d-none');
                 $('#expense_date_vence').data('daterangepicker').setStartDate(startOfYear);
                 $('#expense_date_vence').data('daterangepicker').setEndDate(endOfYear);
                 $('#expense_date_vence').val(
@@ -1639,9 +1649,9 @@ $(document).ready(function () {
     //Generar CUEPAG
     $(document).on('click', '#generate_report', function () {
         if ($('#type').val() == 0) {
-            if ($('#date_report').val() == null || $('#date_report').val() == "") {
+            if ($('#date_report_end').val() == null || $('#date_report_end').val() == "") {
                 swal({
-                    title: "Debe seleccionar la fecha del filtro de creación",
+                    title: "Debe seleccionar la fecha final del filtro de creación",
                     icon: 'warning',
                     buttons: {
                         confirm: {
@@ -1655,15 +1665,15 @@ $(document).ready(function () {
                     dangerMode: true,
                 }).then(willDelete => {
                     if (willDelete) {
-                        $('#date_report').focus();
+                        $('#date_report_end').focus();
                     }
                 });
                 return;
             }
         } else {
-            if ($('#date_vence_report').val() == null || $('#date_vence_report').val() == "") {
+            if ($('#date_vence_report_end').val() == null || $('#date_vence_report_end').val() == "") {
                 swal({
-                    title: "Debe seleccionar la fecha del filtro de vencimiento",
+                    title: "Debe seleccionar la fecha final del filtro de vencimiento",
                     icon: 'warning',
                     buttons: {
                         confirm: {
@@ -1677,7 +1687,7 @@ $(document).ready(function () {
                     dangerMode: true,
                 }).then(willDelete => {
                     if (willDelete) {
-                        $('#date_vence_report').focus();
+                        $('#date_vence_report_end').focus();
                     }
                 });
                 return;
@@ -1693,33 +1703,23 @@ $(document).ready(function () {
                 tableFilters[this.index()] = this.search();
             }
         });
-        // Captura los documentos seleccionados por Proveedor y Factura
-        let selectedDocuments = [];
-        $('#expense_table tbody tr').each(function () {
-            let $checkbox = $(this).find('td:nth-child(2) input[type="checkbox"]');
-            if ($checkbox.is(':checked')) {
-                let provider = $(this).find('td:nth-child(3)').text().trim();
-                let invoice = $(this).find('td:nth-child(5)').text().trim();
-
-                if (provider && invoice) {
-                    selectedDocuments.push({
-                        provider: provider,
-                        invoice: invoice
-                    });
-                }
-            }
-        });
         // Genera los datos combinados de los filtros globales y de columnas
+        //Fechas Filtros
+        var date_start = $('#date_report_start').val() ? $('#date_report_start').val() : null;
+        var date_end = $('#date_report_end').val() ? $('#date_report_end').val() : null;
+        var date_vence_start = $('#date_vence_report_start').val() ? $('#date_vence_report_start').val() : null;
+        var date_vence_end = $('#date_vence_report_end').val() ? $('#date_vence_report_end').val() : null;
         let data = {
             payment_status: $('select#expense_payment_status').val(),
             location_id: $('select#location_id').val(),
-            expense_category_id: $('select#expense_category_id').val(),
-            end_vence_date: $('#date_vence_report').val(),
             type: $('#type').val(),
-            end_date: $('#date_report').val(),
-            table_filters: tableFilters, // Incluye los filtros de DataTable
-            selected_documents: selectedDocuments
+            date_start: date_start,
+            date_end: date_end,
+            date_vence_start: date_vence_start,
+            date_vence_end: date_vence_end,
+            table_filters: tableFilters
         };
+        console.log(data);
         // Envía los datos combinados al backend
         $.ajax({
             url: url,
@@ -1741,9 +1741,9 @@ $(document).ready(function () {
     //Generar CXP Detallado
     $(document).on('click', '#generate_report_detail', function () {
         if ($('#type').val() == 0) {
-            if ($('#date_report').val() == null || $('#date_report').val() == "") {
+            if ($('#date_report_end').val() == null || $('#date_report_end').val() == "") {
                 swal({
-                    title: "Debe seleccionar la fecha del filtro de creación",
+                    title: "Debe seleccionar la fecha final del filtro de creación",
                     icon: 'warning',
                     buttons: {
                         confirm: {
@@ -1757,15 +1757,15 @@ $(document).ready(function () {
                     dangerMode: true,
                 }).then(willDelete => {
                     if (willDelete) {
-                        $('#date_report').focus();
+                        $('#date_report_end').focus();
                     }
                 });
                 return;
             }
         } else {
-            if ($('#date_vence_report').val() == null || $('#date_vence_report').val() == "") {
+            if ($('#date_vence_report_end').val() == null || $('#date_vence_report_end').val() == "") {
                 swal({
-                    title: "Debe seleccionar la fecha del filtro de vencimiento",
+                    title: "Debe seleccionar la fecha final del filtro de vencimiento",
                     icon: 'warning',
                     buttons: {
                         confirm: {
@@ -1779,7 +1779,7 @@ $(document).ready(function () {
                     dangerMode: true,
                 }).then(willDelete => {
                     if (willDelete) {
-                        $('#date_vence_report').focus();
+                        $('#date_vence_report_end').focus();
                     }
                 });
                 return;
@@ -1795,32 +1795,20 @@ $(document).ready(function () {
                 tableFilters[this.index()] = this.search();
             }
         });
-        // Captura los documentos seleccionados por Proveedor y Factura
-        let selectedDocuments = [];
-        $('#expense_table tbody tr').each(function () {
-            let $checkbox = $(this).find('td:nth-child(2) input[type="checkbox"]');
-            if ($checkbox.is(':checked')) {
-                let provider = $(this).find('td:nth-child(3)').text().trim();
-                let invoice = $(this).find('td:nth-child(5)').text().trim();
-
-                if (provider && invoice) {
-                    selectedDocuments.push({
-                        provider: provider,
-                        invoice: invoice
-                    });
-                }
-            }
-        });
         // Genera los datos combinados de los filtros globales y de columnas
+        var date_start = $('#date_report_start').val() ? $('#date_report_start').val() : null;
+        var date_end = $('#date_report_end').val() ? $('#date_report_end').val() : null;
+        var date_vence_start = $('#date_vence_report_start').val() ? $('#date_vence_report_start').val() : null;
+        var date_vence_end = $('#date_vence_report_end').val() ? $('#date_vence_report_end').val() : null;
         let data = {
             payment_status: $('select#expense_payment_status').val(),
             location_id: $('select#location_id').val(),
-            expense_category_id: $('select#expense_category_id').val(),
-            end_vence_date: $('#date_vence_report').val(),
             type: $('#type').val(),
-            end_date: $('#date_report').val(),
-            table_filters: tableFilters, // Incluye los filtros de DataTable
-            selected_documents: selectedDocuments
+            date_start: date_start,
+            date_end: date_end,
+            date_vence_start: date_vence_start,
+            date_vence_end: date_vence_end,
+            table_filters: tableFilters
         };
         // Envía los datos combinados al backend
         $.ajax({
@@ -2654,15 +2642,25 @@ $(document).on('click', 'button.deselect-all', function () {
 });
 
 $(document).on('change', 'input.row-select', function () {
-    if (this.checked) {
-        $(this)
-            .closest('tr')
-            .addClass('selected');
-    } else {
-        $(this)
-            .closest('tr')
-            .removeClass('selected');
-    }
+    var checked = this.checked ? 1 : 0;
+    var prov_id = $(this).closest('tr').find('td').eq(2).text();
+    var ref_no = $(this).closest('tr').find('td').eq(4).text();
+    let url = '/expenses/check-update'; // Actualiza esta ruta
+    let data = {
+        checked: checked,
+        prov_id: prov_id,
+        ref_no: ref_no
+    };
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: data,
+        success: function (result) {
+        },
+        error: function (xhr, status, error) {
+            console.error('Error al generar el reporte:', error);
+        }
+    });
 });
 
 $(document).on('click', '#select-all-row', function (e) {

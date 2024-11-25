@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('product.edit_product')</h1>
         <!-- <ol class="breadcrumb">
-                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                <li class="active">Here</li>
-                              </ol> -->
+                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                    <li class="active">Here</li>
+                                  </ol> -->
     </section>
 
     <!-- Main content -->
@@ -241,31 +241,25 @@
                     </div>
                 </div>
                 <div class="clearfix"></div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <br>
-                        <label>
-                            {!! Form::checkbox('is_show', 1, $product->is_show == 1 ? true : 0, [
-                                'class' => 'input-icheck',
-                                'id' => 'is_show',
-                            ]) !!} <strong>@lang('Se muestra en piso?')</strong>
-                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
-                        mantenimiento')) <p class="help-block">
-                            <i>@lang('Este check indica si el vehículo se está mostrando en la venta')</i>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <br>
-                        <label>
-                            {!! Form::checkbox('is_mant', 1, $product->is_mant == 1 ? true : 0, [
-                                'class' => 'input-icheck',
-                                'id' => 'is_mant',
-                            ]) !!} <strong>@lang('Se encuentra en mantenimiento?')</strong>
-                        </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
-                        exhibición')) <p class="help-block"><i>@lang('Este check indica si el vehículo se encuentra en mantenimiento')</i></p>
-                    </div>
+                <div class="form-group col-md-3">
+                    @php
+                   
+                    if($product->is_show == 1){
+                        $state = 0;
+                    }
+                    if($product->is_mant == 1){
+                        $state = 1;
+                    }
+                    if($product->is_inactive == 1){
+                        $state = 2;
+                    }
+                    @endphp
+                    {!! Form::label('state', 'Se encuentra en' . ':') !!}
+                    {!! Form::select('state', ['0' => 'Exhibición', '1' => 'Mantenimiento', '2' => 'Vendido'], $state, [
+                        'class' => 'form-control',
+                        'id' => 'gender',
+                        'placeholder' => __('messages.please_select'),
+                    ]) !!}
                 </div>
                 {{--  <div class="col-sm-4" id="alert_quantity_div" @if (!$product->enable_stock) style="display:none" @endif>
                     <div class="form-group">

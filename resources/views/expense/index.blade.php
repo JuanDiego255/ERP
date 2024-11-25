@@ -83,30 +83,60 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div id="div_date_report" class="col-md-3">
+                    <div id="div_date_report_start" class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('date_report', __('Fecha creación reporte (Imprimir hasta)') . ':') !!}
+                            {!! Form::label('date_report_start', __('Fecha creación reporte (Inicial)') . ':') !!}
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </span>
-                                {!! Form::date('date_report', @format_datetime('now'), [
+                                {!! Form::date('date_report_start', @format_datetime('now'), [
                                     'class' => 'form-control',
-                                    'id' => 'date_report',
+                                    'id' => 'date_report_start',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <p class="help-block">Campo no requerido, al no tomarlo en cuenta se mostrarán todas las facturas antiguas vencidas</p>
+                    </div>
+                    <div id="div_date_vence_report_start" class="col-md-3 d-none">
+                        <div class="form-group">
+                            {!! Form::label('date_vence_report_start', __('Fecha vence reporte (Inicial)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_vence_report_start', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_vence_report_start',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <p class="help-block">Campo no requerido, al no tomarlo en cuenta se mostrarán todas las facturas antiguas vencidas</p>
+                    </div>
+                    <div id="div_date_report_end" class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('date_report_end', __('Fecha creación reporte (Final)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_report_end', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_report_end',
                                 ]) !!}
                             </div>
                         </div>
                     </div>
-                    <div id="div_date_vence_report" class="col-md-3 d-none">
+                    <div id="div_date_vence_report_end" class="col-md-3 d-none">
                         <div class="form-group">
-                            {!! Form::label('date_vence_report', __('Fecha vence reporte (Imprimir hasta)') . ':') !!}
+                            {!! Form::label('date_vence_report_end', __('Fecha vence reporte (Final)') . ':') !!}
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </span>
-                                {!! Form::date('date_vence_report', @format_datetime('now'), [
+                                {!! Form::date('date_vence_report_end', @format_datetime('now'), [
                                     'class' => 'form-control',
-                                    'id' => 'date_vence_report',
+                                    'id' => 'date_vence_report_end',
                                 ]) !!}
                             </div>
                         </div>
@@ -151,7 +181,7 @@
                             </thead>
                             <tfoot>
                                 <tr class="bg-gray font-17 text-center footer-total">
-                                    <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                    <td colspan="7"><strong>@lang('sale.total'):</strong></td>
                                     <td id="footer_payment_status_count"></td>
                                     <td><span class="display_currency" id="footer_expense_total"
                                             data-currency_symbol ="true"></span></td>

@@ -10,6 +10,7 @@ use App\Models\ExpenseCategory;
 use App\Models\TaxRate;
 use App\Models\Transaction;
 use App\Models\City;
+use App\Models\Contact;
 use App\Models\DetailTransaction;
 use App\Models\Pais;
 use App\Models\User;
@@ -99,6 +100,7 @@ class ExpenseController extends Controller
                 ->select(
                     'transactions.id',
                     'transactions.contact_id',
+                    'transactions.check_report',
                     'transactions.document',
                     'transaction_date',
                     'transactions.fecha_vence',
@@ -221,7 +223,8 @@ class ExpenseController extends Controller
                     return $action;
                 })
                 ->addColumn('mass_check', function ($row) {
-                    return  '<input type="checkbox" checked  class="row-select selected" value="' . $row->id . '">';
+                    return '<input type="checkbox" class="row-select" value="' . $row->id . '"'
+                        . ($row->check_report == 1 ? ' checked' : '') . '>';
                 })
                 ->removeColumn('id')
                 ->editColumn(
@@ -283,6 +286,7 @@ class ExpenseController extends Controller
             )
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'expense')
+            ->where('transactions.check_report', 1)
             ->select(
                 'ct.name as provider',
                 DB::raw("GROUP_CONCAT(transactions.ref_no SEPARATOR ', ') as invoices"),
@@ -295,14 +299,20 @@ class ExpenseController extends Controller
         $type = request()->get('type');
         // Filtros globales
         if ($type == 0) {
-            if ($request->filled('end_date')) {
-                $query->where('transactions.transaction_date', '<=', $request->end_date);
-                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->end_date;
+            if ($request->filled('date_start') && $request->filled('date_end')) {
+                $query->whereBetween('transactions.transaction_date', [$request->date_start, $request->date_end]);
+                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->end_date;
+            } else {
+                $query->where('transactions.transaction_date', '<=', $request->date_end);
+                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->date_end;
             }
         } else {
-            if ($request->filled('end_vence_date')) {
-                $query->where('transactions.fecha_vence', '<=', $request->end_vence_date);
-                $rango = "Reporte al (Se filtro por fecha vence): " . $request->end_vence_date;
+            if ($request->filled('date_vence_start') && $request->filled('date_vence_end')) {
+                $query->whereBetween('transactions.fecha_vence', [$request->date_vence_start, $request->date_vence_end]);
+                $rango = "Reporte del (Se filtro por fecha vence): " . $request->date_vence_start . " al " . $request->date_vence_end;
+            } else {
+                $query->where('transactions.fecha_vence', '<=', $request->date_vence_end);
+                $rango = "Reporte al (Se filtro por fecha vence): " . $request->date_vence_end;
             }
         }
 
@@ -335,19 +345,6 @@ class ExpenseController extends Controller
             }
         }
 
-        /* if ($request->filled('selected_documents')) {
-            $selectedDocuments = $request->input('selected_documents');
-
-            $query->where(function ($subQuery) use ($selectedDocuments) {
-                foreach ($selectedDocuments as $document) {
-                    $subQuery->orWhere(function ($innerQuery) use ($document) {
-                        $innerQuery->where('ct.contact_id', $document['provider'])
-                            ->where('transactions.ref_no', $document['invoice']);
-                    });
-                }
-            });
-        } */
-
         $report = $query->get();
 
         return view('expense.view-modal', compact('report', 'rango'));
@@ -361,6 +358,7 @@ class ExpenseController extends Controller
             ->leftJoin('transaction_payments AS TP', 'transactions.id', '=', 'TP.transaction_id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'expense')
+            ->where('transactions.check_report', 1)
             ->select(
                 'ct.name as provider', // Nombre del proveedor
                 'transactions.ref_no as invoice', // Factura
@@ -386,14 +384,20 @@ class ExpenseController extends Controller
         $type = request()->get('type');
         // Filtros globales
         if ($type == 0) {
-            if ($request->filled('end_date')) {
-                $query->where('transactions.transaction_date', '<=', $request->end_date);
-                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->end_date;
+            if ($request->filled('date_start') && $request->filled('date_end')) {
+                $query->whereBetween('transactions.transaction_date', [$request->date_start, $request->date_end]);
+                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->end_date;
+            } else {
+                $query->where('transactions.transaction_date', '<=', $request->date_end);
+                $rango = "Reporte al (Se filtro por fecha de creación): " . $request->date_end;
             }
         } else {
-            if ($request->filled('end_vence_date')) {
-                $query->where('transactions.fecha_vence', '<=', $request->end_vence_date);
-                $rango = "Reporte al (Se filtro por fecha vence): " . $request->end_vence_date;
+            if ($request->filled('date_vence_start') && $request->filled('date_vence_end')) {
+                $query->whereBetween('transactions.fecha_vence', [$request->date_vence_start, $request->date_vence_end]);
+                $rango = "Reporte del (Se filtro por fecha vence): " . $request->date_vence_start . " al " . $request->date_vence_end;
+            } else {
+                $query->where('transactions.fecha_vence', '<=', $request->date_vence_end);
+                $rango = "Reporte al (Se filtro por fecha vence): " . $request->date_vence_end;
             }
         }
         if ($request->filled('location_id')) {
@@ -422,18 +426,6 @@ class ExpenseController extends Controller
                 }
             }
         }
-        /* if ($request->filled('selected_documents')) {
-            $selectedDocuments = $request->input('selected_documents');
-
-            $query->where(function ($subQuery) use ($selectedDocuments) {
-                foreach ($selectedDocuments as $document) {
-                    $subQuery->orWhere(function ($innerQuery) use ($document) {
-                        $innerQuery->where('ct.contact_id', $document['provider'])
-                            ->where('transactions.ref_no', $document['invoice']);
-                    });
-                }
-            });
-        } */
 
         // Ejecutar consulta y obtener resultados
         $report = $query->get();
@@ -448,6 +440,37 @@ class ExpenseController extends Controller
 
         return view('expense.view-modal-detail', compact('report', 'rango'));
     }
+    public function updateCheckReport(Request $request)
+    {
+        try {
+            $business_id = $request->session()->get('user.business_id');
+            $prov_id_req = $request->prov_id;
+            $checked = $request->checked;
+            $ref_no = $request->ref_no;
+            $prov_id = Contact::where('contact_id', $prov_id_req)
+                ->where('business_id', $business_id)
+                ->where('type', 'supplier')
+                ->firstOrFail()->id;
+
+            $factura = Transaction::where('contact_id', $prov_id)
+                ->where('ref_no', $ref_no)
+                ->where('business_id', $business_id)
+                ->where('type', 'expense')
+                ->firstOrFail();
+
+            $data = [
+                'check_report' => $checked
+            ];
+
+            $factura->update($data);
+
+            return response()->json(['result' => true]);
+        } catch (\Exception $th) {
+            // Manejo de errores
+            return response()->json(['result' => $th->getMessage()]);
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.

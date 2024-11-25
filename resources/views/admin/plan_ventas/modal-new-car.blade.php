@@ -5,8 +5,8 @@
                     aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">Agregar vehículo</h4>
         </div>
-        {!! Form::open([   
-            'url' => action('ProductController@store'),       
+        {!! Form::open([
+            'url' => action('ProductController@store'),
             'id' => 'product_add_form',
             'class' => 'product_form_modal ',
             'files' => true,
@@ -184,29 +184,14 @@
 
                     <div class="clearfix"></div>
 
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <br>
-                            <label>
-                                {!! Form::checkbox('is_show', 1, false, [
-                                    'class' => 'input-icheck',
-                                    'id' => 'is_show',
-                                ]) !!} <strong>@lang('Se muestra en piso?')</strong>
-                            </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
-                            mantenimiento')) <p class="help-block"><i>@lang('Este check indica si el vehículo se está mostrando en la venta')</i></p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <br>
-                            <label>
-                                {!! Form::checkbox('is_mant', 1, false, [
-                                    'class' => 'input-icheck',
-                                    'id' => 'is_mant',
-                                ]) !!} <strong>@lang('Se encuentra en mantenimiento?')</strong>
-                            </label>@show_tooltip(__('Al marcar esta opción, al guardar se deshabilita si se encuentra en
-                            exhibición')) <p class="help-block"><i>@lang('Este check indica si el vehículo se encuentra en mantenimiento')</i></p>
-                        </div>
+                   
+                    <div class="form-group col-md-3">
+                        {!! Form::label('state', 'Se encuentra en' . ':') !!}
+                        {!! Form::select('state', ['0' => 'Exhibición', '1' => 'Mantenimiento', '2' => 'Vendido'], null, [
+                            'class' => 'form-control',
+                            'id' => 'gender',
+                            'placeholder' => __('messages.please_select'),
+                        ]) !!}
                     </div>
                     @if (!empty($common_settings['enable_product_warranty']))
                         <div class="col-sm-4">

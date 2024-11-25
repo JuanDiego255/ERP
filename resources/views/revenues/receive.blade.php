@@ -10,7 +10,7 @@
             <select name="contact_id" class="form-control select2" id="contact_id">
                 <option selected value="{{ $contact->id }}">{{ $contact->name . ' - (' . $contact->contact_id . ')' }}
                 </option>
-                @foreach ($contacts as $contact_id => $contact_data)                    
+                @foreach ($contacts as $contact_id => $contact_data)
                     <option value="{{ $contact_data['rev_id'] }}">
                         {{ $contact_data['contact'] }}
                     </option>
@@ -857,6 +857,11 @@
                                         behavior: 'smooth',
                                         block: 'center'
                                     });
+                                    // Enfoca la segunda columna (índice 1, ya que los índices empiezan en 0)
+                                    var secondColumnInput = lastRow.closest('tr').find('td').eq(2).find('input');
+                                    if (secondColumnInput.length) {
+                                        secondColumnInput.focus().select();
+                                    }
                                 }
                             }, 1000);
                             toggleInputs();

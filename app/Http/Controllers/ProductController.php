@@ -115,7 +115,9 @@ class ProductController extends Controller
                 'products.bin',
                 'products.created_at',
                 'products.image',
-                'products.is_inactive'
+                'products.is_inactive',
+                'products.is_show',
+                'products.is_mant'
 
             )->groupBy('products.id');
 
@@ -159,7 +161,7 @@ class ProductController extends Controller
                         }
                         //Boton para ver los gastos del vehiculo
                         $html .=
-                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id,0]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
+                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id, 0]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
                         //Boton para ver los gastos del vehiculo
                         if ($row->is_inactive == 1) {
                             $html .=
@@ -190,8 +192,15 @@ class ProductController extends Controller
                     }
                 )
                 ->editColumn('product', function ($row) {
-                    $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->product;
-
+                    $text = '';
+                    if ($row->is_inactive == 1) {
+                        $text = ' <span class="label bg-gray">' . "Vendido" . '</span>';
+                    } else if ($row->is_show == 1) {
+                        $text = ' <span class="label bg-gray">' . "Exhibición" . '</span>';
+                    } else if ($row->is_mant == 1) {
+                        $text = ' <span class="label bg-gray">' . "Mantenimiento" . '</span>';
+                    }
+                    $product =  $row->product . $text;
 
                     return $product;
                 })
@@ -582,6 +591,24 @@ class ProductController extends Controller
             } else {
                 $product_details['is_mant'] = 0;
             }
+            //Estado del vehículo
+            $value = $request->input('state');
+            switch ($value) {
+                case 0:
+                    $column = "is_show";
+                    $product_details["is_mant"] = 0;
+                    break;
+                case 1:
+                    $column = "is_mant";
+                    $product_details["is_show"] = 0;
+                    break;
+                case 2:
+                    $column = "is_inactive";
+                    $product_details["is_show"] = 0;
+                    $product_details["is_mant"] = 0;
+                    break;
+            }
+            $product_details[$column] = 1;
 
             //upload document
             $product_details['image'] = $this->productUtil->uploadFile($request, 'image', config('constants.product_img_path'), 'image');
@@ -966,16 +993,23 @@ class ProductController extends Controller
             $product->monto_venta = isset($request->monto_venta)
                 ? floatval(str_replace(',', '', $request->monto_venta))
                 : null;
-            if (!empty($request->input('is_show')) &&  $request->input('is_show') == 1) {
-                $product->is_show = 1;
-            } else {
-                $product->is_show = 0;
+            $value = $request->input('state');
+            switch ($value) {
+                case 0:
+                    $column = "is_show";
+                    $product->is_mant = 0;
+                    break;
+                case 1:
+                    $column = "is_mant";
+                    $product->is_show = 0;
+                    break;
+                case 2:
+                    $column = "is_inactive";
+                    $product->is_show = 0;
+                    $product->is_mant = 0;
+                    break;
             }
-            if (!empty($request->input('is_mant')) &&  $request->input('is_mant') == 1) {
-                $product->is_mant = 1;
-            } else {
-                $product->is_mant = 0;
-            }
+            $product->$column = 1;
 
             //$product->not_for_selling = (!empty($request->input('not_for_selling')) &&  $request->input('not_for_selling') == 1) ? 1 : 0;
 

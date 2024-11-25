@@ -455,7 +455,6 @@ class RevenueController extends Controller
             $saldo_anterior = $request->input('saldo_anterior');
             $fecha_interes_anterior = $request->input('fecha_pago_anterior');
             $es_cero = $request->input('es_cero');
-            $fecha_interes_cero = $request->input('fecha_interes_cero');
             $detalle[$column] = $value;
             $fecha_interes_anterior = $request->input('fecha_pago_anterior');
             if ($column == "created_at" || $column == "fecha_interes") {

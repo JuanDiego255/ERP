@@ -446,7 +446,7 @@
                 // Completar los campos con la información del vehículo
                 $('#marca').val(data.marca);
                 $('#fecha_ingreso').val(data.fecha_ingreso);
-                $('#vin').val(data.vin);
+                $('#vin').val(data.bin);
                 $('#dua').val(data.dua);
                 $('#placa').val(data.placa);
                 $('#combustible').val(data.combustible);
