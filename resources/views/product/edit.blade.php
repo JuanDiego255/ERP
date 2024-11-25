@@ -7,9 +7,9 @@
     <section class="content-header">
         <h1>@lang('product.edit_product')</h1>
         <!-- <ol class="breadcrumb">
-                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                    <li class="active">Here</li>
-                                  </ol> -->
+                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                        <li class="active">Here</li>
+                                      </ol> -->
     </section>
 
     <!-- Main content -->
@@ -243,16 +243,16 @@
                 <div class="clearfix"></div>
                 <div class="form-group col-md-3">
                     @php
-                   
-                    if($product->is_show == 1){
-                        $state = 0;
-                    }
-                    if($product->is_mant == 1){
-                        $state = 1;
-                    }
-                    if($product->is_inactive == 1){
-                        $state = 2;
-                    }
+                        $state = null;
+                        if ($product->is_show == 1) {
+                            $state = 0;
+                        }
+                        if ($product->is_mant == 1) {
+                            $state = 1;
+                        }
+                        if ($product->is_inactive == 1) {
+                            $state = 2;
+                        }
                     @endphp
                     {!! Form::label('state', 'Se encuentra en' . ':') !!}
                     {!! Form::select('state', ['0' => 'Exhibición', '1' => 'Mantenimiento', '2' => 'Vendido'], $state, [

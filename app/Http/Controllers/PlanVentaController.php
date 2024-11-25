@@ -370,8 +370,9 @@ class PlanVentaController extends Controller
                     ->where('id', $request->vehiculo_recibido_id_hidden)
                     ->firstOrFail();
                 if ($vehicle->is_inactive == 1) {
+                    $stay = $vehicle->stay + 1;
                     $veh_recibido['is_inactive'] = 0;
-                    $veh_recibido['receive_date'] = Carbon::now()->format('Y-m-d');
+                    $veh_recibido['stay'] = $stay;
                     $vehicle->update($veh_recibido);
                 }
             }

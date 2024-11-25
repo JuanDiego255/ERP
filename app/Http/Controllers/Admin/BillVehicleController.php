@@ -28,10 +28,20 @@ class BillVehicleController extends Controller
 
 
      */
-    public function indexBill($id,$type)
+    public function indexBill($id, $type)
     {
-        $was_received = Product::where('id',$id)->first()->receive_date;
         $business_id = request()->session()->get('user.business_id');
+        $stays = VehicleBill::where('vehicle_bills.business_id', $business_id)
+            ->where('vehicle_bills.product_id', $id)
+            ->select('vehicle_bills.stay')
+            ->groupBy('vehicle_bills.stay') // Agrupar por los valores únicos de 'stay'
+            ->pluck('stay'); // Obtener los valores únicos como una colección
+
+        // Formatear los valores en el arreglo deseado
+        $stayArray = $stays->mapWithKeys(function ($stay) {
+            return [$stay => "Estancia $stay"];
+        })->toArray();
+
         $all_cars = Product::where('products.business_id', $business_id)
             ->join('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
             ->select(
@@ -62,13 +72,9 @@ class BillVehicleController extends Controller
                 DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
             ]);
 
-        if($was_received != ""){
-            if($type != 1){
-                $bills->whereDate('vehicle_bills.fecha_compra', '<', $was_received);
-            }else{
-                $bills->whereDate('vehicle_bills.fecha_compra', '>=', $was_received);
-            }           
-        }
+
+        $bills->where('vehicle_bills.stay', '=', $type);
+
         if (request()->ajax()) {
 
             return Datatables::of($bills)
@@ -90,10 +96,10 @@ class BillVehicleController extends Controller
                 ->rawColumns(['action', 'name'])
                 ->make(true);
         }
-        $totalMonto = (clone $bills)->sum('vehicle_bills.monto');        
+        $totalMonto = (clone $bills)->sum('vehicle_bills.monto');
         $cant_gastos = (clone $bills)->count();
 
-        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'cant_gastos', 'cars','was_received','type'));
+        return view('admin.vehicle-bills.index', compact('id', 'totalMonto', 'stayArray', 'cant_gastos', 'cars', 'type'));
     }
     /**
      * Show the form for creating a new resource.
@@ -162,12 +168,18 @@ class BillVehicleController extends Controller
             $bill_details['monto'] = $monto;
             $bill_details['created_by'] = $user_id;
             $bill_details['is_cxp'] = $request->is_cxp ? 1 : 0;
-
+            //Calcular estancia del vehículo
+            $stay = Product::where('id', $request->product_id)
+                ->where('business_id', $business_id)
+                ->first()->stay ?? 1;
+            if ($stay) {
+                $bill_details['stay'] = $stay;
+            }
             // Crear el registro en VehicleBill
             $bill = VehicleBill::create($bill_details);
 
             // Ingresar a cuentas por pagar si es CxP
-            if ($request->is_cxp) {               
+            if ($request->is_cxp) {
                 $transaction_data = [
                     'business_id' => $business_id,
                     'created_by' => $user_id,
@@ -230,11 +242,12 @@ class BillVehicleController extends Controller
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __("messages.something_went_wrong")
+                'msg' => $e->getMessage()
             ];
+            return redirect()->back()->with('status', $output);
         }
 
-        return redirect('products/bills/' . $request->product_id . '/0')->with('status', $output);
+        return redirect('products/bills/' . $request->product_id . '/' . $stay)->with('status', $output);
     }
 
     /**
@@ -334,9 +347,9 @@ class BillVehicleController extends Controller
         try {
             DB::beginTransaction();
             $user_id = $request->session()->get('user.id');
-
+            $business_id = $request->session()->get('user.business_id');
             // Obtener datos actuales del registro
-            $bill = VehicleBill::where('business_id', $request->session()->get('user.business_id'))
+            $bill = VehicleBill::where('business_id', $business_id)
                 ->findOrFail($id);
             $is_cxp = $bill->is_cxp;
 
@@ -375,6 +388,13 @@ class BillVehicleController extends Controller
             $bill_details['created_by'] = $user_id;
             $monto = isset($request['monto']) ? floatval(str_replace(',', '', $request['monto'])) : 0;
             $bill_details['monto'] = $monto;
+            //Calcular estancia del vehículo
+            $stay = Product::where('id', $request->product_id)
+                ->where('business_id', $business_id)
+                ->first()->stay ?? 1;
+            if ($stay) {
+                $bill_details['stay'] = $stay;
+            }
             // Verificar cambios y agregar al arreglo de auditoría
             foreach ($bill_details as $campo => $nuevo_valor) {
                 $valor_antiguo = $bill->$campo;
@@ -433,6 +453,6 @@ class BillVehicleController extends Controller
             ];
         }
 
-        return redirect('products/bills/' . $request->product_id . '/0' )->with('status', $output);
+        return redirect('products/bills/' . $request->product_id . '/' . $stay)->with('status', $output);
     }
 }

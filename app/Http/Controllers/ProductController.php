@@ -161,7 +161,7 @@ class ProductController extends Controller
                         }
                         //Boton para ver los gastos del vehiculo
                         $html .=
-                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id, 0]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
+                            '<li><a href="' . action('Admin\BillVehicleController@indexBill', [$row->id, 1]) . '" class="bill-product"><i class="fa fa-receipt"></i> ' . __("Gastos") . '</a></li>';
                         //Boton para ver los gastos del vehiculo
                         if ($row->is_inactive == 1) {
                             $html .=
