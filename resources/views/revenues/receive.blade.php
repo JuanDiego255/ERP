@@ -674,7 +674,6 @@
                 var tasa = $('#tasa').val();
                 var cuota = $('#cuota').val().replace(/,/g, '').replace(/\.\d+$/, '');
                 var inputType = input.attr('type'); // Obtiene el tipo de input
-                var fecha_interes_cero = "";
                 // Verificar si es un input de tipo "text" o "number" y realizar las validaciones correspondientes
                 var isValid = false;
                 if (inputType === 'text') {
@@ -689,9 +688,8 @@
                 if (value != initialValue && isValid && saldo_anterior != 0) {
                     if (column_name === "paga") {
                         saldo_anterior = saldo_anterior.replace(/,/g, '');
-                        var interes_calc = parseFloat(saldo_anterior * (tasa / 100));
-                        var amortiza = parseFloat(value - interes_calc);
-                        var diasCalcPorSaldo = calcDiasInteres(saldo_anterior, tasa, value);
+                        var diasCalcPorSaldo = calcDiasInteres(saldo_anterior, tasa, value,
+                            fecha_interes_act);
                         var diasCalcEntreFechas = diferenciaEnDias(fecha_pago_interes_ant,
                             fecha_interes_act);
                         if (diasCalcPorSaldo < diasCalcEntreFechas) {
@@ -712,36 +710,32 @@
                             var nuevoAnio = fechaInicial.getFullYear();
                             var nuevaFechaPago = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
                             fecha_interes_cero = nuevaFechaPago;
-                            //Calcular nueva fecha
+
                             swal({
                                 title: LANG.sure,
-                                text: 'La cuota pagada solo cubre hasta el día ' + nuevaFechaPago +
+                                text: 'La cuota pagada solo cubre hasta el día ' +
+                                    nuevaFechaPago +
                                     ',¿Desea continuar?',
                                 icon: "warning",
                                 buttons: true,
                                 dangerMode: true,
                             }).then((willDelete) => {
                                 if (willDelete) {
-                                    ejecutarAjax
-                                        (1,
-                                            fecha_interes_cero
-                                        ); // Llama a la función para realizar la solicitud AJAX
+                                    fecha_interes_act = fecha_interes_cero;
+                                    ejecutarAjax();
                                 } else {
                                     restablecerValorInicial
-                                        (); // Restablece y formatea el valor inicial si el usuario cancela
+                                (); // Restablece y formatea el valor inicial si el usuario cancela
                                 }
                             });
+
                         } else {
                             ejecutarAjax
-                                (
-                                    0, fecha_interes_cero
-                                ); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
+                        (); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
                         }
                     } else {
                         ejecutarAjax
-                            (0,
-                                fecha_interes_cero
-                            ); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
+                    (); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
                     }
                 }
 
@@ -751,10 +745,7 @@
                     input.val(formattedInitialValue); // Restablece el valor inicial formateado
                 }
 
-                function ejecutarAjax(es_cero, pfecha_interes_cero) {
-                    // Deshabilita todos los campos de entrada mientras se procesa la solicitud
-                    $('input[type="text"], input[type="number"]').prop('disabled', true);
-
+                function ejecutarAjax() {
                     // Guardar la posición del siguiente input antes de la recarga
                     var currentInputIndex = input.closest('td').index() - 1;
 
@@ -765,41 +756,55 @@
                             _token: $('meta[name="csrf-token"]').attr('content'),
                             column: column_name,
                             value: value,
-                            es_cero: es_cero,
-                            fecha_interes_cero: pfecha_interes_cero,
                             saldo_anterior: saldo_anterior,
-                            fecha_pago_anterior: fecha_pago_interes_ant
+                            fecha_pago_anterior: fecha_pago_interes_ant,
+                            fecha_interes_act: fecha_interes_act
                         },
                         success: function(response) {
                             if (response.success) {
-                                console.log(response.msg)
+                                console.log(response.msg);
                                 htmlContent = "";
-                                payment_table.ajax.reload(function() {
-                                    // Buscar la fila por el 'row_id' después de recargar la tabla
-                                    var updatedRow = $('#payments tbody tr').filter(
-                                        function() {
-                                            return $(this).find('td').eq(1)
-                                                .text() === row_id;
+                                if (column_name == "paga") {
+                                    // Encontrar y almacenar los valores de los inputs en la fila procesada
+                                    ['amortiza', 'interes_c', 'monto_general', 'paga'].forEach(
+                                        function(
+                                            inputName) {
+                                            // Buscar el input con el nombre especificado en la fila procesada
+                                            var inputField = input.closest('tr').find(
+                                                `input[name="${inputName}"]`);
+
+                                            if (inputField.length > 0) {
+                                                // Asignar el valor desde response.data al input
+                                                inputField.val(response.data[inputName]);
+                                            } else {
+                                                console.warn(
+                                                    `No se encontró un input con el nombre '${inputName}' en la fila procesada`
+                                                );
+                                            }
                                         });
+                                } else if (column_name == "amortiza" || column_name ==
+                                    "interes_c" || column_name == "monto_general") {
+                                    [column_name].forEach(
+                                        function(
+                                            inputName) {
+                                            // Buscar el input con el nombre especificado en la fila procesada
+                                            var inputField = input.closest('tr').find(
+                                                `input[name="${inputName}"]`);
 
-                                    // Encontrar el siguiente input dentro de esa fila
-                                    var nextInput = updatedRow.find('td input').eq(
-                                        currentInputIndex);
-
-                                    // Si existe el siguiente input, aplicar el foco y seleccionar el texto
-                                    if (nextInput.length > 0) {
-                                        nextInput.focus().select();
-                                    }
-                                });
+                                            if (inputField.length > 0) {
+                                                // Asignar el valor desde response.data al input
+                                                inputField.val(response.data[inputName]);
+                                            } else {
+                                                console.warn(
+                                                    `No se encontró un input con el nombre '${inputName}' en la fila procesada`
+                                                );
+                                            }
+                                        });
+                                }
                             }
                         },
                         error: function(xhr) {
                             // Manejo de error
-                        },
-                        complete: function() {
-                            // Rehabilita los campos de entrada después de que la solicitud se complete
-                            $('input[type="text"], input[type="number"]').prop('disabled',
-                                false);
                         }
                     });
                 }
@@ -858,7 +863,8 @@
                                         block: 'center'
                                     });
                                     // Enfoca la segunda columna (índice 1, ya que los índices empiezan en 0)
-                                    var secondColumnInput = lastRow.closest('tr').find('td').eq(2).find('input');
+                                    var secondColumnInput = lastRow.closest('tr').find(
+                                        'td').eq(2).find('input');
                                     if (secondColumnInput.length) {
                                         secondColumnInput.focus().select();
                                     }
@@ -910,26 +916,19 @@
                 var currentRow = $(this).closest('tr');
                 var allRows = $(this).closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
-
                 // Obtén los valores de las celdas de la fila actual y de la penúltima fila
                 var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val().replace(/,/g,
                     '');
                 var paga = currentRow.find('td').eq(6).find('input[type="text"]').val().replace(/,/g, '');
                 var fecha_anterior_int = penultimaFila.find('td').eq(3).find('input[type="text"]').val();
                 var fecha_actual = currentRow.find('td').eq(3).find('input[type="text"]').val();
-                var interes = parseFloat(currentRow.find('td').eq(8).find('input[type="text"]').val());
                 var tasa = $('#tasa').val();
-                var es_cero = 0;
-                var fecha_interes_cero = "";
                 var href = $(this).data('href');
-
-                // Realiza el cálculo de interés y amortización
-                var interes_calc = parseFloat(saldo * (tasa / 100));
-                var amortiza = parseFloat(paga - interes_calc);
-
                 // Calcula la cantidad de días por saldo y entre fechas
-                var diasCalcPorSaldo = calcDiasInteres(saldo, tasa, paga);
-                var diasCalcEntreFechas = diferenciaEnDias(fecha_anterior_int, fecha_actual);
+                var diasCalcPorSaldo = calcDiasInteres(saldo, tasa, paga,
+                    fecha_actual);
+                var diasCalcEntreFechas = diferenciaEnDias(fecha_anterior_int,
+                    fecha_actual);
 
                 if (diasCalcPorSaldo < diasCalcEntreFechas) {
                     // Calcula la nueva fecha de pago cuando el saldo no cubre todos los días
@@ -945,8 +944,6 @@
                     var nuevoMes = (fechaInicial.getMonth() + 1).toString().padStart(2, '0');
                     var nuevoAnio = fechaInicial.getFullYear();
                     fecha_interes_cero = `${nuevoDia}/${nuevoMes}/${nuevoAnio}`;
-                    es_cero = 1; // Marca que el saldo no cubre el total
-
                     // Mensaje de confirmación
                     swal({
                         title: LANG.sure,
@@ -957,6 +954,7 @@
                         dangerMode: true,
                     }).then((willDelete) => {
                         if (willDelete) {
+                            fecha_actual = fecha_interes_cero;
                             realizarAjax(href);
                         }
                     });
@@ -965,19 +963,14 @@
                 }
 
                 function realizarAjax(href) {
-
                     var data = {
                         saldo: saldo,
                         paga: paga,
-                        interes: interes,
                         fecha_anterior_int: fecha_anterior_int,
                         fecha_actual: fecha_actual,
                         tasa: tasa,
-                        es_cero: es_cero,
-                        fecha_interes_cero: fecha_interes_cero,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     };
-
                     $.ajax({
                         method: "POST",
                         url: href,
@@ -986,7 +979,23 @@
                         success: function(result) {
                             if (result.success == true) {
                                 toastr.success(result.msg);
-                                payment_table.ajax.reload();
+                                //payment_table.ajax.reload();
+                                ['amortiza', 'interes_c', 'monto_general', 'paga'].forEach(
+                                    function(
+                                        inputName) {
+                                        // Buscar el input con el nombre especificado en la fila procesada
+                                        var inputField = currentRow.closest('tr').find(
+                                            `input[name="${inputName}"]`);
+
+                                        if (inputField.length > 0) {
+                                            // Asignar el valor desde response.data al input
+                                            inputField.val(result.data[inputName]);
+                                        } else {
+                                            console.warn(
+                                                `No se encontró un input con el nombre '${inputName}' en la fila procesada`
+                                            );
+                                        }
+                                    });
                                 htmlContent = "";
                             } else {
                                 toastr.error(result.msg);
@@ -995,7 +1004,6 @@
                     });
                 }
             });
-
             $(document).on('click', 'a.view-payment', function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -1075,14 +1083,12 @@
                 });
             }
 
-            function calcDiasInteres(saldo_anterior, tasa, paga) {
-                var mes_dias = 30;
-                var calc_tasa = saldo_anterior * (tasa / 100);
-                var calc_tasa_mensual = calc_tasa / mes_dias;
-                var calc_diff_dias_paga = paga - calc_tasa;
-                var dias_calculados = (calc_diff_dias_paga / calc_tasa_mensual) + mes_dias;
-                dias_calculados = dias_calculados >= 10 ? Math.floor(dias_calculados / 10) * 10 : Math.floor(
-                    dias_calculados);
+            function calcDiasInteres(saldo_anterior, tasa, paga, fecha_interes_act) {
+                const mes_dias = 30;
+                const calc_tasa = tasa === 0 ? saldo_anterior : saldo_anterior * (tasa / 100);
+                const pago_diario = calc_tasa / mes_dias;
+                dias_calculados = paga / pago_diario;
+                dias_calculados = Math.floor(dias_calculados);
                 return dias_calculados;
             }
 
