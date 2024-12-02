@@ -877,7 +877,7 @@ class ExpenseController extends Controller
                 'fecha_vence',
                 'plazo'
             ]);
-
+            $cambios[] = "Factura modificada: $transaction->ref_no";
             foreach ($transaction_audit as $campo => $nuevo_valor) {
                 $valor_antiguo = $transaction->$campo;
                 if ($nuevo_valor != $valor_antiguo) {
@@ -901,8 +901,8 @@ class ExpenseController extends Controller
                     // Reemplazar guiones bajos por espacios en el nombre del campo
                     $campo_formateado = str_replace('_', ' ', $campo);
 
-                    // Agregar el cambio al arreglo de auditoría
-                    $cambios[] = "$campo_formateado => Se cambió el valor: $valor_antiguo por el valor: $nuevo_valor";
+                    // Agregar el cambio al arreglo de auditoría                   
+                    $cambios[] .= "$campo_formateado => Se cambió el valor: $valor_antiguo por el valor: $nuevo_valor";
                 }
             }
 
