@@ -7,11 +7,12 @@ use App\Models\Contact;
 use App\Events\TransactionPaymentAdded;
 use App\Events\TransactionPaymentDeleted;
 use App\Events\TransactionPaymentUpdated;
+use App\Models\Audit;
 use App\Models\Transaction;
 use App\Models\TransactionPayment;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
-
+use Carbon\Carbon;
 use Datatables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -94,6 +95,7 @@ class TransactionPaymentController extends Controller
                 $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['payment_for'] = $transaction->contact_id;
+                $inputs['ref_no_audit'] = $transaction->ref_no;
 
                 if ($inputs['method'] == 'custom_pay_1') {
                     $inputs['transaction_no'] = $request->input('transaction_no_1');
@@ -129,6 +131,40 @@ class TransactionPaymentController extends Controller
                 $this->transactionUtil->updatePaymentStatus($transaction_id, $transaction->final_total);
                 $inputs['transaction_type'] = $transaction->type;
                 event(new TransactionPaymentAdded($tp, $inputs));
+                $cambios = [];
+                $transaction_audit = $request->only([
+                    'amount',
+                    'paid_on',
+                    'payment_for',
+                    'note'
+                ]);
+                $transaction_audit['payment_for'] = $inputs['ref_no_audit'];
+                foreach ($transaction_audit as $campo => $valor) {
+                    switch ($campo) {
+                        case "amount":
+                            $campo = "monto";
+                            break;
+                        case "paid_on":
+                            $campo = "fecha de pago";
+                            break;
+                        case "note":
+                            $campo = "detalle";
+                            break;
+                        case "payment_for":
+                            $campo = "factura aplica";
+                            break;
+                    }
+                    $campo_formateado = str_replace('_', ' ', $campo);
+                    // Agregar el campo y su valor al arreglo de cambios
+                    $cambios[] = "$campo_formateado => $valor *.*";
+                }
+                // Guardar los cambios en la tabla de auditoría
+                $user_id = $request->session()->get('user.id');
+                $audit['type'] = "cxp";
+                $audit['type_transaction'] = "Creación de pago";
+                $audit['change'] = implode("\n", $cambios); // Cada cambio en una nueva línea
+                $audit['update_by'] = $user_id;
+                Audit::create($audit);
                 DB::commit();
             }
 
@@ -268,6 +304,34 @@ class TransactionPaymentController extends Controller
             // die;
 
             $payment = TransactionPayment::findOrFail($id);
+            $cambios = [];
+            $transaction_audit = $request->only([
+                'amount',
+                'payment_for',
+                'note'
+            ]);
+
+            foreach ($transaction_audit as $campo => $nuevo_valor) {
+                $valor_antiguo = $payment->$campo;
+                if ($nuevo_valor != $valor_antiguo) {
+                    switch ($campo) {
+                        case "amount":
+                            $campo = "monto";
+                            break;
+                        case "payment_for":
+                            $campo = "factura aplica";
+                            break;
+                        case "note":
+                            $campo = "detalle";
+                            break;
+                    }
+                    // Reemplazar guiones bajos por espacios en el nombre del campo
+                    $campo_formateado = str_replace('_', ' ', $campo);
+
+                    // Agregar el cambio al arreglo de auditoría
+                    $cambios[] = "$campo_formateado => Se cambió el valor: $valor_antiguo por el valor: $nuevo_valor";
+                }
+            }
 
             //Update parent payment if exists
             if (!empty($payment->parent_id)) {
@@ -293,6 +357,15 @@ class TransactionPaymentController extends Controller
 
             //update payment status
             $this->transactionUtil->updatePaymentStatus($payment->transaction_id);
+            $user_id = $request->session()->get('user.id');
+            if (!empty($cambios)) {
+                $audit = new Audit();
+                $audit->type = "cxp";
+                $audit->type_transaction = "modificación de pago";
+                $audit->change = implode("*.*\n", $cambios);
+                $audit->update_by = $user_id;
+                $audit->save();
+            }
             DB::commit();
 
             //event
@@ -321,15 +394,27 @@ class TransactionPaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         if (!auth()->user()->can('purchase.payments')) {
             abort(403, 'Unauthorized action.');
         }
+        DB::beginTransaction();
 
         if (request()->ajax()) {
             try {
+                $business_id = $request->session()->get('user.business_id');
                 $payment = TransactionPayment::findOrFail($id);
+                $transaction = Transaction::where('business_id', $business_id)
+                ->find($payment->transaction_id);
+                 // Guardar auditoría antes de eliminar el registro
+                 $user_id = $request->session()->get('user.id');
+                 $audit = new Audit();
+                 $audit->type = "cxp";
+                 $audit->type_transaction = "eliminación de pago";
+                 $audit->change = "Pago eliminado, pago: {$payment->id}, aplicado a la factura: {$transaction->ref_no} eliminada el día: " . Carbon::now()->format('Y-m-d H:i:s');
+                 $audit->update_by = $user_id;
+                 $audit->save();
 
                 //Update parent payment if exists
                 if (!empty($payment->parent_id)) {
@@ -344,6 +429,7 @@ class TransactionPaymentController extends Controller
                 }
 
                 $payment->delete();
+                DB::commit();
 
                 //update payment status
                 $this->transactionUtil->updatePaymentStatus($payment->transaction_id);
@@ -355,6 +441,7 @@ class TransactionPaymentController extends Controller
                     'msg' => __('purchase.payment_deleted_success')
                 ];
             } catch (\Exception $e) {
+                Db::rollBack();
                 \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
                 $output = [
@@ -631,13 +718,12 @@ class TransactionPaymentController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('business.id');
-            $single_payment_line = TransactionPayment::
-            leftJoin('users AS usr', 'transaction_payments.created_by', '=', 'usr.id')
+            $single_payment_line = TransactionPayment::leftJoin('users AS usr', 'transaction_payments.created_by', '=', 'usr.id')
                 ->select(
                     'transaction_payments.*',
                     DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
                 )
-            ->findOrFail($payment_id);
+                ->findOrFail($payment_id);
 
             $transaction = null;
             if (!empty($single_payment_line->transaction_id)) {
