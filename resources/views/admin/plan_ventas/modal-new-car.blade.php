@@ -7,7 +7,7 @@
         </div>
         {!! Form::open([
             'url' => action('ProductController@store'),
-            'id' => 'product_add_form',
+            'id' => 'product_add_form_pv',
             'class' => 'product_form_modal ',
             'files' => true,
         ]) !!}

@@ -2655,8 +2655,7 @@ $(document).on('change', 'input.row-select', function () {
         url: url,
         method: 'POST',
         data: data,
-        success: function (result) {
-        },
+        success: function (result) {},
         error: function (xhr, status, error) {
             console.error('Error al generar el reporte:', error);
         }
@@ -3109,7 +3108,7 @@ $(document).on('click', '.remove_cars', function () {
     $('#vehiculo_recibido_id').val("");
 });
 //Boton para guardar carro desde plan de ventas
-$(document).on('submit', 'form#product_add_form', function (e) {
+$(document).on('submit', 'form#product_add_form_pv', function (e) {
     e.preventDefault();
     var data = $(this).serialize();
     $.ajax({
@@ -3119,10 +3118,15 @@ $(document).on('submit', 'form#product_add_form', function (e) {
         data: data,
         success: function (response) {
             // Manejar la respuesta exitosa
-            toastr.success('El vehículo ha sido guardado con éxito');
-            $('#vehiculo_recibido_id').val(response.name);
-            $('#vehiculo_recibido_id_hidden').val(response.product_id);
-            $('.car_new_modal').modal('hide');
+            if (response.success == 1) {
+                toastr.success('El vehículo ha sido guardado con éxito');
+                $('#vehiculo_recibido_id').val(response.name);
+                $('#vehiculo_recibido_id_hidden').val(response.product_id);
+                $('.car_new_modal').modal('hide');
+            } else {
+                toastr.warning(response.msg);
+            }
+
         },
         error: function (xhr, status, error) {
             // Manejar errores

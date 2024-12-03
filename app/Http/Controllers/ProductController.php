@@ -479,7 +479,21 @@ class ProductController extends Controller
         }
 
         try {
-
+            $vin_exist = $this->checkProductSku($request);
+            if (!$vin_exist) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('Ya existe un vehículo con ese VIN '),
+                    'product_id' => null,
+                    'name' => null
+                ];
+                if ($request->ajax()) {
+                    return response()->json($output);
+                }
+                return redirect()->action(
+                    'ProductController@create'
+                )->with('status', $output);
+            }
             $request->merge(['codigo_barras' => $request->codigo_barras ?? '']);
             $request->merge(['codigo_anp' => $request->codigo_anp ?? '']);
             $request->merge(['perc_glp' => $request->perc_glp ?? 0]);
@@ -688,11 +702,10 @@ class ProductController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => __("messages.something_went_wrong")
+                'msg' => __("Mal Mal")
             ];
             return redirect('products')->with('status', $output);
         }
-
         if ($request->input('submit_type') == 'submit_n_add_opening_stock') {
             return redirect()->action(
                 'OpeningStockController@add',
@@ -1562,31 +1575,16 @@ class ProductController extends Controller
     public function checkProductSku(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $sku = $request->input('sku');
-        $product_id = $request->input('product_id');
-
+        $vin = $request->bin;
         //check in products table
         $query = Product::where('business_id', $business_id)
-            ->where('sku', $sku);
-        if (!empty($product_id)) {
-            $query->where('id', '!=', $product_id);
-        }
-        $count = $query->count();
+            ->where('bin', $vin);
 
-        //check in variation table if $count = 0
+        $count = $query->count();
         if ($count == 0) {
-            $count = Variation::where('sub_sku', $sku)
-                ->join('products', 'variations.product_id', '=', 'products.id')
-                ->where('product_id', '!=', $product_id)
-                ->where('business_id', $business_id)
-                ->count();
-        }
-        if ($count == 0) {
-            echo "true";
-            exit;
+            return true;
         } else {
-            echo "false";
-            exit;
+            return false;
         }
     }
 

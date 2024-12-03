@@ -83,6 +83,7 @@
                             'class' => 'form-control',
                             'required',
                             'placeholder' => __('VIN'),
+                            'id' => 'bin'
                         ]) !!}
                     </div>
                 </div>
