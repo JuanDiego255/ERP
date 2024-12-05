@@ -508,14 +508,19 @@ class PlanVentaController extends Controller
             $cxc['created_by'] = Auth::user()->id;
             $cxc_item->update($cxc);
             //Primer linea de pago CxC
-            $pay = PaymentRevenue::where('revenue_id', $cxc_item->id)
-                ->firstOrFail();
-            $cxc_pay['cuota'] = $cuota;
-            $cxc_pay['monto_general'] = $total_financiado_format;
-            $cxc_pay['paga'] = 0;
-            $cxc_pay['interes_c'] = 0;
-            $cxc_pay['amortiza'] = 0;
-            $pay->update($cxc_pay);
+            $cxc_pay = [
+                'cuota' => $cuota,
+                'monto_general' => $total_financiado_format,
+                'paga' => 0,
+                'interes_c' => 0,
+                'amortiza' => 0,
+            ];
+
+            // Actualizar o crear el registro
+            $pay = PaymentRevenue::updateOrCreate(
+                ['revenue_id' => $cxc_item->id], // Criterio de búsqueda
+                $cxc_pay // Valores a actualizar o crear
+            );
             $vehicle = Product::where('business_id', $business_id)
                 ->where('id', $request->vehiculo_venta_id_hidden)
                 ->firstOrFail();

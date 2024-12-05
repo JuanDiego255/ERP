@@ -725,17 +725,17 @@
                                     ejecutarAjax();
                                 } else {
                                     restablecerValorInicial
-                                (); // Restablece y formatea el valor inicial si el usuario cancela
+                                        (); // Restablece y formatea el valor inicial si el usuario cancela
                                 }
                             });
 
                         } else {
                             ejecutarAjax
-                        (); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
+                                (); // Si no hay problema con la amortización, realiza la solicitud AJAX directamente
                         }
                     } else {
                         ejecutarAjax
-                    (); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
+                            (); // Si la validación de la cuota no es relevante, realiza la solicitud AJAX
                     }
                 }
 
@@ -762,6 +762,19 @@
                         },
                         success: function(response) {
                             if (response.success) {
+                                if (response.msg == -1) {
+                                    swal({
+                                        title: "Problema entre fechas",
+                                        text: 'La fecha de interés es menor que la fecha de interés anterior. No se pudieron realizar los cambios',
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                    }).then((willDelete) => {
+                                        input.closest('tr').find('td').eq(3).find('input').focus().select();
+                                        input.val(initialValue);
+                                    });
+                                    return;
+                                }
                                 console.log(response.msg);
                                 htmlContent = "";
                                 if (column_name == "paga") {
@@ -916,6 +929,7 @@
                 var currentRow = $(this).closest('tr');
                 var allRows = $(this).closest('tbody').find('tr');
                 var penultimaFila = allRows.eq(allRows.length - 2);
+                var input_fecha_act = $(this).closest('tr').find('td').eq(2).find('input');
                 // Obtén los valores de las celdas de la fila actual y de la penúltima fila
                 var saldo = penultimaFila.find('td').eq(10).find('input[type="text"]').val().replace(/,/g,
                     '');
@@ -978,6 +992,18 @@
                         data: data,
                         success: function(result) {
                             if (result.success == true) {
+                                if (result.msg == -1) {
+                                    swal({
+                                        title: "Problema entre fechas",
+                                        text: 'La fecha de interés es menor que la fecha de interés anterior. No se pudo realizar el cálculo',
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                    }).then((willDelete) => {
+                                        input_fecha_act.closest('tr').find('td').eq(3).find('input').focus().select();
+                                    });
+                                    return;
+                                }
                                 toastr.success(result.msg);
                                 //payment_table.ajax.reload();
                                 ['amortiza', 'interes_c', 'monto_general', 'paga'].forEach(
