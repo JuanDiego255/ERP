@@ -75,7 +75,7 @@ class PlanVentaController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('employee.update')) {
+        if (!auth()->user()->can('plan_venta.update')) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
@@ -182,7 +182,7 @@ class PlanVentaController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('product.create')) {
+        if (!auth()->user()->can('plan_venta.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -235,7 +235,7 @@ class PlanVentaController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('employee.delete')) {
+        if (!auth()->user()->can('plan_venta.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -274,7 +274,7 @@ class PlanVentaController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('employee.create')) {
+        if (!auth()->user()->can('plan_venta.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -408,7 +408,7 @@ class PlanVentaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('user.update')) {
+        if (!auth()->user()->can('plan_venta.update')) {
             abort(403, 'Unauthorized action.');
         }
         try {
