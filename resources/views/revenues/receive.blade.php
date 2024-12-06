@@ -762,6 +762,7 @@
                         },
                         success: function(response) {
                             if (response.success) {
+                                console.log(response.msg);
                                 if (response.msg == -1) {
                                     swal({
                                         title: "Problema entre fechas",
@@ -770,12 +771,12 @@
                                         buttons: true,
                                         dangerMode: true,
                                     }).then((willDelete) => {
-                                        input.closest('tr').find('td').eq(3).find('input').focus().select();
+                                        input.closest('tr').find('td').eq(3).find(
+                                            'input').focus().select();
                                         input.val(initialValue);
                                     });
                                     return;
                                 }
-                                console.log(response.msg);
                                 htmlContent = "";
                                 if (column_name == "paga") {
                                     // Encontrar y almacenar los valores de los inputs en la fila procesada
@@ -796,7 +797,9 @@
                                             }
                                         });
                                 } else if (column_name == "amortiza" || column_name ==
-                                    "interes_c" || column_name == "monto_general") {
+                                    "interes_c" || column_name == "monto_general" ||
+                                    column_name == "created_at" || column_name ==
+                                    "fecha_interes") {
                                     [column_name].forEach(
                                         function(
                                             inputName) {
@@ -1000,7 +1003,8 @@
                                         buttons: true,
                                         dangerMode: true,
                                     }).then((willDelete) => {
-                                        input_fecha_act.closest('tr').find('td').eq(3).find('input').focus().select();
+                                        input_fecha_act.closest('tr').find('td').eq(3)
+                                            .find('input').focus().select();
                                     });
                                     return;
                                 }

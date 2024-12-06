@@ -454,39 +454,32 @@ class RevenueController extends Controller
             $saldo_anterior = $request->input('saldo_anterior');
             $fecha_interes_anterior = $request->input('fecha_pago_anterior');
             $fecha_interes_act = $request->input('fecha_interes_act');
-            $fechaAnteriorInteresRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior)->startOfDay();
-            $fechaActInteresRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_act)->startOfDay();
+            $fechaAnteriorInteresRequest = $this->convertDates($fecha_interes_anterior);
+            $fechaActInteresRequest = $this->convertDates($fecha_interes_act);
             if (Carbon::parse($fechaActInteresRequest)->greaterThanOrEqualTo($fechaAnteriorInteresRequest)) {
                 $fechaActual = Carbon::parse($fechaActInteresRequest)->startOfDay();
                 $diasCalc = $fechaAnteriorInteresRequest->diffInDays($fechaActual);
             } else {
-                return response()->json(['success' => true, 'msg' => -1]);
+                return response()->json(['success' => true, 'msg' => -1, 'fecha_interes' => $fechaAnteriorInteresRequest . ' - ' . $fechaActInteresRequest]);
             }
             $detalle[$column] = $value;
             $data = null;
             $data[$column] = is_numeric($value) ? number_format($value, 2, '.', ',') : null;
             if ($column == "created_at" || $column == "fecha_interes") {
-                $fechaFormateada = null;
+                $fechaFormateada = $this->convertDates($value);
 
-                if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
-                    // Formato dd/MM/yyyy
-                    $fechaFormateada = Carbon::createFromFormat('d/m/Y', $value);
-                } elseif (preg_match('/^\d{2}\/\d{2}\/\d{2}$/', $value)) {
-                    // Formato dd/MM/yy
-                    $fechaFormateada = Carbon::createFromFormat('d/m/y', $value);
-                } else {
-                    // Si no coincide con ninguno de los formatos esperados
-                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido, formato correcto (dd/MM/yyyy o dd/MM/yy)']);
+                if ($fechaFormateada == null) {
+                    return response()->json(['success' => true, 'msg' => 'Formato de fecha inválido, formato correcto (dd/MM/yyyy o dd/MM/yy)']);
                 }
-
                 // Verifica que la fecha formateada coincide exactamente con el valor ingresado
                 if ($fechaFormateada && ($fechaFormateada->format('d/m/Y') === $value || $fechaFormateada->format('d/m/y') === $value)) {
                     // Aquí puedes continuar con la lógica deseada si el formato es válido
                 } else {
-                    return response()->json(['success' => false, 'msg' => 'Formato de fecha inválido']);
+                    return response()->json(['success' => true, 'msg' => 'Formato de fecha inválido']);
                 }
 
-                $detalle[$column] = $fechaFormateada;
+                $detalle[$column] = $fechaFormateada;                
+                $data[$column] = $fechaFormateada->format('d/m/Y');
             }
             $detalle_planilla->update($detalle);
             if ($column === "paga") {
@@ -508,9 +501,7 @@ class RevenueController extends Controller
                 $lastRecord = PaymentRevenue::where('payment_revenues.revenue_id', $revenue_id)
                     ->orderBy('id', 'desc')->first();
 
-                //Validar si el siguiente pago lleva meses atrasados   
-                $fechaAnteriorInteresRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_anterior)->startOfDay();
-                $fechaActInteresRequest = Carbon::createFromFormat('d/m/Y', $fecha_interes_act)->startOfDay();
+                //Validar si el siguiente pago lleva meses atrasados                
                 $pago_diario = $this->calcPagoDiario($saldo_anterior, $record->tasa);
 
                 if ($id == $lastRecord->id) {
@@ -542,6 +533,20 @@ class RevenueController extends Controller
             return response()->json(['success' => false, 'msg' => $diasCalc, 'data' => $data]);
         }
         return response()->json(['success' => true, 'msg' => "Actualizado con éxito", 'data' => $data]);
+    }
+    public function convertDates($date)
+    {
+       
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+            // Formato dd/MM/yyyy
+            $fechaFormateada = Carbon::createFromFormat('d/m/Y', $date)->startOfDay();
+        } elseif (preg_match('/^\d{2}\/\d{2}\/\d{2}$/', $date)) {
+            // Formato dd/MM/yy
+            $fechaFormateada = Carbon::createFromFormat('d/m/y', $date)->startOfDay();
+        }else{
+            $fechaFormateada = null;
+        }
+        return $fechaFormateada;
     }
     public function calcPagoDiario($saldo_anterior, $tasa)
     {
