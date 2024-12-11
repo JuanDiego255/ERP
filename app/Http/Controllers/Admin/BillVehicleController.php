@@ -37,13 +37,19 @@ class BillVehicleController extends Controller
             ->groupBy('vehicle_bills.stay') // Agrupar por los valores únicos de 'stay'
             ->pluck('stay'); // Obtener los valores únicos como una colección
 
+        // Si la consulta no trae resultados, agregar la estancia 1
+        if ($stays->isEmpty()) {
+            $stays = collect([1]); // Crear una colección con la estancia 1
+        }
+
         // Formatear los valores en el arreglo deseado
         $stayArray = $stays->mapWithKeys(function ($stay) {
             return [$stay => "Estancia $stay"];
         })->toArray();
 
+
         $all_cars = Product::where('products.business_id', $business_id)
-            ->join('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
+            ->leftJoin('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
             ->select(
                 'products.id',
                 DB::raw("CONCAT(products.name, ' (', products.bin, ')') as name")
