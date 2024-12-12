@@ -9,26 +9,26 @@
             </div>
             <div class="row">
                 <div class="col-sm-12 text-center">
-                    <h5 class="modal-title" id="modalTitle">Autos Grecia A Su Servicio, Grecia, Costa Rica</h5>
-                    <h5>Tel: 2494-7694</h5>
-                    <h5>{{ \Carbon\Carbon::now()->format('d-m-Y') }}</h5>
-                    <h5 class="text-info text-center">RECIBO DE DINERO</h5>
+                    <h3 class="modal-title" id="modalTitle">Autos Grecia A Su Servicio, Grecia, Costa Rica</h3>
+                    <h4>Tel: 2494-7694</h4>
+                    <h4>{{ \Carbon\Carbon::now()->format('d-m-Y') }}</h4>
+                    <h4 class="text-info text-center">RECIBO DE DINERO</h4>
                 </div>               
             </div>
           
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-sm-4 invoice-col">
+                <div class="col-sm-4 invoice-col text-receive">
                     <b>Recibí de:</b> {{ $item->name }}<br>                    
                     <b>Fecha de pago:</b> {{ $item->fecha_pago }}<br>
                     <b>Interés pagado al:</b> {{ $item->fecha_interes }}
                 </div>
-                <div class="col-sm-4 invoice-col">
+                <div class="col-sm-4 invoice-col text-receive">
                     <b>Cantidad recibida:</b> ₡{{ number_format($item->paga) }}<br>
                     <b>Recibo:</b> {{ $item->referencia }}
                 </div>
-                <div class="col-sm-4 invoice-col">
+                <div class="col-sm-4 invoice-col text-receive">
                     <b>Vehículo comprado:</b>{{ $item->veh_venta }}<br>
                     <b>Modelo:</b> {{ $item->modelo }}<br>
                     <b>Color:</b> {{ $item->color }}<br>
@@ -39,7 +39,7 @@
                 <div class="col-sm-12">
                     <hr>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-receive">
                     <b class="mb-2">Saldo anterior:</b> ₡{{ number_format($item->monto_general + $item->amortiza) }}
                     <br>
                     <b class="mb-2">Intereses pagados:</b> ₡{{ number_format($item->interes_c) }}<br>
@@ -51,7 +51,7 @@
                 <div class="col-sm-12">
                     <hr>
                 </div>
-                <div class="col-sm-6 invoice-col">
+                <div class="col-sm-6 invoice-col text-receive">
                     <br>
                     <b class=" text-danger">Firma:</b>
                 </div>
