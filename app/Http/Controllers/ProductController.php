@@ -2655,7 +2655,10 @@ class ProductController extends Controller
                 ->join('brands', 'products.brand_id', '=', 'brands.id')
                 ->leftJoin('vehicle_bills', 'products.id', '=', 'vehicle_bills.product_id')
                 ->when(!empty($term), function ($query) use ($term) {
-                    $query->where('products.name', 'like', '%' . $term . '%');
+                    $query->where(function ($query) use ($term) {
+                        $query->where('products.name', 'like', '%' . $term . '%')
+                              ->orWhere('products.bin', 'like', '%' . $term . '%'); // Búsqueda por VIN
+                    });
                 })
                 ->select(
                     'products.id',
