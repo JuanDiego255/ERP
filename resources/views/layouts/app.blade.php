@@ -20,6 +20,8 @@
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="shortcut icon" href="/images/logo_car.png"
+        type="image/x-icon">
 
         <title>@yield('title') - {{ Session::get('business.name') }}</title>
         
