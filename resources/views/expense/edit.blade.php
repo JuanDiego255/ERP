@@ -78,6 +78,8 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" value="{{ $expense->fecha_vence }}" name="fecha_vence_hidden"
+                        id="fecha_vence_hidden">
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('fecha_vence', __('Fecha Vence') . ':*') !!}
@@ -160,7 +162,7 @@
                     <div class="col-sm-12">
                         <div class="pull-right">
                             <strong>Valor total:</strong>
-                            <span id="payment_due">{{number_format($expense->final_total, 2, '.', ',') }}</span>
+                            <span id="payment_due">{{ number_format($expense->final_total, 2, '.', ',') }}</span>
                         </div>
                     </div>
                 </div>
@@ -180,31 +182,54 @@
 @section('javascript')
     <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
     <script>
-        var plazo = $('#plazo').val();
-        plazo = parseInt(plazo);
-        plazoSetFecha(plazo);
+        calcularFechaVencimiento();
         $('#plazo').on('input', function() {
-            // Obtiene el valor del plazo
-            plazoSetFecha(parseInt($(this).val()));
+            calcularFechaVencimiento();
         });
 
-        function plazoSetFecha(input) {
-            var plazo = input;
-            // Verifica si es un número válido
-            if (!isNaN(plazo) && plazo > 0) {
-                // Calcula la fecha de vencimiento
-                var fechaVence = new Date();
-                fechaVence.setDate(fechaVence.getDate() + plazo);
+        function parsearFecha(fechaStr) {
+            // Divide la parte de la fecha y la hora
+            var partes = fechaStr.split(' ');
+            var fechaPartes = partes[0].split('/');
+            var horaPartes = partes[1].split(':');
 
-                // Formatea la fecha en el formato deseado (YYYY-MM-DD)
-                var dia = ("0" + fechaVence.getDate()).slice(-2);
-                var mes = ("0" + (fechaVence.getMonth() + 1)).slice(-2);
-                var anio = fechaVence.getFullYear();
+            // Extrae los componentes de la fecha
+            var dia = parseInt(fechaPartes[0], 10);
+            var mes = parseInt(fechaPartes[1], 10) - 1; // Los meses en JavaScript van de 0 a 11
+            var anio = parseInt(fechaPartes[2], 10);
+
+            // Extrae los componentes de la hora
+            var horas = parseInt(horaPartes[0], 10);
+            var minutos = parseInt(horaPartes[1], 10);
+
+            // Crea un objeto Date con los componentes extraídos
+            return new Date(anio, mes, dia, horas, minutos);
+        }
+        // Función que calcula y actualiza la fecha de vencimiento
+        function calcularFechaVencimiento() {
+            // Obtiene el valor del plazo
+            var plazo = parseInt($('#plazo').val());
+
+            // Obtiene el valor de la fecha de la transacción
+            var fechaTransaccionStr = $('#expense_transaction_date').val();
+
+            // Convierte la fecha de la transacción en un objeto Date (en formato DD/MM/YYYY HH:mm)
+            var fechaTransaccion = parsearFecha(fechaTransaccionStr);
+
+            // Verifica si el plazo es un número válido y la fecha de la transacción también es válida
+            if (!isNaN(plazo) && plazo > 0 && !isNaN(fechaTransaccion.getTime())) {
+                // Calcula la fecha de vencimiento sumando el plazo a la fecha de la transacción
+                fechaTransaccion.setDate(fechaTransaccion.getDate() + plazo);
+
+                // Formatea la fecha de vencimiento en el formato deseado (YYYY-MM-DD)
+                var dia = ("0" + fechaTransaccion.getDate()).slice(-2);
+                var mes = ("0" + (fechaTransaccion.getMonth() + 1)).slice(-2);
+                var anio = fechaTransaccion.getFullYear();
 
                 // Asigna la fecha formateada al campo de fecha_vence
                 $('#fecha_vence').val(anio + '-' + mes + '-' + dia);
             } else {
-                // Si el plazo no es válido, limpia el campo de fecha_vence
+                // Si el plazo no es válido o la fecha de transacción no es válida, limpia el campo de fecha_vence
                 $('#fecha_vence').val('');
             }
         }
