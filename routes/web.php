@@ -429,6 +429,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::delete('/bill/delete/{id}', [BillVehicleController::class, 'destroy'])->name('bill.delete');
     //Rutas para gastos de vehiculos
     Route::post('/expenses/generate-report', [ExpenseController::class, 'generateReport'])->name('expenses.generateReport');
+    Route::post('/bills/generate-report', [BillVehicleController::class, 'generateReport'])->name('expenses.generateReport');
     Route::post('/expenses/check-update', [ExpenseController::class, 'updateCheckReport'])->name('expenses.check_update');
     Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');

@@ -301,7 +301,7 @@ class ExpenseController extends Controller
         if ($type == 0) {
             if ($request->filled('date_start') && $request->filled('date_end')) {
                 $query->whereBetween('transactions.transaction_date', [$request->date_start, $request->date_end]);
-                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->end_date;
+                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->date_end;
             } else {
                 $query->where('transactions.transaction_date', '<=', $request->date_end);
                 $rango = "Reporte al (Se filtro por fecha de creación): " . $request->date_end;
@@ -386,7 +386,7 @@ class ExpenseController extends Controller
         if ($type == 0) {
             if ($request->filled('date_start') && $request->filled('date_end')) {
                 $query->whereBetween('transactions.transaction_date', [$request->date_start, $request->date_end]);
-                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->end_date;
+                $rango = "Reporte del (Se filtro por fecha de creación): " . $request->date_start . " al " . $request->date_end;
             } else {
                 $query->where('transactions.transaction_date', '<=', $request->date_end);
                 $rango = "Reporte al (Se filtro por fecha de creación): " . $request->date_end;

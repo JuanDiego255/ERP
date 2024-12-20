@@ -74,7 +74,7 @@ class ReportController extends Controller
             ->select([
                 'vehicle_bills.id as bill_id',
                 'vehicle_bills.fecha_compra as fecha_compra',
-                DB::raw("CONCAT(products.name, ' (', products.model, ')') as name"),
+                DB::raw("CONCAT(products.name, ' (', products.model, ')') as model_name"),
                 'contacts.name as prov_name',
                 'products.id as product_id',
                 'products.name',
@@ -102,6 +102,7 @@ class ReportController extends Controller
                 }
             }
         }
+        $bills->orderBy('vehicle_bills.fecha_compra','desc');
         if (request()->ajax()) {
 
             return Datatables::of($bills)
@@ -119,14 +120,14 @@ class ReportController extends Controller
                 ->editColumn('fecha_compra', function ($row) {
                     return \Carbon\Carbon::parse($row->created_at)->format('Y/m/d g:i A');
                 })
-                ->editColumn('name', function ($row) {
-                    $product = $row->is_inactive == 1 ? $row->name . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->name;
+                ->editColumn('model_name', function ($row) {
+                    $product = $row->is_inactive == 1 ? $row->model_name . ' <span class="label bg-gray">' . __("Vendido") . '</span>' : $row->name;
 
 
                     return $product;
                 })
                 ->editColumn('monto', '{{"₡ ". number_format($monto) }}')
-                ->rawColumns(['action', 'name'])
+                ->rawColumns(['action', 'model_name'])
                 ->make(true);
         }
         return view('report.profit_loss');

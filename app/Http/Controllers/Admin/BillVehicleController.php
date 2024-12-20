@@ -461,4 +461,65 @@ class BillVehicleController extends Controller
 
         return redirect('products/bills/' . $request->product_id . '/' . $stay)->with('status', $output);
     }
+    public function generateReport(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $query = VehicleBill::where('vehicle_bills.business_id', $business_id)
+            ->join('products', 'vehicle_bills.product_id', '=', 'products.id')
+            ->join('contacts', 'vehicle_bills.proveedor_id', '=', 'contacts.id')
+            ->leftJoin('users AS usr', 'vehicle_bills.created_by', '=', 'usr.id')
+            ->select([
+                'vehicle_bills.id as bill_id',
+                'vehicle_bills.fecha_compra as fecha_compra',
+                DB::raw("CONCAT(products.name, ' (', products.model, ')') as name"),
+                'contacts.name as prov_name',
+                'products.id as product_id',
+                'products.name',
+                'products.is_inactive as is_inactive',
+                'vehicle_bills.descripcion as descripcion',
+                'vehicle_bills.monto as monto',
+                'vehicle_bills.factura as factura',
+                'vehicle_bills.business_id',
+                'vehicle_bills.created_at',
+                DB::raw("CONCAT(COALESCE(usr.first_name, ''),' ',COALESCE(usr.last_name,'')) as added_by")
+            ]);
+        // Filtros globales
+
+        if ($request->filled('date_start') && $request->filled('date_end')) {
+            $query->whereBetween('vehicle_bills.fecha_compra', [$request->date_start, $request->date_end]);
+            $rango = "Reporte del: " . $request->date_start . " al " . $request->date_end;
+        } else {
+            $query->where('vehicle_bills.fecha_compra', '<=', $request->date_end);
+            $rango = "Reporte al: " . $request->date_end;
+        }
+        if (request()->has('status')) {
+            $status = request()->get('status');
+            if (!empty($status)) {
+                $query->where('products.is_inactive', $status == 2 ? 0 : 1);
+            }
+        }
+
+        // Filtros de DataTable
+        if ($request->filled('table_filters')) {
+            $filters = $request->input('table_filters');
+            foreach ($filters as $index => $value) {
+                switch ($index) {
+                    case '1': // Columna Contact
+                        $query->where('products.name', 'LIKE', "%$value%");
+                        break;
+                    case '2': // Columna Ref No
+                        $query->where('contacts.name', 'LIKE', "%$value%");
+                        break;
+                    case '5': // Columna Ref No
+                        $query->where('vehicle_bills.factura', 'LIKE', "%$value%");
+                        break;
+                        // Agrega casos adicionales según las columnas filtrables
+                }
+            }
+        }
+
+        $report = $query->get();
+
+        return view('admin.vehicle-bills.view-modal', compact('report', 'rango'));
+    }
 }

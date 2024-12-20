@@ -40,6 +40,36 @@
                             ) !!}
                         </div>
                     </div>
+                    <div id="div_date_report_start" class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('date_report_start', __('Fecha (Inicial)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_report_start', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_report_start',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <p class="help-block">Campo no requerido, al no tomarlo en cuenta se mostrarán todos los gastos antiguos
+                        </p>
+                    </div>
+                    <div id="div_date_report_end" class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('date_report_end', __('Fecha (Final)') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                {!! Form::date('date_report_end', @format_datetime('now'), [
+                                    'class' => 'form-control',
+                                    'id' => 'date_report_end',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
                 @endcomponent
             </div>
         </div>
@@ -65,6 +95,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="modal fade" id="view_bills_report_modal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
         </div>
 
 
@@ -123,7 +156,7 @@
                         "data": "fecha_compra"
                     },
                     {
-                        data: 'name',
+                        data: 'model_name',
                         name: 'products.name'
                     },
                     {
@@ -144,97 +177,15 @@
                         "data": "added_by"
                     }
                 ],
+                dom: '<"text-center"B><"top"p>rtip',
                 buttons: [{
                         extend: 'pageLength',
                         text: 'Mostrando 25',
                         titleAttr: 'Mostrar registros'
                     },
                     {
-                        extend: 'print',
-                        text: 'Reporte General',
-                        customize: function(win) {
-                            $(win.document.body).find('h1').remove();
-                            $(win.document.body).find('div.printHeader').remove();
-                            var body = $(win.document.body).find('table tbody');
-
-                            // Función para formatear valores monetarios
-                            function formatCurrency(value) {
-                                value = value.toFixed(2);
-                                var formattedValue = new Intl.NumberFormat('es-ES', {
-                                    minimumFractionDigits: 3,
-                                    maximumFractionDigits: 3
-                                }).format(value);
-                                return __currency_trans_from_en(formattedValue, true, true);
-                            }
-                            var groupedData = groupBillsData();
-                            var grandTotalMonto = 0;
-                            var vehiculo = "";
-                            body.empty();
-                            // Insertar las filas agrupadas en el reporte
-                            groupedData.forEach(function(row) {
-                                var formattedMonto = __currency_trans_from_en(row.monto,
-                                    true,
-                                    true);
-
-                                // Acumular los totales
-                                grandTotalMonto += parseFloat(row.monto);
-                                // Inserta cada fila con sus datos formateados
-                                body.append(
-                                    '<tr>' +
-                                    '<td>' + row.fecha_compra + '</td>' +
-                                    '<td>' + row.vehiculo.replace('Vendido', '').trim() + '</td>' +
-                                    '<td>' + row.proveedor + '</td>' +
-                                    '<td>' + row.descripcion + '</td>' +
-                                    '<td>' + row.factura + '</td>' +
-                                    '<td>' + formattedMonto + '</td>' +
-                                    '<td>' + (row.vehiculo.includes('Vendido') ? 'Sí' : 'No') + '</td>' +
-                                    '</tr>'
-                                );
-                                vehiculo = row.vehiculo;
-                            });
-
-                            // Formatear los totales
-                            var formattedGrandTotalMonto = __currency_trans_from_en(grandTotalMonto,
-                                true, true);
-                            // Agregar la fila final con los totales
-                            body.append(
-                                '<tr>' +
-                                '<td colspan="5" style="text-align: right;"><strong>Total:</strong></td>' +
-                                '<td><strong>' + formattedGrandTotalMonto + '</strong></td>' +
-                                '<td colspan="1" style="text-align: right;"></td>' +
-                                '</tr>'
-                            );
-
-                            // Ajustar encabezados de la tabla para la planilla
-                            $(win.document.body).find('table thead tr').html(
-                                '<th>Fecha</th>' +
-                                '<th>Vehículo</th>' +
-                                '<th>Proveedor</th>' +
-                                '<th>Detalle</th>' +
-                                '<th>Factura</th>' +
-                                '<th>Monto</th>' +
-                                '<th>Vendido</th>'
-                            );
-
-                            // Personalizar el estilo del documento
-                            $(win.document.body)
-                                .css('font-size', '10pt')
-                                .prepend(
-                                    '<img src="' + window.location.origin +
-                                    '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
-                                    '<div style="text-align: center; margin-bottom: 10px;">' +
-                                    '<h3 style="margin: 0;">Reporte de gastos de vehículos general</h3>' +
-                                    '</div>' +
-                                    // Sección de información del vehículo
-                                    '<div class="text-justify" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background-color: #f9f9f9;">' +
-                                    '<p style="margin: 5px 0;"><strong>En este reporte puede detallar los gastos aplicados a distintos vehículos, donde puede observar cada gasto, y la sumatoria de todos estos.</strong></p>' +
-                                    '</div>'
-                                );
-
-                            $(win.document.body).find('table')
-                                .addClass('display')
-                                .css('font-size', 'inherit');
-                        }
+                        extend: 'colvis',
+                        text: 'Visibilidad de columna'
                     }
                 ],
                 initComplete: function() {
@@ -262,32 +213,81 @@
                     });
                 }
             });
+            $(document).on('click', '#generate_report_bills', function() {
 
-            function groupBillsData() {
-                var selected_rows = [];
-                var i = 0;
-                $('#bills_table tbody tr').each(function() {
-                    var row = $(this);
-                    var fecha_compra = row.find('td:eq(0)').text();
-                    var vehiculo = row.find('td:eq(1)').text();
-                    var proveedor = row.find('td:eq(2)').text();
-                    var descripcion = row.find('td:eq(3)').text();
-                    var monto = parseFloat(row.find('td:eq(4)').text().replace(/[^\d.-]/g, ''));
-                    var factura = row.find('td:eq(5)').text();
+                if ($('#date_report_end').val() == null || $('#date_report_end').val() == "") {
+                    swal({
+                        title: "Debe seleccionar la fecha final del filtro",
+                        icon: 'warning',
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true
+                            }
+                        },
+                        dangerMode: true,
+                    }).then(willDelete => {
+                        if (willDelete) {
+                            $('#date_report_end').focus();
+                        }
+                    });
+                    return;
+                }
+                let url = '/bills/generate-report'; // Actualiza esta ruta
+                let dataTable = $('#bills_table').DataTable();
 
-                    selected_rows[i++] = {
-                        fecha_compra: fecha_compra.trim(),
-                        vehiculo: vehiculo.trim(),
-                        proveedor: proveedor.trim(),
-                        descripcion: descripcion.trim(),
-                        factura: factura.trim(),
-                        monto: monto
-                    };
+                // Captura filtros aplicados en DataTable
+                let tableFilters = {};
+                dataTable.columns().every(function() {
+                    if (this.search()) {
+                        tableFilters[this.index()] = this.search();
+                    }
                 });
-
-                return selected_rows;
-            }
+                // Genera los datos combinados de los filtros globales y de columnas
+                //Fechas Filtros
+                var date_start = $('#date_report_start').val() ? $('#date_report_start').val() : null;
+                var date_end = $('#date_report_end').val() ? $('#date_report_end').val() : null;
+                let data = {
+                    date_start: date_start,
+                    status: $('select#expense_payment_status').val(),
+                    date_end: date_end,
+                    table_filters: tableFilters
+                };
+                console.log(data);
+                // Envía los datos combinados al backend
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    dataType: 'html',
+                    data: data,
+                    success: function(result) {
+                        $('#view_bills_report_modal')
+                            .html(result)
+                            .modal('show');
+                        __currency_convert_recursively($('#view_bills_report_modal'));
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al generar el reporte:', error);
+                    }
+                });
+            });
         });
+
+        function printThis() {
+            $("#billsModalReport").printThis({
+                importCSS: true, // Importa los estilos de la página
+                importStyle: true, // Importa las hojas de estilo
+                loadCSS: "/public/css/print.css", // Ruta a una hoja de estilo específica para impresión
+                pageTitle: false, // Título de la página
+                removeInline: false,
+                printDelay: 500, // Tiempo de espera antes de imprimir
+                header: false, // Opcional: cabecera en cada página
+                footer: null // Opcional: pie de página
+            });
+        }
     </script>
 
 @endsection
