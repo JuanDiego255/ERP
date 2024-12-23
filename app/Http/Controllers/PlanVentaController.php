@@ -97,7 +97,7 @@ class PlanVentaController extends Controller
         $business = Business::find($business_id);
         $plan = PlanVenta::where('plan_ventas.business_id', $business_id)
             ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
-            ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
+            ->leftJoin('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
             ->join('employees as emp', 'plan_ventas.vendedor_id', '=', 'emp.id')
             ->join('revenues as cxc', 'plan_ventas.id', '=', 'cxc.plan_venta_id')
             ->leftJoin('products as vv', 'plan_ventas.vehiculo_venta_id', '=', 'vv.id')
@@ -322,7 +322,7 @@ class PlanVentaController extends Controller
                 : null;
 
             $plan_details['total_recibido'] = $total_recibido_format;
-            $plan_details['total_financiado'] = $total_financiado_format;
+            $plan_details['total_financiado'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             $plan_details['monto_recibo'] = $monto_rec_format;
             $plan_details['monto_efectivo'] = $monto_efect_format;
             $plan_details['venta_sin_rebajos'] = $monto_vent_format;
@@ -338,7 +338,7 @@ class PlanVentaController extends Controller
             $cxc['sucursal'] = "GRECIA";
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
-            $cxc['valor_total'] = $total_financiado_format;
+            $cxc['valor_total'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
             $cxc['tasa'] = $request->tasa;
@@ -354,9 +354,9 @@ class PlanVentaController extends Controller
             $cxc_pay['revenue_id'] = $cxc_reg->id;
             $cxc_pay['cuota'] = $cuota;
             $cxc_pay['monto_general'] = $total_financiado_format;
-            $cxc_pay['paga'] = 0;
+            $cxc_pay['paga'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             $cxc_pay['interes_c'] = 0;
-            $cxc_pay['amortiza'] = 0;
+            $cxc_pay['amortiza'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             PaymentRevenue::create($cxc_pay);
             $vehicle = Product::where('business_id', $business_id)
                 ->where('id', $request->vehiculo_venta_id_hidden)
@@ -474,7 +474,7 @@ class PlanVentaController extends Controller
                 : null;
 
             $plan_details['total_recibido'] = $total_recibido_format;
-            $plan_details['total_financiado'] = $total_financiado_format;
+            $plan_details['total_financiado'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             $plan_details['monto_recibo'] = $monto_rec_format;
             $plan_details['monto_efectivo'] = $monto_efect_format;
             $plan_details['venta_sin_rebajos'] = $monto_vent_format;
@@ -496,7 +496,7 @@ class PlanVentaController extends Controller
             $cxc['referencia'] = $request->numero;
             $cxc['detalle'] = $request->desc_forma_pago;
             $cxc['sucursal'] = "GRECIA";
-            $cxc['valor_total'] = $total_financiado_format;
+            $cxc['valor_total'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
             $cxc['status'] = 0;
             $cxc['contact_id'] = $request->cliente_id;
             $cxc['tasa'] = $request->tasa;
@@ -511,9 +511,9 @@ class PlanVentaController extends Controller
             $cxc_pay = [
                 'cuota' => $cuota,
                 'monto_general' => $total_financiado_format,
-                'paga' => 0,
+                'paga' => $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format,
                 'interes_c' => 0,
-                'amortiza' => 0,
+                'amortiza' => $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format
             ];
 
             // Actualizar o crear el registro

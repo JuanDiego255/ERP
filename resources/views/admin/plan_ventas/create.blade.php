@@ -100,7 +100,6 @@
                                     'class' => 'form-control mousetrap',
                                     'id' => 'fiador_id',
                                     'placeholder' => 'Seleccione un fiador',
-                                    'required',
                                 ]) !!}
                             </div>
                         </div>
@@ -454,6 +453,7 @@
                 $('#color').val(data.color);
                 $('#gastos').val(__currency_trans_from_en(data.gastos, true, true));
             });
+
             function limpiarModal() {
                 // Limpiar el campo de selección de vehículos
                 $('#vehiculo_id').val(null).trigger('change'); // Limpiar select2
@@ -534,6 +534,39 @@
                 limpiarModal();
                 $('.car_modal').modal('show');
             });
+
+            // Validar el tipo de plan y activar/desactivar el requerido de tipo_prestamo y fiador_id
+            $('#tipo_plan').on('change', function() {
+                var tipoPlan = $(this).val(); // Obtener el valor seleccionado
+                var tipoPrestamo = $('#tipo_prestamo'); // Seleccionar el campo tipo_prestamo
+                var fiadorId = $('#fiador_id'); // Seleccionar el campo fiador_id
+
+                if (tipoPlan == '1') { // Si el tipo es Contado
+                    tipoPrestamo.prop('required',
+                        false); // Quitar el requerido de tipo_prestamo
+                    tipoPrestamo.val('').trigger(
+                        'change'); // Limpiar la selección de tipo_prestamo
+                    tipoPrestamo.closest('.form-group')
+                        .hide(); // Ocultar tipo_prestamo si es necesario
+
+                    fiadorId.prop('required', false); // Quitar el requerido de fiador_id
+                    fiadorId.val('').trigger('change'); // Limpiar la selección de fiador_id
+                    fiadorId.closest('.form-group').hide(); // Ocultar fiador_id si es necesario
+                } else { // Si el tipo es Crédito
+                    tipoPrestamo.prop('required',
+                        true); // Activar el requerido de tipo_prestamo
+                    tipoPrestamo.closest('.form-group')
+                        .show(); // Mostrar tipo_prestamo si estaba oculto
+
+                    fiadorId.prop('required', true); // Activar el requerido de fiador_id
+                    fiadorId.closest('.form-group')
+                        .show(); // Mostrar fiador_id si estaba oculto
+                }
+            });
+
+            // Activar la validación al cargar la página en caso de que haya valores preseleccionados
+            $('#tipo_plan').trigger('change');
+
         });
     </script>
 @endsection

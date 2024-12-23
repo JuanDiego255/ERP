@@ -3029,7 +3029,7 @@ function actualizarTotalRecibido(tipo) {
     $('#total_recibido').val(montoFormat);
     totalRecibido = parseFloat($('#total_recibido').val().replace(/,/g, '')) || 0;
     ventaSinRebajos = parseFloat($('#venta_sin_rebajos').val().replace(/,/g, '')) || 0;
-    if (ventaSinRebajos > totalRecibido) {
+    if (ventaSinRebajos >= totalRecibido) {
         montoFormat = Intl.NumberFormat('en-US').format(ventaSinRebajos - totalRecibido);
         $('#total_financiado').val(montoFormat);
     }

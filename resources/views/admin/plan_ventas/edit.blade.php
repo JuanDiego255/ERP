@@ -104,7 +104,6 @@
                                     'class' => 'form-control mousetrap',
                                     'id' => 'fiador_id',
                                     'placeholder' => 'Seleccione un fiador',
-                                    'required',
                                 ]) !!}
                             </div>
                         </div>
@@ -199,12 +198,16 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             {!! Form::label('total_financiado', __('Total financiado')) !!}
-                            {!! Form::text('total_financiado', number_format($plan->total_financiado, 2, '.', ','), [
-                                'class' => 'form-control display_currency precio',
-                                'id' => 'total_financiado',
-                                'required',
-                                'min' => 0,
-                            ]) !!}
+                            {!! Form::text(
+                                'total_financiado',
+                                $plan->tipo_plan == 1 ? 0 : number_format($plan->total_financiado, 2, '.', ','),
+                                [
+                                    'class' => 'form-control display_currency precio',
+                                    'id' => 'total_financiado',
+                                    'required',
+                                    'min' => 0,
+                                ],
+                            ) !!}
                         </div>
                     </div>
                     <div class="col-sm-6">
@@ -417,7 +420,11 @@
                     return markup;
                 },
             });
-            set_default_fiador()
+            var tipo_plan_val = $('#tipo_plan').val();
+
+            if (tipo_plan_val != 1) {
+                set_default_fiador();
+            }
 
             function set_default_fiador() {
                 var default_fiador_id = $('#default_fiador_id').val();
@@ -614,13 +621,44 @@
                 });
                 limpiarModal();
                 $('.car_modal').modal('show');
-            });           
-            
+            });
+
             // Recalcular montos si se cambia el valor de efectivo o recibo manualmente
             $('#monto_efectivo, #monto_recibo').on('input', function() {
                 actualizarTotalRecibido();
             });
-            
+
+            // Validar el tipo de plan y activar/desactivar el requerido de tipo_prestamo y fiador_id
+            $('#tipo_plan').on('change', function() {
+                var tipoPlan = $(this).val(); // Obtener el valor seleccionado
+                var tipoPrestamo = $('#tipo_prestamo'); // Seleccionar el campo tipo_prestamo
+                var fiadorId = $('#fiador_id'); // Seleccionar el campo fiador_id
+
+                if (tipoPlan == '1') { // Si el tipo es Contado
+                    tipoPrestamo.prop('required',
+                        false); // Quitar el requerido de tipo_prestamo
+                    tipoPrestamo.val('').trigger(
+                        'change'); // Limpiar la selección de tipo_prestamo
+                    tipoPrestamo.closest('.form-group')
+                        .hide(); // Ocultar tipo_prestamo si es necesario
+
+                    fiadorId.prop('required', false); // Quitar el requerido de fiador_id
+                    fiadorId.val('').trigger('change'); // Limpiar la selección de fiador_id
+                    fiadorId.closest('.form-group').hide(); // Ocultar fiador_id si es necesario
+                } else { // Si el tipo es Crédito
+                    tipoPrestamo.prop('required',
+                        true); // Activar el requerido de tipo_prestamo
+                    tipoPrestamo.closest('.form-group')
+                        .show(); // Mostrar tipo_prestamo si estaba oculto
+
+                    fiadorId.prop('required', true); // Activar el requerido de fiador_id
+                    fiadorId.closest('.form-group')
+                        .show(); // Mostrar fiador_id si estaba oculto
+                }
+            });
+
+            // Activar la validación al cargar la página en caso de que haya valores preseleccionados
+            $('#tipo_plan').trigger('change');
         });
     </script>
 @endsection
