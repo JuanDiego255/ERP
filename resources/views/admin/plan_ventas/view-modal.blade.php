@@ -12,7 +12,8 @@
                     <img src="/images/logo_ag_cor.png" alt="Logo de la Empresa">
                 </div>
                 <div class="col-sm-9 text-left invoice-col">
-                    <h5 class="modal-title" id="modalTitle">AUTOS GRECIA LTDA - PLAN DE VENTAS</h5>
+                    <h5 class="modal-title" id="modalTitle">AUTOS GRECIA LTDA - PLAN DE VENTAS
+                        {{ $plan->tipo_plan == 1 ? '(Contado)' : '(Crédito)' }}</h5>
                     <p>Tel: 2494-7694 / 2494-4155 <br> 550 MTS Oeste Sucursal C.C.S.S</p>
                 </div>
             </div>
@@ -49,27 +50,29 @@
                 </div>
             </div>
             <hr class="no-margin">
-            <div class="row">
-                <div class="col-sm-12">
-                    <h4 class="text-success">Información del fiador</h4>
+            @if ($plan->tipo_plan != 1)
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="text-success">Información del fiador</h4>
+                    </div>
+                    <div class="col-sm-6 invoice-col">
+                        <b>Nombre: </b>{{ $plan->fiador_name }}<br>
+                        <b>Cédula: </b>{{ $plan->fiador_ident }}<br>
+                        <b>Teléfono: </b>{{ $plan->fiador_tel }}<br>
+                    </div>
+                    <div class="col-sm-6 invoice-col">
+                        <b>Estado: </b>{{ $plan->fiador_state }}<br>
+                        <b>Puesto: </b>{{ $plan->fiador_puesto }}<br>
+                        <b>E-mail: </b>{{ $plan->fiador_email }}<br>
+                    </div>
                 </div>
-                <div class="col-sm-6 invoice-col">
-                    <b>Nombre: </b>{{ $plan->fiador_name }}<br>
-                    <b>Cédula: </b>{{ $plan->fiador_ident }}<br>
-                    <b>Teléfono: </b>{{ $plan->fiador_tel }}<br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <br>
+                        <b>Dirección: </b>{{ $plan->fiador_direccion }}<br>
+                    </div>
                 </div>
-                <div class="col-sm-6 invoice-col">
-                    <b>Estado: </b>{{ $plan->fiador_state }}<br>
-                    <b>Puesto: </b>{{ $plan->fiador_puesto }}<br>
-                    <b>E-mail: </b>{{ $plan->fiador_email }}<br>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <br>
-                    <b>Dirección: </b>{{ $plan->fiador_direccion }}<br>
-                </div>
-            </div>
+            @endif
             <hr class="no-margin">
             <div class="row">
                 <div class="col-sm-12">
@@ -106,7 +109,7 @@
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Monto Efectivo: </b>₡{{ number_format($plan->monto_efectivo) }}<br>
-                    <b>Total financiado: </b>₡{{ number_format($plan->total_financiado) }}<br>
+                    <b>Total financiado: </b>₡{{ $plan->tipo_plan == 1 ? 0 : number_format($plan->total_financiado) }}<br>
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Gastos traspaso: </b>{{ $plan->gastos_plan }}<br>
@@ -142,9 +145,10 @@
             <br>
             <div class="row">
                 <div class="col-sm-12">
-                    <span class="text-muted text-center">*Este documento es para efectos de proforma, sin valor comercial*</span>
-                </div>                
-            </div>           
+                    <span class="text-muted text-center">*Este documento es para efectos de proforma, sin valor
+                        comercial*</span>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary no-print" aria-label="Print"
                     onclick="$(this).closest('div.modal').printThis();">

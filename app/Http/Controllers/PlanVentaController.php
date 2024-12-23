@@ -127,7 +127,7 @@ class PlanVentaController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $plan = PlanVenta::where('plan_ventas.business_id', $business_id)
                 ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
-                ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
+                ->leftJoin('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
                 ->join('employees as emp', 'plan_ventas.vendedor_id', '=', 'emp.id')
                 ->join('revenues as cxc', 'plan_ventas.id', '=', 'cxc.plan_venta_id')
                 ->leftJoin('products as vv', 'plan_ventas.vehiculo_venta_id', '=', 'vv.id')
