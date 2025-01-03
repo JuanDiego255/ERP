@@ -1845,13 +1845,13 @@ $(document).ready(function () {
     $('#expense_transaction_date').datetimepicker({
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,
-        locale: 'pt-br'
+        locale: 'es-br'
     });
 
     $('#vencimento').datetimepicker({
         format: moment_date_format,
         ignoreReadonly: true,
-        locale: 'pt-br'
+        locale: 'es-br'
     });
 
     $('#data_inicio_viagem').datetimepicker({
