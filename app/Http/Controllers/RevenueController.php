@@ -508,7 +508,7 @@ class RevenueController extends Controller
 
                 if ($id == $lastRecord->id) {
                     //$monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
-                    $interes = round($pago_diario * $diasCalc, 2);
+                    $interes = $record->tasa == 0 ? 0 : round($pago_diario * $diasCalc, 2);
                     $cxc_pay['monto_general'] = round($saldo_anterior - ($value - $interes), 2);
                     //$cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
                     $cxc_pay['interes_c'] =  round($interes, 2);
@@ -577,7 +577,7 @@ class RevenueController extends Controller
             return response()->json(['success' => true, 'msg' => -1]);
         }
         //Se validan fechas anteriores
-        $interes = round($pago_diario * $diasCalc, 2);
+        $interes = $tasa == 0 ? 0 : round($pago_diario * $diasCalc, 2);
         $detalle['monto_general'] = round($saldo - ($paga - $interes), 2);
         $detalle['interes_c'] =  round($interes, 2);
         $detalle['amortiza'] =  round($paga - $interes, 2);

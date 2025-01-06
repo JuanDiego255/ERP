@@ -217,7 +217,7 @@
             var fechaTransaccion = parsearFecha(fechaTransaccionStr);
 
             // Verifica si el plazo es un número válido y la fecha de la transacción también es válida
-            if (!isNaN(plazo) && plazo > 0 && !isNaN(fechaTransaccion.getTime())) {
+            if (!isNaN(plazo) && plazo >= 0 && !isNaN(fechaTransaccion.getTime())) {
                 // Calcula la fecha de vencimiento sumando el plazo a la fecha de la transacción
                 fechaTransaccion.setDate(fechaTransaccion.getDate() + plazo);
 

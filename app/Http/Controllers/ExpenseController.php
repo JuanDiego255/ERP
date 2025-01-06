@@ -671,6 +671,13 @@ class ExpenseController extends Controller
             $cantidades = $request->input('cantidad');
 
             // Iterar sobre los valores para procesarlos
+            if ($descripciones == null) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('Debe agregar líneas en el detalle')
+                ];
+                return redirect()->back()->with('status', $output);
+            }
             foreach ($descripciones as $index => $descripcion) {
                 $precio = str_replace(',', '', $precios[$index]);
                 $cantidad = $cantidades[$index];

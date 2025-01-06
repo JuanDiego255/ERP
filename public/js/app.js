@@ -414,7 +414,37 @@ $(document).ready(function () {
             data: 'mobile',
             name: 'mobile'
         }]);
+        if (contact_table_type == "customer") {
+            Array.prototype.push.apply(columns, [
+                {
+                    data: 'total_gen',
+                    name: 'total_gen'
+                },
+                {
+                    data: 'total_debt',
+                    name: 'total_debt'
+                },
+                {
+                    data: 'total_paid',
+                    name: 'total_paid'
+                },
+                {
+                    data: 'last_payment_date',
+                    name: 'last_payment_date'
+                }
+            ]);
+        }
     }
+    var buttonsConfig = [{
+            extend: 'pageLength',
+            text: 'Mostrando 25',
+            titleAttr: 'Mostrar registros'
+        },
+        {
+            extend: 'colvis',
+            text: 'Visibilidad de columna'
+        }
+    ];
 
     contact_table = $('#contact_table').DataTable({
         processing: true,
@@ -423,6 +453,8 @@ $(document).ready(function () {
             "url": "/contacts",
             "data": function (d) {
                 d.type = $('#contact_type').val();
+                d.customer_filter = $('select#customer_filter').val();
+                d.mes_atraso = $('select#mes_atraso').val();
                 d = __datatable_ajax_callback(d);
             }
         },
@@ -431,6 +463,7 @@ $(document).ready(function () {
         ],
         columns: columns,
         dom: '<"text-center"B><"top"p>rtip',
+        buttons: buttonsConfig,
         fnDrawCallback: function (oSettings) {
             var total_due = sum_table_col($('#contact_table'), 'contact_due');
             $('#footer_contact_due').text(total_due);
@@ -477,7 +510,68 @@ $(document).ready(function () {
             });
         }
     });
+    $('select#customer_filter').on(
+        'change',
+        function () {
+            contact_table.ajax.reload();
+        }
+    );
+    $('select#mes_atraso').on(
+        'change',
+        function () {
+            contact_table.ajax.reload();
+        }
+    );
+    $(document).on('click', '#generate_customer_exc', function () {
+        let url = '/contacts/generate/customer/excel'; // Actualiza esta ruta
+        let dataTable = $('#contact_table').DataTable();
+        let tableFilters = {};
+        dataTable.columns().every(function () {
+            if (this.search()) {
+                tableFilters[this.index()] = this.search();
+            }
+        });
+        // Genera los datos combinados de los filtros globales y de columnas
+        //Fechas Filtros
 
+        let data = {
+            customer_filter: $('select#customer_filter').val(),
+            mes_atraso: $('select#mes_atraso').val(),
+            table_filters: tableFilters
+        };
+        console.log(data);
+        // Envía los datos combinados al backend
+        $.ajax({
+            url: url,
+            method: 'POST',
+            xhrFields: {
+                responseType: 'blob',
+            },
+            data: data,
+            success: function (result, status, xhr) {
+
+                var disposition = xhr.getResponseHeader('content-disposition');
+                var matches = /"([^"]*)"/.exec(disposition);
+                var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
+
+                // The actual download
+                var blob = new Blob([result], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al generar el reporte:', error);
+            }
+        });
+    });
     //On display of add contact modal
     $('.contact_modal').on('shown.bs.modal', function (e) {
 

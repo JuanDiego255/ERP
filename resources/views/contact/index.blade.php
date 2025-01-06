@@ -14,14 +14,96 @@
         <h1> @lang('lang_v1.' . $type . 's')
         </h1>
         <!-- <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                    <li class="active">Here</li>
-                </ol> -->
+                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                    <li class="active">Here</li>
+                                                </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
         <input type="hidden" value="{{ $type }}" id="contact_type">
+        @if ($type == 'customer')
+            <div class="row">
+                <div class="col-md-12">
+                    @component('components.filters', ['title' => __('report.filters')])
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('customer_filter', __('Filtrar Clientes Por') . ':') !!}
+                                {!! Form::select(
+                                    'customer_filter',
+                                    ['1' => __('Todos '), '2' => __('Con saldo'), '3' => __('SIn saldo')],
+                                    null,
+                                    [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width:100%',
+                                        'id' => 'customer_filter',
+                                    ],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('mes_atraso', __('Meses de atraso') . ':') !!}
+                                {!! Form::select(
+                                    'mes_atraso',
+                                    [
+                                        '0' => __('Todos'),
+                                        '1' => __('1 mes'),
+                                        '2' => __('2 meses'),
+                                        '3' => __('3 meses'),
+                                        '4' => __('4 meses'),
+                                        '5' => __('5 meses'),
+                                        '6' => __('6 meses'),
+                                        '7' => __('7 meses'),
+                                        '8' => __('8 meses'),
+                                        '9' => __('9 meses'),
+                                        '10' => __('10 meses'),
+                                        '11' => __('11 meses'),
+                                        '12' => __('12 meses'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width:100%',
+                                        'id' => 'mes_atraso',
+                                    ],
+                                ) !!}
+                            </div>
+                            <p class="help-block">Al seleccionar todos no tomará en cuenta los meses de atraso</p>
+                        </div>
+                        {{--   <div id="div_date_report_start" class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('date_report_start', __('Fecha Inicial') . ':') !!}
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                    {!! Form::date('date_report_start', @format_datetime('now'), [
+                                        'class' => 'form-control',
+                                        'id' => 'date_report_start',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <p class="help-block">Campo no requerido</p>
+                        </div>
+                        <div id="div_date_report_end" class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('date_report_end', __('Fecha Final') . ':') !!}
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                    {!! Form::date('date_report_end', @format_datetime('now'), [
+                                        'class' => 'form-control',
+                                        'id' => 'date_report_end',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div> --}}
+                    @endcomponent
+                </div>
+            </div>
+        @endif
         @component('components.widget', [
             'class' => 'box-primary',
             'title' => __('contact.all_your_contact', ['contacts' => __('lang_v1.' . $type . 's')]),
@@ -37,7 +119,12 @@
                     </div>
                 @endslot
             @endif
-            @if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('guarantor.view'))
+            @if (auth()->user()->can('supplier.view') ||
+                    auth()->user()->can('customer.view') ||
+                    auth()->user()->can('guarantor.view'))
+                @if ($type == 'customer')
+                    <button id="generate_customer_exc" class="btn btn-primary">Generar Excel</button>
+                @endif
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="contact_table">
                         <thead>
@@ -47,6 +134,12 @@
                                 <th>@lang('contact.name')</th>
                                 <th>@lang('business.email')</th>
                                 <th>@lang('contact.mobile')</th>
+                                @if ($type == 'customer')
+                                    <th>Total</th>
+                                    <th>Deuda a pagar</th>
+                                    <th>Pagado</th>
+                                    <th>Ultimo pago</th>
+                                @endif
                             </tr>
                         </thead>
                         <tfoot>
@@ -55,7 +148,10 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>                               
+                                @if ($type == 'customer')
+                                    <td></td>
+                                    <td></td>
+                                @endif
                             </tr>
                         </tfoot>
                     </table>

@@ -354,9 +354,9 @@ class PlanVentaController extends Controller
             $cxc_pay['revenue_id'] = $cxc_reg->id;
             $cxc_pay['cuota'] = $cuota;
             $cxc_pay['monto_general'] = $total_financiado_format;
-            $cxc_pay['paga'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
+            $cxc_pay['paga'] = $request->tipo_plan == 1 ? $total_recibido_format : 0;
             $cxc_pay['interes_c'] = 0;
-            $cxc_pay['amortiza'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
+            $cxc_pay['amortiza'] = $request->tipo_plan == 1 ? $total_recibido_format : 0;
             PaymentRevenue::create($cxc_pay);
             $vehicle = Product::where('business_id', $business_id)
                 ->where('id', $request->vehiculo_venta_id_hidden)
@@ -511,9 +511,9 @@ class PlanVentaController extends Controller
             $cxc_pay = [
                 'cuota' => $cuota,
                 'monto_general' => $total_financiado_format,
-                'paga' => $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format,
+                'paga' => $request->tipo_plan == 1 ? $total_recibido_format : 0,
                 'interes_c' => 0,
-                'amortiza' => $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format
+                'amortiza' => $request->tipo_plan == 1 ? $total_recibido_format : 0
             ];
 
             // Actualizar o crear el registro

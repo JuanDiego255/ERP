@@ -258,7 +258,7 @@
                     </div>
                 @endcomponent
                 {!! Form::close() !!}
-                <div class="row">
+               {{--  <div class="row">
                     <div class="col-md-12">
                         @component('components.filters', ['title' => __('report.filters'), 'id' => 'expenseFilter'])
                             <div class="col-md-4">
@@ -274,7 +274,7 @@
                             </div>
                         @endcomponent
                     </div>
-                </div>
+                </div> --}}
                 <div class="container-pay">
                     @component('components.widget-accordion', [
                         'title' => __('Gestión de pagos en esta cuenta'),
@@ -353,10 +353,10 @@
                 serverSide: true,
                 ajax: {
                     url: '/payments/revenues/' + $('#contact_id').val() + '/' + revenue_id,
-                    data: function(d) {
+                    data: function(d) {/* 
                         d.start_date = $('input#expense_date_range')
                             .data('daterangepicker')
-                            .startDate.format('YYYY-MM-DD');
+                            .startDate.format('YYYY-MM-DD'); */
                     },
                 },
                 pageLength: 500,

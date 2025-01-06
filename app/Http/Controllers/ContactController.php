@@ -18,9 +18,10 @@ use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use DB;
-use Excel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\ContactsReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ContactController extends Controller
 {
@@ -59,7 +60,7 @@ class ContactController extends Controller
     {
         $type = request()->get('type');
 
-        $types = ['supplier', 'customer','guarantor'];
+        $types = ['supplier', 'customer', 'guarantor'];
 
         if (empty($type) || !in_array($type, $types)) {
             return redirect()->back();
@@ -99,19 +100,32 @@ class ContactController extends Controller
             ->where('contacts.business_id', $business_id)
             ->onlySuppliers()
             ->select([
-                'contacts.contact_id', 'supplier_business_name', 'name','city', 'state', 'country', 'landmark', 'contacts.created_at', 'mobile',
-                'contacts.type', 'contacts.id',
+                'contacts.contact_id',
+                'supplier_business_name',
+                'name',
+                'city',
+                'state',
+                'country',
+                'landmark',
+                'contacts.created_at',
+                'mobile',
+                'contacts.type',
+                'contacts.id',
                 DB::raw("SUM(IF(t.type = 'purchase', final_total, 0)) as total_purchase"),
                 DB::raw("SUM(IF(t.type = 'purchase', (SELECT SUM(amount) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as purchase_paid"),
                 DB::raw("SUM(IF(t.type = 'purchase_return', final_total, 0)) as total_purchase_return"),
                 DB::raw("SUM(IF(t.type = 'purchase_return', (SELECT SUM(amount) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as purchase_return_paid"),
                 DB::raw("SUM(IF(t.type = 'opening_balance', final_total, 0)) as opening_balance"),
                 DB::raw("SUM(IF(t.type = 'opening_balance', (SELECT SUM(IF(is_return = 1,-1*amount,amount)) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as opening_balance_paid"),
-                'email', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4',
+                'email',
+                'contacts.custom_field1',
+                'contacts.custom_field2',
+                'contacts.custom_field3',
+                'contacts.custom_field4',
                 'contacts.contact_status'
             ])
             ->groupBy('contacts.id')
-            ->orderBy('created_at','desc');;
+            ->orderBy('created_at', 'desc');;
 
         return Datatables::of($contact)
             ->addColumn('address', '{{ implode(", ", array_filter([$landmark, $city, $state, $country])) }}')
@@ -167,7 +181,7 @@ class ContactController extends Controller
                         $html .= "</a></li>";
                     }
 
-                    
+
                     $html .= '</ul></div>';
 
                     return $html;
@@ -207,19 +221,27 @@ class ContactController extends Controller
             ->where('contacts.business_id', $business_id)
             ->onlyGuarantor()
             ->select([
-                'contacts.contact_id', 'contacts.name', 'contacts.created_at', 'mobile',
-                'contacts.type', 'contacts.id',
+                'contacts.contact_id',
+                'contacts.name',
+                'contacts.created_at',
+                'mobile',
+                'contacts.type',
+                'contacts.id',
                 DB::raw("SUM(IF(t.type = 'loan', final_total, 0)) as total_loan"),
                 DB::raw("SUM(IF(t.type = 'loan', (SELECT SUM(amount) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as loan_paid"),
                 DB::raw("SUM(IF(t.type = 'loan_return', final_total, 0)) as total_loan_return"),
                 DB::raw("SUM(IF(t.type = 'loan_return', (SELECT SUM(amount) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as loan_return_paid"),
                 DB::raw("SUM(IF(t.type = 'opening_balance', final_total, 0)) as opening_balance"),
                 DB::raw("SUM(IF(t.type = 'opening_balance', (SELECT SUM(IF(is_return = 1,-1*amount,amount)) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as opening_balance_paid"),
-                'email', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4',
+                'email',
+                'contacts.custom_field1',
+                'contacts.custom_field2',
+                'contacts.custom_field3',
+                'contacts.custom_field4',
                 'contacts.contact_status'
             ])
             ->groupBy('contacts.id')
-            ->orderBy('created_at','desc');;
+            ->orderBy('created_at', 'desc');;
 
         return Datatables::of($contact)
             ->addColumn(
@@ -273,7 +295,7 @@ class ContactController extends Controller
 
                         $html .= "</a></li>";
                     }
-                    
+
                     $html .= '</ul></div>';
 
                     return $html;
@@ -321,26 +343,79 @@ class ContactController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $query = Contact::leftjoin('transactions AS t', 'contacts.id', '=', 't.contact_id')
-            ->leftjoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
+        $query = Contact::leftJoin('transactions AS t', 'contacts.id', '=', 't.contact_id')
+            ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
+            ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
+            ->leftJoin(
+                DB::raw('(SELECT revenue_id, SUM(paga) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                function ($join) {
+                    $join->on('r.id', '=', 'pr.revenue_id');
+                }
+            )
             ->where('contacts.business_id', $business_id)
             ->onlyCustomers()
             ->select([
-                'contacts.contact_id', 'contacts.name', 'contacts.created_at', 'cg.name as customer_group', 'city', 'state', 'country', 'landmark', 'mobile', 'contacts.id', 'is_default',
+                'contacts.contact_id',
+                'contacts.name',
+                'contacts.created_at',
+                'cg.name as customer_group',
+                'city',
+                'state',
+                'country',
+                'landmark',
+                'mobile',
+                'contacts.id',
+                'is_default',
                 DB::raw("SUM(IF(t.type = 'sell' AND t.status = 'final', final_total, 0)) as total_invoice"),
-                DB::raw("SUM(IF(t.type = 'sell' AND t.status = 'final', (SELECT SUM(IF(is_return = 1,-1*amount,amount)) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as invoice_received"),
+                DB::raw("SUM(IF(t.type = 'sell' AND t.status = 'final', 
+                (SELECT SUM(IF(is_return = 1,-1*amount,amount)) 
+                FROM transaction_payments 
+                WHERE transaction_payments.transaction_id=t.id), 0)) as invoice_received"),
                 DB::raw("SUM(IF(t.type = 'sell_return', final_total, 0)) as total_sell_return"),
-                DB::raw("SUM(IF(t.type = 'sell_return', (SELECT SUM(amount) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as sell_return_paid"),
+                DB::raw("SUM(IF(t.type = 'sell_return', 
+                (SELECT SUM(amount) 
+                FROM transaction_payments 
+                WHERE transaction_payments.transaction_id=t.id), 0)) as sell_return_paid"),
                 DB::raw("SUM(IF(t.type = 'opening_balance', final_total, 0)) as opening_balance"),
-                DB::raw("SUM(IF(t.type = 'opening_balance', (SELECT SUM(IF(is_return = 1,-1*amount,amount)) FROM transaction_payments WHERE transaction_payments.transaction_id=t.id), 0)) as opening_balance_paid"),
-                'email', 'contacts.credit_limit', 'contacts.custom_field1', 'contacts.custom_field2', 'contacts.custom_field3', 'contacts.custom_field4', 'contacts.type',
-                'contacts.contact_status'
+                DB::raw("SUM(IF(t.type = 'opening_balance', 
+                (SELECT SUM(IF(is_return = 1,-1*amount,amount)) 
+                FROM transaction_payments 
+                WHERE transaction_payments.transaction_id=t.id), 0)) as opening_balance_paid"),
+                'email',
+                'contacts.credit_limit',
+                'contacts.custom_field1',
+                'contacts.custom_field2',
+                'contacts.custom_field3',
+                'contacts.custom_field4',
+                'contacts.type',
+                'contacts.contact_status',
+                DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"),
+                DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
+                DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
+                DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
             ])
-            ->groupBy('contacts.id')
-            ->orderBy('created_at','desc');;
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date')
+            ->orderBy('contacts.created_at', 'desc')
+            ->orderBy('contacts.name', 'asc');
 
-            
+        // Aplicar filtros según customer_filter
+        if (request()->has('customer_filter')) {
+            $filter = request()->input('customer_filter');
 
+            if ($filter == 2) {                // Clientes con saldo (deuda mayor a 0)
+
+                $query->havingRaw("total_debt > 0");
+            } elseif ($filter == 3) {
+                // Clientes sin saldo (deuda igual a 0)
+                $query->havingRaw("total_debt = 0");
+            }
+        }
+        if (request()->has('mes_atraso') && !empty(request()->input('mes_atraso'))) {
+            $months_late = request()->input('mes_atraso');
+            if ($months_late != 0) {
+                $query->whereRaw("TIMESTAMPDIFF(MONTH, pr.last_payment_date, NOW()) >= ?", [$months_late]);
+            }
+        }
         $contacts = Datatables::of($query)
             ->addColumn('address', '{{ implode(", ", array_filter([$landmark, $city, $state, $country])) }}')
             ->addColumn(
@@ -350,6 +425,18 @@ class ContactController extends Controller
             ->addColumn(
                 'return_due',
                 '<span class="display_currency return_due" data-orig-value="{{ $total_sell_return - $sell_return_paid }}" data-currency_symbol=true data-highlight=false>{{ $total_sell_return - $sell_return_paid }}</span>'
+            )
+            ->addColumn(
+                'total_debt',
+                '<span class="display_currency return_due" data-orig-value="{{ $total_debt }}" data-currency_symbol=true data-highlight=false>{{ $total_debt }}</span>'
+            )
+            ->addColumn(
+                'total_paid',
+                '<span class="display_currency return_due" data-orig-value="{{ $total_paid }}" data-currency_symbol=true data-highlight=false>{{ $total_paid }}</span>'
+            )
+            ->addColumn(
+                'total_gen',
+                '<span class="display_currency return_due" data-orig-value="{{ $total_gen }}" data-currency_symbol=true data-highlight=false>{{ $total_gen }}</span>'
             )
             ->addColumn(
                 'action',
@@ -395,7 +482,7 @@ class ContactController extends Controller
                         $html .= "</a></li>";
                     }
 
-                    
+
                     $html .= '</ul></div>';
 
                     return $html;
@@ -444,7 +531,7 @@ class ContactController extends Controller
         if (!$reward_enabled) {
             $contacts->removeColumn('total_rp');
         }
-        return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name'])
+        return $contacts->rawColumns(['action', 'total_debt','total_gen','total_paid', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name'])
             ->make(true);
     }
     /**
@@ -570,13 +657,47 @@ class ContactController extends Controller
 
 
             $input = $request->only([
-                'type', 'supplier_business_name', 'cpf_cnpj', 'ie_rg', 'contribuinte','identificacion','tipo_identificacion',
-                'consumidor_final', 'city_id', 'rua', 'numero', 'bairro', 'cep',
-                'name', 'tax_number', 'pay_term_number', 'pay_term_type', 'mobile', 'landline',
-                'alternate_number', 'city', 'state', 'country', 'landmark', 'customer_group_id',
-                'contact_id', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'email',
-                'shipping_address', 'position', 'city_id', 'cod_pais', 'id_estrangeiro', 'rua_entrega',
-                'numero_entrega', 'bairro_entrega', 'cep_entrega', 'city_id_entrega'
+                'type',
+                'supplier_business_name',
+                'cpf_cnpj',
+                'ie_rg',
+                'contribuinte',
+                'identificacion',
+                'tipo_identificacion',
+                'consumidor_final',
+                'city_id',
+                'rua',
+                'numero',
+                'bairro',
+                'cep',
+                'name',
+                'tax_number',
+                'pay_term_number',
+                'pay_term_type',
+                'mobile',
+                'landline',
+                'alternate_number',
+                'city',
+                'state',
+                'country',
+                'landmark',
+                'customer_group_id',
+                'contact_id',
+                'custom_field1',
+                'custom_field2',
+                'custom_field3',
+                'custom_field4',
+                'email',
+                'shipping_address',
+                'position',
+                'city_id',
+                'cod_pais',
+                'id_estrangeiro',
+                'rua_entrega',
+                'numero_entrega',
+                'bairro_entrega',
+                'cep_entrega',
+                'city_id_entrega'
             ]);
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
@@ -727,11 +848,46 @@ class ContactController extends Controller
         if (request()->ajax()) {
             try {
                 $input = $request->only([
-                    'type', 'supplier_business_name', 'cpf_cnpj', 'ie_rg', 'contribuinte', 'consumidor_final', 'name', 'tax_number', 'pay_term_number', 'pay_term_type', 'mobile', 'landline', 'alternate_number', 'city', 'state', 'country', 'landmark',
-                    'customer_group_id', 'contact_id', 'custom_field1', 'custom_field2', 'custom_field3','identificacion','tipo_identificacion',
-                    'custom_field4', 'email', 'shipping_address', 'position', 'rua', 'numero', 'bairro',
-                    'cep', 'city_id', 'cod_pais', 'id_estrangeiro', 'rua_entrega', 'numero_entrega',
-                    'bairro_entrega', 'cep_entrega', 'city_id_entrega'
+                    'type',
+                    'supplier_business_name',
+                    'cpf_cnpj',
+                    'ie_rg',
+                    'contribuinte',
+                    'consumidor_final',
+                    'name',
+                    'tax_number',
+                    'pay_term_number',
+                    'pay_term_type',
+                    'mobile',
+                    'landline',
+                    'alternate_number',
+                    'city',
+                    'state',
+                    'country',
+                    'landmark',
+                    'customer_group_id',
+                    'contact_id',
+                    'custom_field1',
+                    'custom_field2',
+                    'custom_field3',
+                    'identificacion',
+                    'tipo_identificacion',
+                    'custom_field4',
+                    'email',
+                    'shipping_address',
+                    'position',
+                    'rua',
+                    'numero',
+                    'bairro',
+                    'cep',
+                    'city_id',
+                    'cod_pais',
+                    'id_estrangeiro',
+                    'rua_entrega',
+                    'numero_entrega',
+                    'bairro_entrega',
+                    'cep_entrega',
+                    'city_id_entrega'
                 ]);
 
                 $input['credit_limit'] = $request->input('credit_limit') != '' ? $this->commonUtil->num_uf($request->input('credit_limit')) : null;
@@ -1504,5 +1660,85 @@ class ContactController extends Controller
 
         return view('contact.contact_map')
             ->with(compact('contacts'));
+    }
+    //Reporte excel de los clientes
+    public function generateReportExc(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+
+        $query = Contact::leftJoin('transactions AS t', 'contacts.id', '=', 't.contact_id')
+            ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
+            ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
+            ->leftJoin(
+                DB::raw('(SELECT revenue_id, SUM(paga) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                function ($join) {
+                    $join->on('r.id', '=', 'pr.revenue_id');
+                }
+            )
+            ->where('contacts.business_id', $business_id)
+            ->onlyCustomers()
+            ->select([
+                'contacts.contact_id',
+                'contacts.name',
+                'contacts.email',
+                'contacts.created_at',
+                'cg.name as customer_group',
+                'city',
+                'state',
+                'country',
+                'landmark',
+                'mobile',
+                'contacts.id',
+                'is_default',
+                DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
+                DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
+                DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"), // Deuda total
+                DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
+            ])
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date')
+            ->orderBy('contacts.created_at', 'desc')
+            ->orderBy('contacts.name', 'asc');
+        $type = request()->get('type');
+        // Filtros globales      
+        if (request()->has('customer_filter')) {
+            $filter = request()->input('customer_filter');
+            if ($filter == 2) {
+                $query->havingRaw("total_debt > 0");
+            } elseif ($filter == 3) {
+                $query->havingRaw("total_debt = 0");
+            }
+        }
+        if (request()->has('mes_atraso') && !empty(request()->input('mes_atraso'))) {
+            $months_late = request()->input('mes_atraso');
+            if ($months_late != 0) {
+                $query->whereRaw("TIMESTAMPDIFF(MONTH, pr.last_payment_date, NOW()) >= ?", [$months_late]);
+            }
+        }
+
+        // Filtros de DataTable
+        if ($request->filled('table_filters')) {
+            $filters = $request->input('table_filters');
+            foreach ($filters as $index => $value) {
+                switch ($index) {
+                    case '1': // Columna Contact
+                        $query->where('contacts.contact_id', 'LIKE', "%$value%");
+                        break;
+                    case '2': // Columna Ref No
+                        $query->where('contacts.name', 'LIKE', "%$value%");
+                        break;
+                    case '3': // Columna Ref No
+                        $query->where('contacts.email', 'LIKE', "%$value%");
+                        break;
+                    case '4': // Columna Ref No
+                        $query->where('contacts.mobile', 'LIKE', "%$value%");
+                        break;
+                }
+            }
+        }
+
+        $report = $query->get();
+        $file_name = 'Reporte de clientes' . '.xlsx';
+
+        return Excel::download(new ContactsReportExport($report), $file_name, null, [\Maatwebsite\Excel\Excel::XLSX]);
     }
 }
