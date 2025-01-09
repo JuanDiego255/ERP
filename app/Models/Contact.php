@@ -122,7 +122,7 @@ class Contact extends Authenticatable
      *
      * @return array users
      */
-    public static function contactDropdownCustomer($business_id, $revenue = false, $prepend_none = true, $append_id = true)
+    public static function contactDropdownCustomer($business_id, $revenue = false, $prepend_none = true, $id = null, $rev_id = null)
     {
         $query = Contact::where('contacts.business_id', $business_id)
             ->where('type', 'customer')
@@ -130,12 +130,15 @@ class Contact extends Authenticatable
 
         // Si $revenue es true, agregar el join con la tabla revenues
         if ($revenue) {
-            $query->join('revenues as rev', function ($join) {
+            $query->join('revenues as rev', function ($join) use ($rev_id, $id) {
                 $join->on('contacts.id', '=', 'rev.contact_id')
-                    ->where('rev.status', 0); // Asegurando que el status sea 0
+                    ->where('rev.status', 0)
+                    ->where('rev.id', '!=', $rev_id)
+                    ->where('contacts.id', '!=', $id);
             })
                 ->groupBy('contacts.id'); // Agrupando por cliente
         }
+
 
         // Seleccionar las columnas
         $query->select(

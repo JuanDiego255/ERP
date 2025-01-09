@@ -323,7 +323,7 @@ class RevenueController extends Controller
 
         $contact = Contact::where('business_id', $business_id)
             ->find($item->cliente_id);
-        $contacts = Contact::contactDropdownCustomer($business_id, true);
+        $contacts = Contact::contactDropdownCustomer($business_id, true, true, $id, $rev_id);
 
         $canUpdate = true;
         if (!auth()->user()->can('cxc.update')) {
