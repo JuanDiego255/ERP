@@ -347,7 +347,7 @@ class ContactController extends Controller
             ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id, SUM(paga) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
