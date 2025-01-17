@@ -8,11 +8,13 @@
         <h1></h1>
         <div class="col-md-4 col-xs-12 mt-15 pull-right mb-10">
             <select name="contact_id" class="form-control select2" id="contact_id">
-                <option selected value="{{ $contact->id }}">{{ $contact->name . ' - (' . $contact->contact_id . ')' }}
+                <option selected value="{{ $contact->id }}">
+                    {{ $contact->name . ' (' . $contact->contact_id . ') - (#PV ' . $item->numero . ')' }}
                 </option>
                 @foreach ($contacts as $contact_id => $contact_data)
                     <option value="{{ $contact_data['rev_id'] }}">
                         {{ $contact_data['contact'] }}
+
                     </option>
                 @endforeach
             </select>
@@ -258,7 +260,7 @@
                     </div>
                 @endcomponent
                 {!! Form::close() !!}
-               {{--  <div class="row">
+                {{--  <div class="row">
                     <div class="col-md-12">
                         @component('components.filters', ['title' => __('report.filters'), 'id' => 'expenseFilter'])
                             <div class="col-md-4">
@@ -353,10 +355,11 @@
                 serverSide: true,
                 ajax: {
                     url: '/payments/revenues/' + $('#contact_id').val() + '/' + revenue_id,
-                    data: function(d) {/* 
-                        d.start_date = $('input#expense_date_range')
-                            .data('daterangepicker')
-                            .startDate.format('YYYY-MM-DD'); */
+                    data: function(d) {
+                        /* 
+                                                d.start_date = $('input#expense_date_range')
+                                                    .data('daterangepicker')
+                                                    .startDate.format('YYYY-MM-DD'); */
                     },
                 },
                 pageLength: 500,

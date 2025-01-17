@@ -128,22 +128,23 @@ class Contact extends Authenticatable
             ->where('type', 'customer')
             ->active();
 
-        // Si $revenue es true, agregar el join con la tabla revenues
+        // Si $revenue es true, agregar los joins con revenues y plan_ventas
         if ($revenue) {
             $query->join('revenues as rev', function ($join) use ($rev_id, $id) {
                 $join->on('contacts.id', '=', 'rev.contact_id')
                     ->where('rev.status', 0)
-                    ->where('rev.id', '!=', $rev_id)
-                    ->where('contacts.id', '!=', $id);
+                    ->where('rev.id', '!=', $rev_id);
             })
-                ->groupBy('contacts.id'); // Agrupando por cliente
+                ->join('plan_ventas as pv', 'rev.plan_venta_id', '=', 'pv.id');
         }
-
 
         // Seleccionar las columnas
         $query->select(
-            DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' - ', COALESCE(supplier_business_name, ''), '(', contacts.contact_id, ')')) AS contact"),
-            $revenue ? DB::raw('MAX(rev.id) as rev_id') : DB::raw('NULL as rev_id'), // Solo agregar rev_id si $revenue es true
+            DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', 
+            name, 
+            CONCAT(name, ' (', contacts.contact_id, ') - (#PV ', pv.numero, ')')
+        ) AS contact"),
+            $revenue ? 'rev.id as rev_id' : DB::raw('NULL as rev_id'), // Seleccionar rev_id si $revenue es true
             'contacts.id as contact_id'
         );
 
@@ -165,6 +166,7 @@ class Contact extends Authenticatable
 
         return $result;
     }
+
 
 
     /**

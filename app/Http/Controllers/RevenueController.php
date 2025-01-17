@@ -298,6 +298,7 @@ class RevenueController extends Controller
                 'vv.name as veh_venta',
                 'vv.model as modelo',
                 'vv.placa as placa',
+                'pv.numero as numero',
                 'rev.id as id',
                 'rev.plan_venta_id as plan_venta_id',
                 'rev.created_at as created_at',
