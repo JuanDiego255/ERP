@@ -167,13 +167,13 @@ class RevenueController extends Controller
                     }
                 )
                 ->editColumn('amount_paid', function ($row) {
-                    $due = $row->valor_total - $row->amount_paid;
+                    $due = $row->min_general_amount;
                     return '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $due . '">' . $due . '</span>';
                 })
                 ->editColumn(
                     'status',
                     function ($row) {
-                        if ($row->min_general_amount == 0) {
+                        if ($row->min_general_amount <= 0) {
                             return '<span class="label bg-green">Cancelado</span>';
                         } else {
                             return '<span class="label bg-yellow">Pendiente</span>';

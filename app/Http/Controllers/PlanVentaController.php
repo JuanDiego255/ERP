@@ -346,6 +346,7 @@ class PlanVentaController extends Controller
             $cxc['tipo_prestamo'] = $request->tipo_prestamo;
             $cxc['moneda'] = $request->moneda;
             $cxc['plan_venta_id'] = $plan->id;
+            $cxc['status'] = $request->tipo_plan == 1 ? 1 : 0;
             $cxc['plazo'] = $request->plazo;
             $cxc['created_by'] = Auth::user()->id;
             $cxc_reg = Revenue::create($cxc);
@@ -505,6 +506,7 @@ class PlanVentaController extends Controller
             $cxc['moneda'] = $request->moneda;
             $cxc['plan_venta_id'] = $plan->id;
             $cxc['plazo'] = $request->plazo;
+            $cxc['status'] = $request->tipo_plan == 1 ? 1 : 0;
             $cxc['created_by'] = Auth::user()->id;
             $cxc_item->update($cxc);
             //Primer linea de pago CxC

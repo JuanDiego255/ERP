@@ -638,6 +638,7 @@ class ExpenseController extends Controller
 
             $transaction_data['type'] = 'expense';
             $transaction_data['status'] = 'final';
+            $transaction_data['plazo'] = $request->plazo ? $request->plazo : 0;
             $transaction_data['payment_status'] = 'due';
             $transaction_data['transaction_date'] = $this->transactionUtil->uf_date($transaction_data['transaction_date'], true);
             $transaction_data['final_total'] = $this->transactionUtil->num_uf(
@@ -858,6 +859,7 @@ class ExpenseController extends Controller
             );
 
             $transaction_data['contact_id'] = $request->contact_id;
+            $transaction_data['plazo'] = $request->plazo ? $request->plazo : 0;
 
             //upload document
             $document_name = $this->transactionUtil->uploadFile($request, 'document', 'documents');
