@@ -218,10 +218,13 @@ class ContactController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $contact = Contact::leftjoin('transactions AS t', 'contacts.id', '=', 't.contact_id')
+            ->leftJoin('plan_ventas as pv', 'contacts.id', 'pv.fiador_id')
             ->where('contacts.business_id', $business_id)
             ->onlyGuarantor()
             ->select([
                 'contacts.contact_id',
+                'pv.numero as plan_venta_numero',
+                'pv.id as plan_venta_id',
                 'contacts.name',
                 'contacts.created_at',
                 'mobile',
@@ -265,7 +268,9 @@ class ContactController extends Controller
             <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
                     $due_amount = $row->total_loan + $row->opening_balance - $row->loan_paid - $row->opening_balance_paid;
-
+                    if (isset($row->plan_venta_numero)) {
+                        $html .= '<li><a href="' . action('PlanVentaController@edit', [$row->plan_venta_id]) . '" class="pay_loan_due"><i class="fas fa-eye" aria-hidden="true"></i>' . __("Ir al plan") . '</a></li>';
+                    }
                     if ($due_amount > 0) {
                         $html .= '<li><a href="' . action('TransactionPaymentController@getPayContactDue', [$row->id]) . '?type=loan" class="pay_loan_due"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>' . __("contact.pay_due_amount") . '</a></li>';
                     }
@@ -531,7 +536,7 @@ class ContactController extends Controller
         if (!$reward_enabled) {
             $contacts->removeColumn('total_rp');
         }
-        return $contacts->rawColumns(['action', 'total_debt','total_gen','total_paid', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name'])
+        return $contacts->rawColumns(['action', 'total_debt', 'total_gen', 'total_paid', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name'])
             ->make(true);
     }
     /**

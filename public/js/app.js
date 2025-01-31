@@ -434,6 +434,14 @@ $(document).ready(function () {
                 }
             ]);
         }
+        if (contact_table_type == "guarantor") {
+            Array.prototype.push.apply(columns, [
+                {
+                    data: 'plan_venta_numero',
+                    name: 'pv.numero'
+                }
+            ]);
+        }
     }
     var buttonsConfig = [{
             extend: 'pageLength',
@@ -477,7 +485,7 @@ $(document).ready(function () {
             var api = this.api();
 
             // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [1, 2, 3, 4]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+            var filterableColumns = [1, 2, 3, 4,5]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
             // Agregar una fila en el encabezado para los filtros de búsqueda
             $('#contact_table thead').append('<tr class="filter-row"></tr>');

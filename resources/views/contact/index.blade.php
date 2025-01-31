@@ -14,9 +14,9 @@
         <h1> @lang('lang_v1.' . $type . 's')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                    <li class="active">Here</li>
-                                                </ol> -->
+                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                            <li class="active">Here</li>
+                                                        </ol> -->
     </section>
 
     <!-- Main content -->
@@ -132,6 +132,7 @@
                                 <th>@lang('messages.action')</th>
                                 <th>@lang('lang_v1.contact_id')</th>
                                 <th>@lang('contact.name')</th>
+
                                 <th>@lang('business.email')</th>
                                 <th>@lang('contact.mobile')</th>
                                 @if ($type == 'customer')
@@ -139,6 +140,9 @@
                                     <th>Deuda a pagar</th>
                                     <th>Pagado</th>
                                     <th>Ultimo pago</th>
+                                @endif
+                                @if ($type == 'guarantor')
+                                    <th>Plan Venta Asoc</th>
                                 @endif
                             </tr>
                         </thead>
