@@ -31,6 +31,7 @@
                             <tr>
                                 <th>@lang('No. Plan')</th>
                                 <th>@lang('Cliente')</th>
+                                <th>@lang('Fiador')</th>
                                 <th>@lang('Vehículo vendido')</th>
                                 <th>@lang('Modelo')</th>
                                 <th>@lang('Fecha plan (yyyy-MM-dd)')</th>
@@ -70,7 +71,11 @@
                     },
                     {
                         data: 'name',
-                        name: 'contacts.name'
+                        name: 'cli.name'
+                    },
+                    {
+                        data: 'fiador_name',
+                        name: 'fdr.name'
                     },
                     {
                         data: 'vehiculo',
@@ -91,7 +96,7 @@
                     $('.dataTables_paginate').css('margin-top', '15px');
                     var api = this.api();
                     var filterableColumns = [0, 1, 2,
-                    3,4];
+                    3,4,5];
                     $('#plan_ventas thead').append('<tr class="filter-row"></tr>');
                     api.columns().every(function(index) {
                         var column = this;

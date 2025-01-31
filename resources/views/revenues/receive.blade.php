@@ -162,7 +162,7 @@
                     </div>
                     <div class="col-md-6">
                         {!! Form::label('detalle', __('Detalle') . '') !!}
-                        {!! Form::textarea('detalle', $item->detalle, ['class' => 'form-control', 'required', 'readonly', 'rows' => 3]) !!}
+                        {!! Form::textarea('detalle', $item->detalle, ['class' => 'form-control', 'required', 'rows' => 3]) !!}
                     </div>
                     <div class="col-md-12" style="margin-top: 5px;">
                         <button type="submit" class="btn btn-primary mt-2">@lang('messages.update')</button>

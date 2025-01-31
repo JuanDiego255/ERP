@@ -30,10 +30,12 @@ class PlanVentaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $planillas = PlanVenta::where('plan_ventas.business_id', $business_id)
-            ->join('contacts', 'plan_ventas.cliente_id', '=', 'contacts.id')
+            ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
+            ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
             ->join('products', 'plan_ventas.vehiculo_venta_id', '=', 'products.id')
             ->select([
-                'contacts.name as name',
+                'cli.name as name',
+                'fdr.name as fiador_name',
                 'plan_ventas.id as id',
                 'plan_ventas.numero as numero',
                 'products.name as vehiculo',
@@ -422,6 +424,7 @@ class PlanVentaController extends Controller
             if (request()->ajax()) {
                 DB::beginTransaction();
                 $cxc['tasa'] = $request->tasa;
+                $cxc['detalle'] = $request->detalle;
                 $cxc_item->update($cxc);
                 DB::commit();
                 $output = [
