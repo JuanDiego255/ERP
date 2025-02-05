@@ -87,6 +87,8 @@ class ExpenseController extends Controller
                     'ct.id'
                 )
                 ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
+                ->leftJoin('vehicle_bills as vb', 'transactions.ref_no', '=', 'vb.factura')
+                ->leftJoin('products as pro', 'vb.product_id', '=', 'pro.id')
                 ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
                 ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
                 ->leftJoin(
@@ -112,6 +114,7 @@ class ExpenseController extends Controller
                     'transactions.additional_notes',
                     'final_total',
                     'bl.name as location_name',
+                    DB::raw("CONCAT(COALESCE(pro.name, ''),' (',COALESCE(pro.model, 'N/A'),') ') as vehicle"),
                     DB::raw("CONCAT(COALESCE(U.surname, ''),' ',COALESCE(U.first_name, ''),' ',COALESCE(U.last_name,'')) as expense_for"),
                     DB::raw("CONCAT(tr.name ,' (', tr.amount ,' )') as tax"),
                     DB::raw('SUM(TP.amount) as amount_paid'),
@@ -356,6 +359,8 @@ class ExpenseController extends Controller
         // Consulta principal
         $query = Transaction::join('contacts as ct', 'transactions.contact_id', '=', 'ct.id')
             ->leftJoin('transaction_payments AS TP', 'transactions.id', '=', 'TP.transaction_id')
+            ->leftJoin('vehicle_bills as vb', 'transactions.ref_no', '=', 'vb.factura')
+            ->leftJoin('products as pro', 'vb.product_id', '=', 'pro.id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'expense')
             ->where('transactions.check_report', 1)
@@ -365,6 +370,7 @@ class ExpenseController extends Controller
                 'transactions.final_total as total', // Total
                 DB::raw('COALESCE(transactions.final_total - SUM(TP.amount), transactions.final_total) as balance'), // Saldo
                 DB::raw('SUM(TP.amount) as advance_amount'), // Monto adelantado
+                DB::raw("CONCAT(COALESCE(pro.name, ''),' (',COALESCE(pro.model, 'N/A'),') ') as vehicle"),
                 'transactions.fecha_vence as fecha_vence', // Fecha vence
                 'transactions.additional_notes as detail' // Detalle
             )

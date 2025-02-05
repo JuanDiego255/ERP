@@ -176,6 +176,7 @@
                                     <th>Total a Pagar</th>
                                     <th>Detalle</th>
                                     <th>@lang('lang_v1.added_by')</th>
+                                    <th>Vehículo (Gastos)</th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -186,7 +187,7 @@
                                             data-currency_symbol ="true"></span></td>
                                     <td><span class="display_currency" id="footer_total_due"
                                             data-currency_symbol ="true"></span></td>
-                                    <td colspan="2"></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </tfoot>
                         </table>

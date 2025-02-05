@@ -1701,6 +1701,10 @@ $(document).ready(function () {
                 data: 'added_by',
                 name: 'usr.first_name'
             },
+            {
+                data: 'vehicle',
+                name: 'pro.name'
+            }
         ],
         fnDrawCallback: function (oSettings) {
             var expense_total = sum_table_col($('#expense_table'), 'final-total');

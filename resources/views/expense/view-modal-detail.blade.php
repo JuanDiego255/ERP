@@ -25,7 +25,7 @@
                         <th>Saldo</th>
                         <th>Monto Adelantos</th>
                         <th>Fecha Vence</th>
-                        <th>Detalle</th>
+                        <th>Detalle - Vehículo Gastos</th>
                         <th>Acumulado</th>
                     </tr>
                 </thead>
@@ -65,7 +65,7 @@
                             <td>₡{{ number_format($row->balance, 2) }}</td>
                             <td>₡{{ number_format($row->advance_amount, 2) }}</td>
                             <td>{{ \Carbon\Carbon::parse($row->fecha_vence)->translatedFormat('d M Y') }}</td>
-                            <td>{{ $row->detail }}</td>
+                            <td>{{ $row->detail }} - {{ $row->vehicle }}</td>
                             <td>₡{{ number_format($row->total - $row->advance_amount, 2) }}</td>
                         </tr>
                     @endforeach
