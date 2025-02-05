@@ -397,30 +397,30 @@ class ContactController extends Controller
                 DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"),
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
-                DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
+                DB::raw("COALESCE(pr.last_payment_date, pr.last_payment_date) as last_payment_date") // Última fecha de pago
             ])
-            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date')
-            ->orderBy('contacts.created_at', 'desc')
-            ->orderBy('contacts.name', 'asc');
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date');
 
         // Aplicar filtros según customer_filter
         if (request()->has('customer_filter')) {
             $filter = request()->input('customer_filter');
 
-            if ($filter == 2) {                // Clientes con saldo (deuda mayor a 0)
-
+            if ($filter == 2) { // Clientes con saldo (deuda mayor a 0)
                 $query->havingRaw("total_debt > 0");
             } elseif ($filter == 3) {
                 // Clientes sin saldo (deuda igual a 0)
                 $query->havingRaw("total_debt = 0");
+            } elseif ($filter == 1) {
+                // Clientes con pagos realizados
+                $query->havingRaw("total_paid > 0 AND total_debt > 0");
             }
         }
-        if (request()->has('mes_atraso') && !empty(request()->input('mes_atraso'))) {
+        /*  if (request()->has('mes_atraso') && !empty(request()->input('mes_atraso'))) {
             $months_late = request()->input('mes_atraso');
             if ($months_late != 0) {
                 $query->whereRaw("TIMESTAMPDIFF(MONTH, pr.last_payment_date, NOW()) >= ?", [$months_late]);
             }
-        }
+        } */
         $contacts = Datatables::of($query)
             ->addColumn('address', '{{ implode(", ", array_filter([$landmark, $city, $state, $country])) }}')
             ->addColumn(
@@ -433,15 +433,24 @@ class ContactController extends Controller
             )
             ->addColumn(
                 'total_debt',
-                '<span class="display_currency return_due" data-orig-value="{{ $total_debt }}" data-currency_symbol=true data-highlight=false>{{ $total_debt }}</span>'
+                function ($row) {
+                    $total_debt = $row->total_debt;
+                    return '<span class="display_currency return_due" data-order="' . $total_debt . '" data-orig-value="' . $total_debt . '" data-currency_symbol="true" data-highlight="false">₡ ' . number_format($total_debt, 2) . '</span>';
+                }
             )
             ->addColumn(
                 'total_paid',
-                '<span class="display_currency return_due" data-orig-value="{{ $total_paid }}" data-currency_symbol=true data-highlight=false>{{ $total_paid }}</span>'
+                function ($row) {
+                    $total_paid = $row->total_paid;
+                    return '<span class="display_currency return_due" data-order="' . $total_paid . '" data-orig-value="' . $total_paid . '" data-currency_symbol="true" data-highlight="false">₡ ' . number_format($total_paid, 2) . '</span>';
+                }
             )
             ->addColumn(
                 'total_gen',
-                '<span class="display_currency return_due" data-orig-value="{{ $total_gen }}" data-currency_symbol=true data-highlight=false>{{ $total_gen }}</span>'
+                function ($row) {
+                    $total_gen = $row->total_gen;
+                    return '<span class="display_currency return_due" data-order="' . $total_gen . '" data-orig-value="' . $total_gen . '" data-currency_symbol="true" data-highlight="false">₡ ' . number_format($total_gen, 2) . '</span>';
+                }
             )
             ->addColumn(
                 'action',
@@ -1675,7 +1684,7 @@ class ContactController extends Controller
             ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id, SUM(paga) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
@@ -1700,23 +1709,57 @@ class ContactController extends Controller
                 DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"), // Deuda total
                 DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
             ])
-            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date')
-            ->orderBy('contacts.created_at', 'desc')
-            ->orderBy('contacts.name', 'asc');
-        $type = request()->get('type');
-        // Filtros globales      
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date');
+
+        // Filtros globales y de columnas
         if (request()->has('customer_filter')) {
             $filter = request()->input('customer_filter');
-            if ($filter == 2) {
+
+            if ($filter == 2) { // Clientes con saldo (deuda mayor a 0)
                 $query->havingRaw("total_debt > 0");
             } elseif ($filter == 3) {
+                // Clientes sin saldo (deuda igual a 0)
                 $query->havingRaw("total_debt = 0");
+            } elseif ($filter == 1) {
+                // Clientes con pagos realizados
+                $query->havingRaw("total_paid > 0 AND total_debt > 0");
             }
         }
-        if (request()->has('mes_atraso') && !empty(request()->input('mes_atraso'))) {
+        /* if ($request->filled('mes_atraso') && !empty(request()->input('mes_atraso'))) {
             $months_late = request()->input('mes_atraso');
             if ($months_late != 0) {
                 $query->whereRaw("TIMESTAMPDIFF(MONTH, pr.last_payment_date, NOW()) >= ?", [$months_late]);
+            }
+        } */
+
+        // Ordenación dinámica
+        if ($request->filled('order_column') && $request->filled('order_direction')) {
+            $orderColumn = $request->input('order_column');
+            $orderDirection = $request->input('order_direction');
+            $orderColumnIndex = $orderColumn;
+            // Validar las columnas permitidas
+            switch ($orderColumn) {
+                case 2:
+                    $orderColumn = 'contacts.name';
+                    break;
+                case 3:
+                    $orderColumn = 'contacts.email';
+                    break;
+                case 4:
+                    $orderColumn = 'total_gen';
+                    break;
+                case 5:
+                    $orderColumn = 'total_debt';
+                    break;
+                case 6:
+                    $orderColumn = 'total_paid';
+                    break;
+                case 7:
+                    $orderColumn = 'pr.last_payment_date';
+                    break;
+            }
+            if ($orderColumnIndex != 1) {
+                $query->orderBy($orderColumn, $orderDirection);
             }
         }
 
@@ -1733,9 +1776,6 @@ class ContactController extends Controller
                         break;
                     case '3': // Columna Ref No
                         $query->where('contacts.email', 'LIKE', "%$value%");
-                        break;
-                    case '4': // Columna Ref No
-                        $query->where('contacts.mobile', 'LIKE', "%$value%");
                         break;
                 }
             }

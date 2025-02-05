@@ -31,7 +31,7 @@
                                 {!! Form::label('customer_filter', __('Filtrar Clientes Por') . ':') !!}
                                 {!! Form::select(
                                     'customer_filter',
-                                    ['1' => __('Todos '), '2' => __('Con saldo'), '3' => __('SIn saldo')],
+                                    ['1' => __('Clientes con pagos realizados'), '2' => __('Con saldo pendiente'), '3' => __('Sin saldo (Cancelado)'), '4' => __('Todos los clientes')],
                                     null,
                                     [
                                         'class' => 'form-control select2',
@@ -40,8 +40,10 @@
                                     ],
                                 ) !!}
                             </div>
+                            <p class="help-block">Si desea ver todos los clientes selecciona la última opción</p>
+
                         </div>
-                        <div class="col-md-3">
+                       {{--  <div class="col-md-3">
                             <div class="form-group">
                                 {!! Form::label('mes_atraso', __('Meses de atraso') . ':') !!}
                                 {!! Form::select(
@@ -70,7 +72,7 @@
                                 ) !!}
                             </div>
                             <p class="help-block">Al seleccionar todos no tomará en cuenta los meses de atraso</p>
-                        </div>
+                        </div> --}}
                         {{--   <div id="div_date_report_start" class="col-md-3">
                             <div class="form-group">
                                 {!! Form::label('date_report_start', __('Fecha Inicial') . ':') !!}
@@ -134,7 +136,6 @@
                                 <th>@lang('contact.name')</th>
 
                                 <th>@lang('business.email')</th>
-                                <th>@lang('contact.mobile')</th>
                                 @if ($type == 'customer')
                                     <th>Total</th>
                                     <th>Deuda a pagar</th>

@@ -39,7 +39,6 @@ class ContactsReportExport implements FromView, WithEvents, WithColumnWidths
             'A' => 10,  // ID
             'B' => 30,  // Nombre (más ancho)
             'C' => 40,  // Email (más ancho)
-            'D' => 20,  // Teléfono
             'E' => 15,  // Deuda a pagar
             'F' => 20,  // Última fecha de pago
             'G' => 15,  // Sumatoria

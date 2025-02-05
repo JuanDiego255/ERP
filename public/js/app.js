@@ -410,13 +410,9 @@ $(document).ready(function () {
                 name: 'email'
             }
         ];
-        Array.prototype.push.apply(columns, [{
-            data: 'mobile',
-            name: 'mobile'
-        }]);
+       
         if (contact_table_type == "customer") {
-            Array.prototype.push.apply(columns, [
-                {
+            Array.prototype.push.apply(columns, [{
                     data: 'total_gen',
                     name: 'total_gen'
                 },
@@ -435,12 +431,10 @@ $(document).ready(function () {
             ]);
         }
         if (contact_table_type == "guarantor") {
-            Array.prototype.push.apply(columns, [
-                {
-                    data: 'plan_venta_numero',
-                    name: 'pv.numero'
-                }
-            ]);
+            Array.prototype.push.apply(columns, [{
+                data: 'plan_venta_numero',
+                name: 'pv.numero'
+            }]);
         }
     }
     var buttonsConfig = [{
@@ -485,7 +479,7 @@ $(document).ready(function () {
             var api = this.api();
 
             // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [1, 2, 3, 4,5]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+            var filterableColumns = [1, 2, 3]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
             // Agregar una fila en el encabezado para los filtros de búsqueda
             $('#contact_table thead').append('<tr class="filter-row"></tr>');
@@ -534,20 +528,25 @@ $(document).ready(function () {
         let url = '/contacts/generate/customer/excel'; // Actualiza esta ruta
         let dataTable = $('#contact_table').DataTable();
         let tableFilters = {};
+        let order = dataTable.order(); // Obtener la columna y la dirección de ordenación
+
         dataTable.columns().every(function () {
             if (this.search()) {
                 tableFilters[this.index()] = this.search();
             }
         });
-        // Genera los datos combinados de los filtros globales y de columnas
-        //Fechas Filtros
 
+        // Genera los datos combinados de los filtros globales y de columnas
         let data = {
             customer_filter: $('select#customer_filter').val(),
-            mes_atraso: $('select#mes_atraso').val(),
-            table_filters: tableFilters
+            //mes_atraso: $('select#mes_atraso').val(),
+            table_filters: tableFilters,
+            order_column: order[0][0], // Columna seleccionada para ordenación
+            order_direction: order[0][1] // Dirección de la ordenación
         };
+
         console.log(data);
+
         // Envía los datos combinados al backend
         $.ajax({
             url: url,
@@ -557,7 +556,6 @@ $(document).ready(function () {
             },
             data: data,
             success: function (result, status, xhr) {
-
                 var disposition = xhr.getResponseHeader('content-disposition');
                 var matches = /"([^"]*)"/.exec(disposition);
                 var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
@@ -580,6 +578,7 @@ $(document).ready(function () {
             }
         });
     });
+
     //On display of add contact modal
     $('.contact_modal').on('shown.bs.modal', function (e) {
 
