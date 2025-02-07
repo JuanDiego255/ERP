@@ -31,7 +31,7 @@ class PlanVentaController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $planillas = PlanVenta::where('plan_ventas.business_id', $business_id)
             ->join('contacts as cli', 'plan_ventas.cliente_id', '=', 'cli.id')
-            ->join('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
+            ->leftJoin('contacts as fdr', 'plan_ventas.fiador_id', '=', 'fdr.id')
             ->join('products', 'plan_ventas.vehiculo_venta_id', '=', 'products.id')
             ->select([
                 'cli.name as name',
