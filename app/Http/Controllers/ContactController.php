@@ -351,8 +351,9 @@ class ContactController extends Controller
         $query = Contact::leftJoin('transactions AS t', 'contacts.id', '=', 't.contact_id')
             ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
+            ->leftJoin('plan_ventas AS pv', 'r.plan_venta_id', '=', 'pv.id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
@@ -364,6 +365,8 @@ class ContactController extends Controller
                 'contacts.name',
                 'contacts.created_at',
                 'cg.name as customer_group',
+                'pv.numero as numero',
+                'r.id as revenue_id',
                 'city',
                 'state',
                 'country',
@@ -394,7 +397,7 @@ class ContactController extends Controller
                 'contacts.custom_field4',
                 'contacts.type',
                 'contacts.contact_status',
-                DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"),
+                DB::raw("COALESCE(pr.min_monto_gen, pr.min_monto_gen) as total_debt"),
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
                 DB::raw("COALESCE(pr.last_payment_date, pr.last_payment_date) as last_payment_date") // Última fecha de pago
@@ -483,7 +486,9 @@ class ContactController extends Controller
                     if (!$row->is_default && auth()->user()->can('customer.delete')) {
                         $html .= '<li><a href="' . action('ContactController@destroy', [$row->id]) . '" class="delete_contact_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</a></li>';
                     }
-
+                    if (isset($row->revenue_id)) {
+                        $html .= '<li><a target="_blank" href="' . action('RevenueController@receive', [$row->id, $row->revenue_id]) . '"><i class="fa fa-eye"></i>' . 'Cuenta Por Cobrar (PV: ' . $row->revenue_id . ')' .  '</a></li>';
+                    }
                     if (auth()->user()->can('customer.update')) {
                         $html .= '<li><a href="' . action('ContactController@updateStatus', [$row->id]) . '"class="update_contact_status"><i class="fas fa-power-off"></i>';
 
@@ -495,7 +500,6 @@ class ContactController extends Controller
 
                         $html .= "</a></li>";
                     }
-
 
                     $html .= '</ul></div>';
 
@@ -1684,7 +1688,7 @@ class ContactController extends Controller
             ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
@@ -1706,7 +1710,7 @@ class ContactController extends Controller
                 'is_default',
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
-                DB::raw("COALESCE(r.valor_total - pr.total_paid, r.valor_total) as total_debt"), // Deuda total
+                DB::raw("COALESCE(pr.min_monto_gen, pr.min_monto_gen) as total_debt"),
                 DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
             ])
             ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date');

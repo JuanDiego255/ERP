@@ -31,7 +31,7 @@
                                 {!! Form::label('customer_filter', __('Filtrar Clientes Por') . ':') !!}
                                 {!! Form::select(
                                     'customer_filter',
-                                    ['1' => __('Clientes con pagos realizados'), '2' => __('Con saldo pendiente'), '3' => __('Sin saldo (Cancelado)'), '4' => __('Todos los clientes')],
+                                    ['1' => __('Clientes con pagos realizados (Clientes activos)'), '2' => __('Con saldo pendiente'), '3' => __('Sin saldo (Cancelado)'), '4' => __('Todos los clientes')],
                                     null,
                                     [
                                         'class' => 'form-control select2',
