@@ -28,16 +28,21 @@
         <input type="hidden" id="can_update" value="{{ $canUpdate }}">
         <div class="row">
             <div class="col-md-12">
+                {!! Form::open([
+                    'url' => action('ProductController@update', [$item->vehiculo_id]),
+                    'method' => 'PUT',
+                    'id' => 'product_edit_form_receive'
+                ]) !!}
                 @component('components.widget-accordion', [
                     'title' => __('Información del vehículo'),
                     'id' => 'accordionVehicle',
                 ])
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('vehículo', __('Vehículo')) !!}
-                            {!! Form::text('vehículo', $item->veh_venta, [
+                            {!! Form::label('name', __('Vehículo')) !!}
+                            {!! Form::text('name', $item->veh_venta, [
                                 'class' => 'form-control',
-                                'id' => 'vehiculo',
+                                'id' => 'name',
                                 'readonly',
                                 'required',
                             ]) !!}
@@ -49,7 +54,6 @@
                             {!! Form::text('modelo', $item->modelo, [
                                 'class' => 'form-control',
                                 'id' => 'modelo',
-                                'readonly',
                                 'required',
                             ]) !!}
                         </div>
@@ -60,12 +64,15 @@
                             {!! Form::text('placa', $item->placa, [
                                 'class' => 'form-control',
                                 'id' => 'placa',
-                                'readonly',
                                 'required',
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-12" style="margin-top: 5px;">
+                        <button type="submit" class="btn btn-primary mt-2">@lang('messages.update')</button>
+                    </div>
                 @endcomponent
+                {!! Form::close() !!}
                 {!! Form::open([
                     'url' => action('PlanVentaController@update', [$item->plan_venta_id]),
                     'method' => 'PUT',

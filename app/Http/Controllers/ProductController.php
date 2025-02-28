@@ -903,13 +903,24 @@ class ProductController extends Controller
                 'valor_ecommerce',
                 'origem'
             ]);
-
-            DB::beginTransaction();
-
             $product = Product::where('business_id', $business_id)
                 ->where('id', $id)
                 ->with(['product_variations'])
                 ->first();
+
+            DB::beginTransaction();
+
+            if (request()->ajax()) {
+                $producto['model'] = $request->modelo;
+                $producto['placa'] = $request->placa;
+                $product->update($producto);
+                DB::commit();
+                $output = [
+                    'success' => true,
+                    'msg' => 'Se ha actualizado la información del vehículo'
+                ];
+                return $output;
+            }
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {

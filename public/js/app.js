@@ -410,7 +410,7 @@ $(document).ready(function () {
                 name: 'email'
             }
         ];
-       
+
         if (contact_table_type == "customer") {
             Array.prototype.push.apply(columns, [{
                     data: 'total_gen',
@@ -754,6 +754,25 @@ $(document).ready(function () {
             $.ajax({
                 method: 'PUT',
                 url: $('form#plan_venta_edit_form').attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function (result) {
+                    if (result.success == true) {
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+    $('form#product_edit_form_receive')
+        .submit(function (e) {
+            e.preventDefault();
+            var data = $('form#product_edit_form_receive').serialize();
+            console.log(data);
+            $.ajax({
+                method: 'PUT',
+                url: $('form#product_edit_form_receive').attr('action'),
                 dataType: 'json',
                 data: data,
                 success: function (result) {
