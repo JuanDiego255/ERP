@@ -3190,7 +3190,7 @@ $(document).on('click', '.save_vehicle', function () {
         monto = parseFloat($('#efectivo').val().replace(/,/g, '')) || 0;
     }
 
-    if (selectedVehicleId !== "" && monto > 0) {
+    if (selectedVehicleId !== "" && monto >= 0) {
         var selectedVehicleName = $('#vehiculo_id option:selected').text();
 
         // Si ya había un vehículo en el input actual, restar su monto
