@@ -238,6 +238,7 @@ class RevenueController extends Controller
             $cxc_pay['interes_c'] = round($interes, 2);
             $cxc_pay['paga'] = 0;
             $cxc_pay['amortiza'] = round($record->cuota - $interes, 2);
+            $cxc_pay['created_at'] = Carbon::now('America/Costa_Rica')->format('Y-m-d H:i:s');
             $payment_do = PaymentRevenue::create($cxc_pay);
             if ($payment_do->monto_general == 0) {
                 $revenue_to_update = Revenue::findOrFail($id);
