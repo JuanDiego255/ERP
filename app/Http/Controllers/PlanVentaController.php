@@ -104,6 +104,7 @@ class PlanVentaController extends Controller
             ->join('revenues as cxc', 'plan_ventas.id', '=', 'cxc.plan_venta_id')
             ->leftJoin('products as vv', 'plan_ventas.vehiculo_venta_id', '=', 'vv.id')
             ->leftJoin('products as vr', 'plan_ventas.vehiculo_recibido_id', '=', 'vr.id')
+            ->leftJoin('products as vr2', 'plan_ventas.vehiculo_recibido_id_dos', '=', 'vr2.id')
             ->select(
                 'plan_ventas.*',
                 'cli.name as cliente_name',
@@ -111,6 +112,7 @@ class PlanVentaController extends Controller
                 'emp.name as vendedor_name',
                 'vv.name as veh_venta',
                 'vr.name as veh_rec',
+                'vr2.name as veh_rec_dos',
                 'cxc.plazo as plazo',
                 'cxc.tasa as tasa',
                 'cxc.cuota as cuota',
@@ -286,6 +288,7 @@ class PlanVentaController extends Controller
                 'numero',
                 'vehiculo_venta_id',
                 'vehiculo_recibido_id',
+                'vehiculo_recibido_id_dos',
                 'business_id',
                 'cliente_id',
                 'fiador_id',
@@ -304,6 +307,7 @@ class PlanVentaController extends Controller
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden ?? null;
+            $plan_details['vehiculo_recibido_id_dos'] = $request->vehiculo_recibido_id_dos_hidden ?? null;
 
 
             //Formatear montos
@@ -445,6 +449,7 @@ class PlanVentaController extends Controller
                 'numero',
                 'vehiculo_venta_id',
                 'vehiculo_recibido_id',
+                'vehiculo_recibido_id_dos',
                 'business_id',
                 'cliente_id',
                 'fiador_id',
@@ -487,6 +492,7 @@ class PlanVentaController extends Controller
             $plan_details['business_id'] = $business_id;
             $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
             $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden;
+            $plan_details['vehiculo_recibido_id_dos'] = $request->vehiculo_recibido_id_dos_hidden;
             $plan = PlanVenta::where('business_id', $business_id)
                 ->findOrFail($id);
 

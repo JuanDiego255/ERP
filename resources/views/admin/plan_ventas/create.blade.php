@@ -107,9 +107,10 @@
                 @endcomponent
                 @component('components.widget', ['title' => __('Vehículos')])
                     {!! Form::hidden('vehiculo_recibido_id_hidden', null, ['id' => 'vehiculo_recibido_id_hidden']) !!}
+                    {!! Form::hidden('vehiculo_recibido_id_dos_hidden', null, ['id' => 'vehiculo_recibido_id_dos_hidden']) !!}
                     {!! Form::hidden('vehiculo_venta_id_hidden', null, ['id' => 'vehiculo_venta_id_hidden']) !!}
                     {!! Form::hidden('venta_sin_rebajos', null, ['id' => 'venta_sin_rebajos']) !!}
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('vehiculo_venta_id', __('Vehículo venta') . ':*') !!}
                             <div class="input-group">
@@ -128,7 +129,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('vehiculo_venta_id', __('Vehículo recibido')) !!}
                             <div class="input-group">
@@ -141,6 +142,28 @@
                                     'id' => 'vehiculo_recibido_id',
                                     'placeholder' => __('Seleccione un vehículo'),
                                     'data-target' => 'vehiculo_recibido_id',
+                                    'data-url' => 'receive',
+                                ]) !!}
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default bg-white btn-flat add_new_product"
+                                        data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            {!! Form::label('vehiculo_recibido_id_dos', __('Vehículo recibido 2')) !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-car"></i>
+                                </span>
+
+                                {!! Form::text('vehiculo_recibido_id_dos', null, [
+                                    'class' => 'form-control vehiculo-input',
+                                    'id' => 'vehiculo_recibido_id_dos',
+                                    'placeholder' => __('Seleccione un vehículo'),
+                                    'data-target' => 'vehiculo_recibido_id_dos',
                                     'data-url' => 'receive',
                                 ]) !!}
                                 <span class="input-group-btn">

@@ -3172,9 +3172,20 @@ function sumarRestarMonto(tipo, monto) {
             $('#total_financiado').val(montoFormat);
         }
     } else {
-        montoFormat = Intl.NumberFormat('en-US').format(monto);
+        // Obtener el valor actual y remover comas para poder convertirlo a número
+        let montoActual = parseFloat($('#monto_recibo').val().replace(/,/g, ''));
+
+        // Verificar si es un número válido, si no, asumir que es 0
+        montoActual = isNaN(montoActual) ? 0 : montoActual;
+
+        // Sumar el nuevo monto al actual si el actual es mayor que 0
+        let montoFinal = montoActual > 0 ? montoActual + monto : monto;
+
+        // Formatear e insertar en el campo
+        let montoFormat = Intl.NumberFormat('en-US').format(montoFinal);
         $('#monto_recibo').val(montoFormat);
     }
+
     // Actualizar el total recibido
     actualizarTotalRecibido(tipo);
 }
@@ -3230,6 +3241,7 @@ $(document).on('click', '.remove_cars', function () {
     $('#monto_efectivo').val(0);
     $('#vehiculo_venta_id').val("");
     $('#vehiculo_recibido_id').val("");
+    $('#vehiculo_recibido_id_dos').val("");
 });
 //Boton para guardar carro desde plan de ventas
 $(document).on('submit', 'form#product_add_form_pv', function (e) {

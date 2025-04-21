@@ -11,6 +11,7 @@ class PlanVenta extends Model
         'numero',
         'vehiculo_venta_id',
         'vehiculo_recibido_id',
+        'vehiculo_recibido_id_dos',
         'cliente_id',
         'business_id',
         'fiador_id',

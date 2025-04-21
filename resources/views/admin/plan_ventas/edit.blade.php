@@ -113,9 +113,12 @@
                     {!! Form::hidden('vehiculo_recibido_id_hidden', $plan->vehiculo_recibido_id, [
                         'id' => 'vehiculo_recibido_id_hidden',
                     ]) !!}
+                     {!! Form::hidden('vehiculo_recibido_id_dos_hidden', $plan->vehiculo_recibido_id_dos, [
+                        'id' => 'vehiculo_recibido_id_dos_hidden',
+                    ]) !!}
                     {!! Form::hidden('venta_sin_rebajos', $plan->venta_sin_rebajos, ['id' => 'venta_sin_rebajos']) !!}
                     {!! Form::hidden('vehiculo_venta_id_hidden', $plan->vehiculo_venta_id, ['id' => 'vehiculo_venta_id_hidden']) !!}
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('vehiculo_venta_id', __('Vehículo venta') . ':*') !!}
                             <div class="input-group">
@@ -134,7 +137,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('vehiculo_venta_id', __('Vehículo recibido')) !!}
                             <div class="input-group">
@@ -147,6 +150,28 @@
                                     'id' => 'vehiculo_recibido_id',
                                     'placeholder' => __('Seleccione un vehículo'),
                                     'data-target' => 'vehiculo_recibido_id',
+                                    'data-url' => 'receive',
+                                ]) !!}
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default bg-white btn-flat add_new_product"
+                                        data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            {!! Form::label('vehiculo_recibido_id_dos', __('Vehículo recibido')) !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-car"></i>
+                                </span>
+
+                                {!! Form::text('vehiculo_recibido_id_dos', $plan->veh_rec_dos, [
+                                    'class' => 'form-control vehiculo-input',
+                                    'id' => 'vehiculo_recibido_id_dos',
+                                    'placeholder' => __('Seleccione un vehículo'),
+                                    'data-target' => 'vehiculo_recibido_id_dos',
                                     'data-url' => 'receive',
                                 ]) !!}
                                 <span class="input-group-btn">
@@ -557,7 +582,7 @@
                 $('#monto_recibo_modal').val(0);
             }
             var vehiculosSeleccionados = {};
-            var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id'];
+            var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id','vehiculo_recibido_id_dos'];
 
             // Manejar selección de vehículo
             $('.vehiculo-input').on('click', function() {
