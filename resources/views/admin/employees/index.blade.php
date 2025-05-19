@@ -124,7 +124,7 @@
             $(document).on('click', 'button.delete_user_button', function() {
                 swal({
                     title: LANG.sure,
-                    text: 'Este empleado será eliminado, desea continuar?',
+                    text: 'Se cambiará el estado del empleado, ¿desea continuar?',
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,

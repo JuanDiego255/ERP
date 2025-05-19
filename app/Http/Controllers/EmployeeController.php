@@ -55,22 +55,23 @@ class EmployeeController extends Controller
                 ]);
 
             return Datatables::of($employees)
-                ->addColumn(
-                    'action',
-                    '@can("employee.update")
-                <a href="{{ action(\'EmployeeController@edit\', [$id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                &nbsp;
-@endcan
-@can("employee.view")
-                                                    <a href="{{ action(\'EmployeeController@show\', [$id]) }}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("Gestionar")</a>
-                                                    &nbsp;
-@endcan
-@can("employee.delete")
-                                                    <button data-href="{{ action(\'EmployeeController@destroy\', [$id]) }}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-@endcan'
-                )
+                ->addColumn('action', function ($row) {
+                    $action_buttons = '';
+                    if (auth()->user()->can('employee.update')) {
+                        $action_buttons .= '<a href="' . action('EmployeeController@edit', [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a> ';
+                    }
+                    if (auth()->user()->can('employee.view')) {
+                        $action_buttons .= '<a href="' . action('EmployeeController@show', [$row->id]) . '" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> ' . __("Gestionar") . '</a> ';
+                    }
+                    if (auth()->user()->can('employee.delete')) {
+                        $button_text = $row->status == 1 ? __("Deshabilitar") : __("Activar");
+                        $button_class = $row->status == 1 ? "btn-danger" : "btn-success";
 
+                        $action_buttons .= '<button data-href="' . action('EmployeeController@destroy', [$row->id]) . '" class="btn btn-xs ' . $button_class . ' delete_user_button"><i class="glyphicon glyphicon-refresh"></i> ' . $button_text . '</button>';
+                    }
 
+                    return $action_buttons;
+                })
                 ->removeColumn('id')
                 ->editColumn('created_at', '{{ @format_date($created_at) }}')
                 ->rawColumns(['action', 'name'])
@@ -363,12 +364,23 @@ class EmployeeController extends Controller
                 $business_id = request()->session()->get('user.business_id');
 
                 $employee = Employees::where('business_id', $business_id)
-                    ->where('id', $id)->first();
-                $employee->delete();
-                $output = [
-                    'success' => true,
-                    'msg' => __("Empleado eliminado con éxito")
-                ];
+                    ->where('id', $id)
+                    ->first();
+
+                if ($employee) {
+                    $employee->status = $employee->status == 1 ? 0 : 1;
+                    $employee->save();
+
+                    $output = [
+                        'success' => true,
+                        'msg' => __("Estado del empleado actualizado con éxito")
+                    ];
+                } else {
+                    $output = [
+                        'success' => false,
+                        'msg' => __("Empleado no encontrado")
+                    ];
+                }
             } catch (\Exception $e) {
                 Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
@@ -527,7 +539,8 @@ class EmployeeController extends Controller
             $employees->select(
                 'employees.id',
                 'employees.name AS text',
-            )->where('employees.puesto','vendedor');
+            )->where('employees.puesto', 'vendedor')
+                ->where('status', 1);
             $employees = $employees->get();
             return json_encode($employees);
         }
