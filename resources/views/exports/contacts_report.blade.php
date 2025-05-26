@@ -31,6 +31,7 @@
                 <th>Total</th>
                 <th>Deuda a pagar</th>
                 <th>Última fecha de pago</th>
+                <th>Fecha Interés</th>
                 <th>Sumatoria</th> <!-- Columna vacía -->
             </tr>
         </thead>
@@ -44,6 +45,7 @@
                     <td>{{ number_format($row->total_gen, 2) }}</td>
                     <td>{{ number_format($row->total_debt, 2) }}</td>
                     <td>{{ $row->last_payment_date }}</td>
+                    <td>{{ $row->last_int }}</td>
                     <td>{{ number_format($row->total_paid, 2) }}</td>
                 </tr>
             @endforeach

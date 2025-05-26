@@ -427,6 +427,10 @@ $(document).ready(function () {
                 {
                     data: 'last_payment_date',
                     name: 'last_payment_date'
+                },
+                {
+                    data: 'last_int',
+                    name: 'last_int'
                 }
             ]);
         }

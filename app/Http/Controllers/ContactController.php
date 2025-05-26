@@ -353,7 +353,7 @@ class ContactController extends Controller
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
             ->leftJoin('plan_ventas AS pv', 'r.plan_venta_id', '=', 'pv.id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date, MAX(fecha_interes) as last_int FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
@@ -400,9 +400,10 @@ class ContactController extends Controller
                 DB::raw("COALESCE(pr.min_monto_gen, pr.min_monto_gen) as total_debt"),
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
-                DB::raw("COALESCE(pr.last_payment_date, pr.last_payment_date) as last_payment_date") // Última fecha de pago
+                DB::raw("COALESCE(pr.last_payment_date, pr.last_payment_date) as last_payment_date"), // Última fecha de pago
+                DB::raw("COALESCE(pr.last_int, pr.last_int) as last_int")
             ])
-            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date');
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date', 'pr.last_int');
 
         // Aplicar filtros según customer_filter
         if (request()->has('customer_filter')) {
@@ -1688,7 +1689,7 @@ class ContactController extends Controller
             ->leftJoin('customer_groups AS cg', 'contacts.customer_group_id', '=', 'cg.id')
             ->leftJoin('revenues AS r', 'contacts.id', '=', 'r.contact_id')
             ->leftJoin(
-                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date FROM payment_revenues GROUP BY revenue_id) as pr'),
+                DB::raw('(SELECT revenue_id,MIN(monto_general) as min_monto_gen, SUM(amortiza) as total_paid, MAX(created_at) as last_payment_date, MAX(fecha_interes) as last_int FROM payment_revenues GROUP BY revenue_id) as pr'),
                 function ($join) {
                     $join->on('r.id', '=', 'pr.revenue_id');
                 }
@@ -1711,9 +1712,10 @@ class ContactController extends Controller
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
                 DB::raw("COALESCE(pr.min_monto_gen, pr.min_monto_gen) as total_debt"),
-                DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date") // Última fecha de pago
+                DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date"), // Última fecha de pago
+                DB::raw("COALESCE(pr.last_int, 'No hay pagos') as last_int")
             ])
-            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date');
+            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date', 'pr.last_int');
 
         // Filtros globales y de columnas
         if (request()->has('customer_filter')) {
@@ -1760,6 +1762,9 @@ class ContactController extends Controller
                     break;
                 case 7:
                     $orderColumn = 'pr.last_payment_date';
+                    break;
+                case 8:
+                    $orderColumn = 'pr.last_int';
                     break;
             }
             if ($orderColumnIndex != 1) {

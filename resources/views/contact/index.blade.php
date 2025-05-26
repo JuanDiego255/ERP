@@ -14,9 +14,9 @@
         <h1> @lang('lang_v1.' . $type . 's')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                            <li class="active">Here</li>
-                                                        </ol> -->
+                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                <li class="active">Here</li>
+                                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -31,7 +31,12 @@
                                 {!! Form::label('customer_filter', __('Filtrar Clientes Por') . ':') !!}
                                 {!! Form::select(
                                     'customer_filter',
-                                    ['1' => __('Clientes con pagos realizados (Clientes activos)'), '2' => __('Con saldo pendiente'), '3' => __('Sin saldo (Cancelado)'), '4' => __('Todos los clientes')],
+                                    [
+                                        '1' => __('Clientes con pagos realizados (Clientes activos)'),
+                                        '2' => __('Con saldo pendiente'),
+                                        '3' => __('Sin saldo (Cancelado)'),
+                                        '4' => __('Todos los clientes'),
+                                    ],
                                     null,
                                     [
                                         'class' => 'form-control select2',
@@ -43,7 +48,7 @@
                             <p class="help-block">Si desea ver todos los clientes selecciona la última opción</p>
 
                         </div>
-                       {{--  <div class="col-md-3">
+                        {{--  <div class="col-md-3">
                             <div class="form-group">
                                 {!! Form::label('mes_atraso', __('Meses de atraso') . ':') !!}
                                 {!! Form::select(
@@ -141,6 +146,7 @@
                                     <th>Deuda a pagar</th>
                                     <th>Pagado</th>
                                     <th>Ultimo pago</th>
+                                    <th>Fecha Interés</th>
                                 @endif
                                 @if ($type == 'guarantor')
                                     <th>Plan Venta Asoc</th>
