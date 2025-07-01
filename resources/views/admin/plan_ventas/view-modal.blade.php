@@ -109,18 +109,34 @@
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Monto Efectivo: </b>₡{{ number_format($plan->monto_efectivo) }}<br>
-                    <b>Total financiado: </b>₡{{ $plan->tipo_plan == 1 ? 0 : number_format($plan->total_financiado) }}<br>
+                    <b>Total financiado:
+                    </b>₡{{ $plan->tipo_plan == 1 ? 0 : number_format($plan->total_financiado) }}<br>
                 </div>
                 <div class="col-sm-4 invoice-col">
                     <b>Gastos traspaso: </b>{{ $plan->gastos_plan }}<br>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <br>
-                    <b>Forma de pago: </b>{{ $plan->desc_forma_pago }}<br>
+            <hr class="no-margin">
+            @if (isset($plan->veh_rec) || isset($plan->veh_rec_dos))
+                <div class="row no-print">
+                    <div class="col-sm-12">
+                        <h4 class="text-success">Vehículos recibidos (Es para uso de la empresa, no se muestra en la
+                            impresión del reporte)</h4>
+                    </div>
+                    <div class="col-sm-6 invoice-col">
+                        <b>Vehículo 1: </b><a href="{{ url('/products/bills/' . $plan->veh_rec_id . '/1') }}" target="_blank">{{ $plan->veh_rec . ' - ' . $plan->model_rec }}</a><br>
+                        <b>Placa: </b>{{ $plan->placa_rec }}<br>
+                        <b>VIN: </b>{{ $plan->bin_rec }}<br>
+                    </div>
+                    @if (isset($plan->veh_rec_dos))
+                        <div class="col-sm-6 invoice-col">
+                            <b>Vehículo 2: </b><a href="{{ url('/products/bills/' . $plan->veh_rec_id_dos . '/1') }}" target="_blank">{{ $plan->veh_rec_dos . ' - ' . $plan->model_rec_dos }}</a><br>
+                            <b>Placa: </b>{{ $plan->placa_rec_dos }}<br>
+                            <b>VIN: </b>{{ $plan->bin_rec_dos }}<br>
+                        </div>
+                    @endif
                 </div>
-            </div>
+            @endif
             <hr class="no-margin">
             <div class="row">
                 <div class="col-sm-6 invoice-col">

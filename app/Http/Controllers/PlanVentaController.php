@@ -112,7 +112,15 @@ class PlanVentaController extends Controller
                 'emp.name as vendedor_name',
                 'vv.name as veh_venta',
                 'vr.name as veh_rec',
+                'vr.id as veh_rec_id',
+                'vr.placa as placa',
+                'vr.model as model',
+                'vr.bin as bin',
+                'vr2.id as veh_rec_id_dos',
                 'vr2.name as veh_rec_dos',
+                'vr2.model as model_dos',
+                'vr2.placa as placa_dos',
+                'vr.bin as bin_dos',
                 'cxc.plazo as plazo',
                 'cxc.tasa as tasa',
                 'cxc.cuota as cuota',
@@ -137,6 +145,7 @@ class PlanVentaController extends Controller
                 ->leftJoin('products as vv', 'plan_ventas.vehiculo_venta_id', '=', 'vv.id')
                 ->leftJoin('brands as b', 'vv.brand_id', '=', 'b.id')
                 ->leftJoin('products as vr', 'plan_ventas.vehiculo_recibido_id', '=', 'vr.id')
+                ->leftJoin('products as vr2', 'plan_ventas.vehiculo_recibido_id_dos', '=', 'vr2.id')
                 ->select(
                     'plan_ventas.*',
                     'cli.name as cliente_name',
@@ -167,7 +176,17 @@ class PlanVentaController extends Controller
                     'cxc.tasa as tasa',
                     'cxc.cuota as cuota',
                     'cxc.tipo_prestamo as tipo_prestamo',
-                    'cxc.moneda as moneda'
+                    'cxc.moneda as moneda',
+                    'vr.id as veh_rec_id',
+                    'vr.name as veh_rec',
+                    'vr.model as model_rec',
+                    'vr.bin as bin_rec',
+                    'vr.placa as placa_rec',
+                    'vr2.id as veh_rec_id_dos',
+                    'vr2.name as veh_rec_dos',
+                    'vr2.model as model_rec_dos',
+                    'vr2.bin as bin_rec_dos',
+                    'vr2.placa as placa_rec_dos'
                 )
                 ->where('plan_ventas.id', $id) // Filtramos por el ID aquí
                 ->firstOrFail();

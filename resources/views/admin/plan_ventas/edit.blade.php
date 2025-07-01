@@ -113,7 +113,7 @@
                     {!! Form::hidden('vehiculo_recibido_id_hidden', $plan->vehiculo_recibido_id, [
                         'id' => 'vehiculo_recibido_id_hidden',
                     ]) !!}
-                     {!! Form::hidden('vehiculo_recibido_id_dos_hidden', $plan->vehiculo_recibido_id_dos, [
+                    {!! Form::hidden('vehiculo_recibido_id_dos_hidden', $plan->vehiculo_recibido_id_dos, [
                         'id' => 'vehiculo_recibido_id_dos_hidden',
                     ]) !!}
                     {!! Form::hidden('venta_sin_rebajos', $plan->venta_sin_rebajos, ['id' => 'venta_sin_rebajos']) !!}
@@ -161,7 +161,7 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('vehiculo_recibido_id_dos', __('Vehículo recibido')) !!}
+                            {!! Form::label('vehiculo_recibido_id_dos', __('Vehículo recibido 2')) !!}
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-car"></i>
@@ -186,6 +186,98 @@
                             Vehículos</button>
                     </div>
                 @endcomponent
+                @if (isset($plan->veh_rec) || isset($plan->veh_rec_dos))
+                    @component('components.widget', ['title' => __('Vehículos recibidos')])
+                        <div class="col-sm-12">
+                            <h4>Vehículo 1</h4>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-car"></i>
+                                </span>
+                                {!! Form::text('vehiculo_uno_label', $plan->veh_rec, [
+                                    'class' => 'form-control precio',
+                                    'readonly',
+                                ]) !!}
+                                <span class="input-group-btn">
+                                    <a target="_blank" href="{{ url('/products/bills/' . $plan->veh_rec_id . '/1') }}" class="btn btn-default bg-white btn-flat" data-name=""><i
+                                            class="fa fa-eye text-primary fa-lg"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                {!! Form::text('model_uno_label', $plan->model . ' - Modelo', [
+                                    'class' => 'form-control precio',
+                                    'readonly',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                {!! Form::text('placa_uno_label', $plan->placa . ' - Placa', [
+                                    'class' => 'form-control precio',
+                                    'readonly',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                {!! Form::text('bin_uno_label', $plan->bin . ' - VIN', [
+                                    'class' => 'form-control precio',
+                                    'readonly',
+                                ]) !!}
+                            </div>
+                        </div>
+                        @if (isset($plan->veh_rec_dos))
+                            <div class="col-sm-12">
+                                <h4>Vehículo 2</h4>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-car"></i>
+                                    </span>
+                                    {!! Form::text('vehiculo_dos_label', $plan->veh_rec_dos, [
+                                        'class' => 'form-control precio',
+                                        'readonly',
+                                    ]) !!}
+                                    <span class="input-group-btn">
+                                        <a target="_blank" href="{{ url('/products/bills/' . $plan->veh_rec_id_dos . '/1') }}"
+                                            class="btn btn-default bg-white btn-flat" data-name=""><i
+                                                class="fa fa-eye text-primary fa-lg"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    {!! Form::text('model_dos_label', $plan->model_dos . ' - Modelo', [
+                                        'class' => 'form-control precio',
+                                        'readonly',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    {!! Form::text('placa_dos_label', $plan->placa_dos . ' - Placa', [
+                                        'class' => 'form-control precio',
+                                        'readonly',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    {!! Form::text('bin_dos_label', $plan->bin_dos . ' - VIN', [
+                                        'class' => 'form-control precio',
+                                        'readonly',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        @endif
+                    @endcomponent
+                @endif
                 @component('components.widget', ['title' => __('Otros datos')])
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -309,7 +401,8 @@
         @can('plan_venta.update')
             <div class="row">
                 <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary pull-right" id="submit_user_button">@lang('messages.save')</button>
+                    <button type="submit" class="btn btn-primary pull-right"
+                        id="submit_user_button">@lang('messages.save')</button>
                 </div>
             </div>
         @endcan
@@ -582,7 +675,7 @@
                 $('#monto_recibo_modal').val(0);
             }
             var vehiculosSeleccionados = {};
-            var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id','vehiculo_recibido_id_dos'];
+            var vehiculoInputs = ['vehiculo_venta_id', 'vehiculo_recibido_id', 'vehiculo_recibido_id_dos'];
 
             // Manejar selección de vehículo
             $('.vehiculo-input').on('click', function() {
