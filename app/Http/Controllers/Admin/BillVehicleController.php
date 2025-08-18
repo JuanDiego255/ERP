@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Audit;
+use App\Models\Category;
 use App\Models\Contact;
 use App\Models\DetailTransaction;
 use App\Models\Product;
@@ -466,6 +467,7 @@ class BillVehicleController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $query = VehicleBill::where('vehicle_bills.business_id', $business_id)
             ->join('products', 'vehicle_bills.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('contacts', 'vehicle_bills.proveedor_id', '=', 'contacts.id')
             ->leftJoin('users AS usr', 'vehicle_bills.created_by', '=', 'usr.id')
             ->select([
@@ -474,6 +476,7 @@ class BillVehicleController extends Controller
                 DB::raw("CONCAT(products.name, ' (', products.model, ')') as name"),
                 'contacts.name as prov_name',
                 'products.id as product_id',
+                'categories.id as category_id',
                 'products.name',
                 'products.is_inactive as is_inactive',
                 'vehicle_bills.descripcion as descripcion',
@@ -486,16 +489,31 @@ class BillVehicleController extends Controller
         // Filtros globales
 
         if ($request->filled('date_start') && $request->filled('date_end')) {
-            $query->whereBetween('vehicle_bills.fecha_compra', [$request->date_start, $request->date_end]);
-            $rango = "Reporte del: " . $request->date_start . " al " . $request->date_end;
+            $startDate = Carbon::parse($request->date_start)->startOfDay();
+            $endDate   = Carbon::parse($request->date_end)->endOfDay();
+            $query->whereBetween('vehicle_bills.fecha_compra', [$startDate, $endDate]);
+            $rango = "Reporte del: " . $startDate->toDateString() . " al " . $endDate->toDateString();
         } else {
-            $query->where('vehicle_bills.fecha_compra', '<=', $request->date_end);
-            $rango = "Reporte al: " . $request->date_end;
+            $endDate   = Carbon::parse($request->date_end)->endOfDay();
+            $startDate = $endDate->copy()->subMonths(6)->startOfDay();
+            $query->whereBetween('vehicle_bills.fecha_compra', [$startDate, $endDate]);
+            $rango = "Reporte al: " . $endDate->toDateString();
         }
+
         if (request()->has('status')) {
             $status = request()->get('status');
             if (!empty($status)) {
-                $query->where('products.is_inactive', $status == 2 ? 0 : 1);
+                if ($status != -1) {
+                    $query->where('products.is_inactive', $status == 2 ? 0 : 1);
+                }
+            }
+        }
+        if (request()->has('category_id')) {
+            $category_id = request()->get('category_id');
+            if (!empty($category_id)) {
+                $query->where('categories.id', $category_id);
+                $category_name = Category::where('id', $category_id)->first()->name;
+                $rango .= ' (' . $category_name . ')';
             }
         }
 

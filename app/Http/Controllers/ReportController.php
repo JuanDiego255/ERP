@@ -69,6 +69,7 @@ class ReportController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $bills = VehicleBill::where('vehicle_bills.business_id', $business_id)
             ->join('products', 'vehicle_bills.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('contacts', 'vehicle_bills.proveedor_id', '=', 'contacts.id')
             ->leftJoin('users AS usr', 'vehicle_bills.created_by', '=', 'usr.id')
             ->select([
@@ -79,6 +80,7 @@ class ReportController extends Controller
                 'products.id as product_id',
                 'products.name',
                 'products.is_inactive as is_inactive',
+                'categories.name as category_name',
                 'vehicle_bills.descripcion as descripcion',
                 'vehicle_bills.monto as monto',
                 'vehicle_bills.factura as factura',
@@ -90,8 +92,8 @@ class ReportController extends Controller
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start = request()->start_date;
             $end =  request()->end_date;
-            $bills->whereDate('vehicle_bills.created_at', '>=', $start)
-                ->whereDate('vehicle_bills.created_at', '<=', $end);
+            $bills->whereDate('vehicle_bills.fecha_compra', '>=', $start)
+                ->whereDate('vehicle_bills.fecha_compra', '<=', $end);
         }
 
         if (request()->has('payment_status')) {
@@ -102,7 +104,13 @@ class ReportController extends Controller
                 }
             }
         }
-        $bills->orderBy('vehicle_bills.fecha_compra','desc');
+        if (request()->has('category_name')) {
+            $category_name = request()->get('category_name');
+            if (!empty($category_name)) {
+                $bills->where('categories.id', $category_name);
+            }
+        }
+        $bills->orderBy('vehicle_bills.fecha_compra', 'desc');
         if (request()->ajax()) {
 
             return Datatables::of($bills)
@@ -130,7 +138,11 @@ class ReportController extends Controller
                 ->rawColumns(['action', 'model_name'])
                 ->make(true);
         }
-        return view('report.profit_loss');
+        $categories = Category::forDropdown($business_id, 'product');
+
+        return view('report.profit_loss')->with(compact(
+            'categories'
+        ));
     }
     /**
      * Shows product report of a business

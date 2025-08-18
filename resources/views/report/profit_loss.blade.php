@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters')])
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
                             {!! Form::text('date_range', null, [
@@ -28,8 +28,19 @@
                                 'readonly',
                             ]) !!}
                         </div>
+                    </div> --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('category_id', __('product.category') . ':') !!}
+                            {!! Form::select('category_id', $categories, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                                'id' => 'product_list_filter_category_id',
+                                'placeholder' => __('lang_v1.all'),
+                            ]) !!}
+                        </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('expense_payment_status', __('purchase.payment_status') . ':') !!}
                             {!! Form::select(
@@ -53,7 +64,8 @@
                                 ]) !!}
                             </div>
                         </div>
-                        <p class="help-block">Campo no requerido, al no tomarlo en cuenta se mostrarán todos los gastos antiguos
+                        <p class="help-block">Campo no requerido, al no tomarlo en cuenta se mostrarán todos los gastos de hace
+                            6 meses hacia acá
                         </p>
                     </div>
                     <div id="div_date_report_end" class="col-md-3">
@@ -125,7 +137,14 @@
                     bills_table.ajax.reload();
                 });
             }
-            $('select#expense_payment_status')
+            /* $('select#expense_payment_status')
+                .on(
+                    'change',
+                    function() {
+                        bills_table.ajax.reload();
+                    }
+                );
+            $('select#product_list_filter_category_id')
                 .on(
                     'change',
                     function() {
@@ -138,6 +157,7 @@
                 ajax: {
                     url: '/reports/profit-loss',
                     data: function(d) {
+                        d.category_name = $('select#product_list_filter_category_id').val();
                         d.payment_status = $('select#expense_payment_status').val();
                         d.start_date = $('input#expense_date_range')
                             .data('daterangepicker')
@@ -165,6 +185,9 @@
                     },
                     {
                         "data": "descripcion"
+                    },
+                    {
+                        "data": "category_name"
                     },
                     {
                         "data": "monto"
@@ -212,7 +235,7 @@
                         }
                     });
                 }
-            });
+            }); */
             $(document).on('click', '#generate_report_bills', function() {
 
                 if ($('#date_report_end').val() == null || $('#date_report_end').val() == "") {
@@ -237,24 +260,26 @@
                     return;
                 }
                 let url = '/bills/generate-report'; // Actualiza esta ruta
-                let dataTable = $('#bills_table').DataTable();
+                //let dataTable = $('#bills_table').DataTable();
 
                 // Captura filtros aplicados en DataTable
-                let tableFilters = {};
+                /* let tableFilters = {};
                 dataTable.columns().every(function() {
                     if (this.search()) {
                         tableFilters[this.index()] = this.search();
                     }
-                });
+                }); */
                 // Genera los datos combinados de los filtros globales y de columnas
                 //Fechas Filtros
                 var date_start = $('#date_report_start').val() ? $('#date_report_start').val() : null;
                 var date_end = $('#date_report_end').val() ? $('#date_report_end').val() : null;
+                var category_id = $('#product_list_filter_category_id').val() ? $('#product_list_filter_category_id').val() : null;
                 let data = {
                     date_start: date_start,
                     status: $('select#expense_payment_status').val(),
                     date_end: date_end,
-                    table_filters: tableFilters
+                    //table_filters: tableFilters,
+                    category_id: category_id
                 };
                 console.log(data);
                 // Envía los datos combinados al backend
