@@ -473,11 +473,10 @@ class BillVehicleController extends Controller
             ->select([
                 'vehicle_bills.id as bill_id',
                 'vehicle_bills.fecha_compra as fecha_compra',
-                DB::raw("CONCAT(products.name, ' (', products.model, ')') as name"),
+                DB::raw("CONCAT(products.name, ' (', products.bin, ')') as name"),
                 'contacts.name as prov_name',
                 'products.id as product_id',
                 'categories.id as category_id',
-                'products.name',
                 'products.is_inactive as is_inactive',
                 'vehicle_bills.descripcion as descripcion',
                 'vehicle_bills.monto as monto',
