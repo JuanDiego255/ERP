@@ -452,6 +452,7 @@ class RevenueController extends Controller
         try {
             DB::beginTransaction();
             $detalle_planilla = PaymentRevenue::findOrFail($id);
+            $revenue_main = Revenue::findOrFail($revenue_id);
             $column = $request->input('column');
             $value = $request->input('value');
             $saldo_anterior = $request->input('saldo_anterior');
@@ -512,17 +513,22 @@ class RevenueController extends Controller
                 if ($id == $lastRecord->id) {
                     //$monto_general = isset($record->monto_general) ? $record->monto_general : $record->monto_general_first;
                     $interes = $record->tasa == 0 ? 0 : round($pago_diario * $diasCalc, 2);
-                    $cxc_pay['monto_general'] = round($saldo_anterior - ($value - $interes), 2);
-                    //$cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
-                    $cxc_pay['interes_c'] =  round($interes, 2);
-                    $cxc_pay['amortiza'] = round($value - $interes, 2);
-                    $detalle_planilla->update($cxc_pay);
-                    $data = $cxc_pay;
-                    // Aplicar formato a los números
-                    $data['monto_general'] = number_format($data['monto_general'], 2, '.', ',');
+                    $cxc_pay = null;
+                    if ($revenue_main->auto_calc == 1) {
+                        $cxc_pay['monto_general'] = round($saldo_anterior - ($value - $interes), 2);
+                        //$cxc_pay['fecha_interes'] = Carbon::createFromFormat('d/m/Y', $fecha_interes_cero);
+                        $cxc_pay['interes_c'] =  round($interes, 2);
+                        $cxc_pay['amortiza'] = round($value - $interes, 2);
+                    }
+                    if (isset($cxc_pay)) {
+                        $detalle_planilla->update($cxc_pay);
+                        $data = $cxc_pay;
+                        // Aplicar formato a los números
+                        $data['monto_general'] = number_format($data['monto_general'], 2, '.', ',');                        
+                        $data['interes_c'] = number_format($data['interes_c'], 2, '.', ',');
+                        $data['amortiza'] = number_format($data['amortiza'], 2, '.', ',');
+                    }
                     $data['paga'] = number_format($value, 2, '.', ',');
-                    $data['interes_c'] = number_format($data['interes_c'], 2, '.', ',');
-                    $data['amortiza'] = number_format($data['amortiza'], 2, '.', ',');
                     //Actualizar estado de la cuenta por cobrar
                     $status["status"] = $detalle_planilla['monto_general'] == 0 ? 1 : 0;
                     if ($status["status"] != $record->status) {
@@ -535,9 +541,9 @@ class RevenueController extends Controller
             DB::commit();
         } catch (Exception $th) {
             DB::rollBack();
-            return response()->json(['success' => false, 'msg' => $diasCalc, 'data' => $data]);
+            return response()->json(['success' => false, 'msg' => $th->getMessage(), 'data' => $data]);
         }
-        return response()->json(['success' => true, 'msg' => $diasCalc, 'data' => $data]);
+        return response()->json(['success' => true, 'msg' => null, 'data' => $data, 'auto_calc' => $revenue_main]);
     }
     public function convertDates($date)
     {

@@ -31,7 +31,7 @@
                 {!! Form::open([
                     'url' => action('ProductController@update', [$item->vehiculo_id]),
                     'method' => 'PUT',
-                    'id' => 'product_edit_form_receive'
+                    'id' => 'product_edit_form_receive',
                 ]) !!}
                 @component('components.widget-accordion', [
                     'title' => __('Información del vehículo'),
@@ -771,8 +771,8 @@
                             fecha_interes_act: fecha_interes_act
                         },
                         success: function(response) {
+                            console.log(response.msg);
                             if (response.success) {
-                                console.log(response.msg);
                                 if (response.msg == -1) {
                                     swal({
                                         title: "Problema entre fechas",
@@ -799,7 +799,12 @@
 
                                             if (inputField.length > 0) {
                                                 // Asignar el valor desde response.data al input
-                                                inputField.val(response.data[inputName]);
+                                                if (response.data[inputName] !==
+                                                    undefined && response.data[
+                                                    inputName] !== null) {
+                                                    inputField.val(response.data[
+                                                    inputName]);
+                                                }
                                             } else {
                                                 console.warn(
                                                     `No se encontró un input con el nombre '${inputName}' en la fila procesada`
@@ -827,6 +832,8 @@
                                             }
                                         });
                                 }
+                            } else {
+                                console.log(response.msg);
                             }
                         },
                         error: function(xhr) {
