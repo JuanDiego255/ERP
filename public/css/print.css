@@ -20,7 +20,13 @@
         border: 1px solid #ddd;
         padding: 8px;
     }
-
+    tfoot {
+        display: table-row-group !important;
+    }
+    /* (Opcional) evitar que el subtotal se parta en dos páginas */
+    tfoot tr {
+        page-break-inside: avoid;
+    }
     .table thead {
         display: table-header-group; /* Mantén el encabezado visible en cada página */
     }
