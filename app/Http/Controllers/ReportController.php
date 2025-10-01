@@ -3216,6 +3216,203 @@ class ReportController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
+        // 1) Rango visible (meses a mostrar)
+        if ($request->filled('date_start') && $request->filled('date_end')) {
+            $start = \Carbon\Carbon::parse($request->date_start)->startOfMonth();
+            $end   = \Carbon\Carbon::parse($request->date_end)->endOfMonth();
+            $rango = "Reporte del: {$start->toDateString()} al {$end->toDateString()}";
+        } else {
+            $end   = $request->filled('date_end')
+                ? \Carbon\Carbon::parse($request->date_end)->endOfMonth()
+                : now()->endOfMonth();
+            $start = $end->copy()->subMonths(6)->startOfMonth();
+            $rango = "Reporte al: {$end->toDateString()}";
+        }
+
+        // 2) Meses a mostrar en el timeline
+        $months = [];
+        for ($c = $start->copy(); $c <= $end; $c->addMonth()) {
+            $months[] = $c->format('Y-m'); // YYYY-MM
+        }
+
+        // 3) Cuentas: incluir TODAS las creadas hasta el fin del rango
+        $revenuesQ = Revenue::where('revenues.business_id', $business_id)
+            ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
+            ->leftJoin('plan_ventas AS pv', 'revenues.plan_venta_id', '=', 'pv.id')
+            ->leftJoin('products AS v', 'pv.vehiculo_venta_id', '=', 'v.id')
+            ->select([
+                'revenues.id as rev_id',
+                'revenues.referencia',
+                'revenues.status',
+                'revenues.sucursal',
+                'revenues.valor_total',
+                'revenues.created_at',
+                'ct.id as cliente_id',
+                'ct.name as cliente',
+                'v.name as vehiculo',
+                'v.model as model',
+            ])
+            ->whereDate('revenues.created_at', '<=', $end->toDateString());
+
+        // Filtros consistentes (estado / sucursal)
+        if ($request->has('status') && $request->status !== null && $request->status !== '' && (int)$request->status !== -1) {
+            if ((int)$request->status === 1) { // pendiente
+                $revenuesQ->where('revenues.status', 1);
+            } elseif ((int)$request->status === 2) { // cancelado
+                $revenuesQ->where('revenues.status', 0);
+            }
+        }
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $revenuesQ->where('revenues.sucursal', $request->location_id);
+            $rango .= " (Sucursal: {$request->location_id})";
+        }
+
+        $revenues = $revenuesQ->orderBy('revenues.created_at', 'asc')->get();
+
+        // 4) PAGOS ACUMULADOS DESDE EL INICIO DE CADA CUENTA
+        // 4.1. Pagos por mes (hasta fin del rango). ¡Sin límite inferior!
+        $paymentsByMonthQ = DB::table('payment_revenues AS pr')
+            ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
+            ->where('r.business_id', $business_id)
+            ->whereDate('pr.created_at', '<=', $end->toDateString())
+            ->select([
+                'pr.revenue_id',
+                DB::raw("DATE_FORMAT(pr.created_at, '%Y-%m') AS ym"),
+                DB::raw('SUM(pr.amortiza) AS pagado_mes')
+            ])
+            ->groupBy('pr.revenue_id', 'ym');
+
+        // filtros consistentes en pagos
+        if ($request->has('status') && $request->status !== null && $request->status !== '' && (int)$request->status !== -1) {
+            if ((int)$request->status === 1) {
+                $paymentsByMonthQ->where('r.status', 1);
+            } elseif ((int)$request->status === 2) {
+                $paymentsByMonthQ->where('r.status', 0);
+            }
+        }
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $paymentsByMonthQ->where('r.sucursal', $request->location_id);
+        }
+
+        $paymentsByMonthRaw = $paymentsByMonthQ->get();
+
+        // Index: $paymentsByRevenue[rev_id][ym] = suma de pagos de ese mes
+        $paymentsByRevenue = [];
+        foreach ($paymentsByMonthRaw as $p) {
+            $paymentsByRevenue[$p->revenue_id][$p->ym] = (float)$p->pagado_mes;
+        }
+
+        // 4.2. Pagos previos al inicio del rango (para "sembrar" el acumulado)
+        $preStartPaidQ = DB::table('payment_revenues AS pr')
+            ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
+            ->where('r.business_id', $business_id)
+            ->whereDate('pr.created_at', '<', $start->toDateString())
+            ->select([
+                'pr.revenue_id',
+                DB::raw('SUM(pr.amortiza) AS pagado_previo')
+            ])
+            ->groupBy('pr.revenue_id');
+
+        // mismos filtros
+        if ($request->has('status') && $request->status !== null && $request->status !== '' && (int)$request->status !== -1) {
+            if ((int)$request->status === 1) {
+                $preStartPaidQ->where('r.status', 1);
+            } elseif ((int)$request->status === 2) {
+                $preStartPaidQ->where('r.status', 0);
+            }
+        }
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $preStartPaidQ->where('r.sucursal', $request->location_id);
+        }
+
+        $preStartPaidRaw = $preStartPaidQ->get();
+        $preStartPaid = []; // [rev_id] => monto pagado antes del inicio del rango
+        foreach ($preStartPaidRaw as $row) {
+            $preStartPaid[$row->revenue_id] = (float)$row->pagado_previo;
+        }
+
+        // 5) Construcción de saldos por CLIENTE y por MES (pagos acumulados desde el inicio real)
+        $byClient = []; // [cliente_id => ['cliente'=>..., 'rows'=>[ym=>['total','pagado','saldo']], 'final'=>...]]
+        $revByClient = $revenues->groupBy('cliente_id');
+
+        foreach ($revByClient as $cliente_id => $clientRevs) {
+            $clienteNombre = optional($clientRevs->first())->cliente ?? 'SIN NOMBRE';
+
+            // Prepara acumulado por cuenta, arrancando en pagos previos al inicio del rango
+            $accumPaidByRevYm = []; // [rev_id][ym] = acumulado hasta fin de ese mes
+            foreach ($clientRevs as $rev) {
+                $revId = $rev->rev_id;
+                $acum = $preStartPaid[$revId] ?? 0.0; // <<-- ¡clave!: sembramos con pagos previos
+                foreach ($months as $ym) {
+                    $acum += $paymentsByRevenue[$revId][$ym] ?? 0.0;
+                    $accumPaidByRevYm[$revId][$ym] = $acum;
+                }
+            }
+
+            // Para cada mes, sumar totales/pagados/saldo de todas las cuentas del cliente que existían a fin de ese mes
+            $rows = [];
+            foreach ($months as $ym) {
+                [$yy, $mm] = explode('-', $ym);
+                $monthEnd = \Carbon\Carbon::createMidnightDate((int)$yy, (int)$mm, 1)->endOfMonth();
+
+                $totalMes  = 0.0;
+                $pagadoMes = 0.0;
+
+                foreach ($clientRevs as $rev) {
+                    if (\Carbon\Carbon::parse($rev->created_at) <= $monthEnd) {
+                        $totalMes  += (float)$rev->valor_total;
+                        $pagadoMes += (float)($accumPaidByRevYm[$rev->rev_id][$ym] ?? 0.0);
+                    }
+                }
+
+                $saldoMes = max($totalMes - $pagadoMes, 0.0);
+                $rows[$ym] = ['total' => $totalMes, 'pagado' => $pagadoMes, 'saldo' => $saldoMes];
+            }
+
+            // Estado final (último mes visible)
+            $finalYm = end($months);
+            $final   = $rows[$finalYm] ?? ['total' => 0, 'pagado' => 0, 'saldo' => 0];
+
+            $byClient[$cliente_id] = [
+                'cliente' => $clienteNombre,
+                'rows'    => $rows,
+                'final'   => $final,
+            ];
+        }
+
+        // 6) Totales por mes
+        $totalesPorMes = [];
+        foreach ($months as $ym) {
+            $t = $p = 0.0;
+            foreach ($byClient as $c) {
+                $t += $c['rows'][$ym]['total']  ?? 0.0;
+                $p += $c['rows'][$ym]['pagado'] ?? 0.0;
+            }
+            $s = max($t - $p, 0.0);
+            $totalesPorMes[$ym] = ['total' => $t, 'pagado' => $p, 'saldo' => $s];
+        }
+
+        // 7) Estado al final del rango (del último mes visible)
+        $lastYm = end($months);
+        $estado_final_total   = $totalesPorMes[$lastYm]['total']  ?? 0.0;
+        $estado_final_pagado  = $totalesPorMes[$lastYm]['pagado'] ?? 0.0;
+        $estado_final_saldo   = $totalesPorMes[$lastYm]['saldo']  ?? 0.0;
+
+        return view('report.partials.cxc-monthly-balance', [
+            'months'                => $months,
+            'byClient'              => $byClient,
+            'totalesPorMes'         => $totalesPorMes,
+            'rango'                 => $rango,
+            'estado_final_total'    => $estado_final_total,
+            'estado_final_pagado'   => $estado_final_pagado,
+            'estado_final_saldo'    => $estado_final_saldo,
+        ]);
+    }
+
+    public function generateCxcReportDetailed(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+
         $query = Revenue::where('revenues.business_id', $business_id)
             ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
             ->leftJoin('payment_revenues AS pr', 'revenues.id', '=', 'pr.revenue_id')
