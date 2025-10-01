@@ -362,6 +362,7 @@ class AdminSidebarMenu
                         function ($sub) use ($enabled_modules) {
                             $sub->url('expense-report', __('Cuentas Por Pagar'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->path() == 'expense-report']);
                             $sub->url(action('ReportController@getProfitLoss'), __('Gastos de vehículos'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'profit-loss']);
+                            $sub->url(action('ReportController@getCxcReport'), __('Reporte CXC'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'cxc']);
                             if (auth()->user()->can('report.audit')) {
                                 $sub->url('audits', __('Auditorias'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->path() == 'audits']);
                             }

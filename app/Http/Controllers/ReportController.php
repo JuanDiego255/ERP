@@ -16,6 +16,7 @@ use App\Models\ExpenseCategory;
 use App\Models\Product;
 use App\Models\PurchaseLine;
 use App\Models\Restaurant\ResTable;
+use App\Models\Revenue;
 use App\Models\SellingPriceGroup;
 use App\Models\Transaction;
 use App\Models\TransactionPayment;
@@ -3199,5 +3200,143 @@ class ReportController extends Controller
             'msg' => __('Auditorías eliminadas con éxito')
         ];
         return redirect('audits')->with('status', $output);
+    }
+    public function getCxcReport(Request $request)
+    {
+        if (!auth()->user()->can('profit_loss_report.view')) { // o crea un permiso nuevo si quieres
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        return view('report.cxc');
+    }
+
+    public function generateCxcReport(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+
+        $query = Revenue::where('revenues.business_id', $business_id)
+            ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
+            ->leftJoin('payment_revenues AS pr', 'revenues.id', '=', 'pr.revenue_id')
+            ->leftJoin('plan_ventas AS pv', 'revenues.plan_venta_id', '=', 'pv.id')
+            ->leftJoin('products AS v', 'pv.vehiculo_venta_id', '=', 'v.id')
+            ->select([
+                'revenues.id as rev_id',
+                'revenues.referencia',
+                'revenues.location_id',
+                'revenues.status',
+                'revenues.sucursal',
+                'revenues.valor_total',
+                'revenues.detalle',
+                'revenues.created_at',
+                'ct.id as cliente_id',
+                'ct.name as cliente',
+                'v.name as vehiculo',
+                'v.model as model',
+                DB::raw('COALESCE(SUM(pr.amortiza), 0) as amount_paid'),
+                DB::raw('COALESCE(MIN(pr.monto_general), -1) as min_general_amount')
+            ])
+            ->groupBy(
+                'revenues.id',
+                'revenues.referencia',
+                'revenues.location_id',
+                'revenues.status',
+                'revenues.sucursal',
+                'revenues.valor_total',
+                'revenues.detalle',
+                'revenues.created_at',
+                'ct.id',
+                'ct.name',
+                'v.name',
+                'v.model'
+            );
+
+        // Fechas (creación)
+        if ($request->filled('date_start') && $request->filled('date_end')) {
+            $start = \Carbon\Carbon::parse($request->date_start)->startOfDay();
+            $end   = \Carbon\Carbon::parse($request->date_end)->endOfDay();
+            $query->whereBetween('revenues.created_at', [$start, $end]);
+            $rango = "Reporte del: {$start->toDateString()} al {$end->toDateString()}";
+        } else {
+            $end   = $request->filled('date_end')
+                ? \Carbon\Carbon::parse($request->date_end)->endOfDay()
+                : now()->endOfDay();
+            $start = $end->copy()->subMonths(6)->startOfDay();
+            $query->whereBetween('revenues.created_at', [$start, $end]);
+            $rango = "Reporte al: {$end->toDateString()}";
+        }
+
+        // Estado: 1 = pendiente, 2 = cancelado
+        if ($request->has('status') && $request->status !== null && $request->status !== '' && (int)$request->status !== -1) {
+            if ((int)$request->status === 1) {
+                $query->where('revenues.status', 1);
+            }
+            if ((int)$request->status === 2) {
+                $query->where('revenues.status', 0);
+            }
+        }
+
+        // Sucursal
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $query->where('revenues.sucursal', $request->location_id);
+            $rango .= " (Sucursal: {$request->location_id})";
+        }
+
+        $rows = $query->orderBy('revenues.created_at', 'desc')->get();
+
+        // Agrupar por mes (YYYY-MM) y calcular: total, pagado, pendiente
+        $grouped = $rows->groupBy(function ($item) {
+            return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+        })->map(function ($collection) {
+            // Cálculos por fila (y acumulados por mes)
+            $detalle = $collection->map(function ($r) {
+                $valor_inicial = ($r->min_general_amount !== null && $r->min_general_amount >= 0)
+                    ? $r->min_general_amount
+                    : $r->valor_total;
+
+                $pagado    = (float)$r->amount_paid;
+                $total     = (float)$r->valor_total;
+                $pendiente = max($total - $pagado, 0); // evita negativos
+
+                return (object)[
+                    'fecha'          => \Carbon\Carbon::parse($r->created_at)->format('Y-m-d'),
+                    'cliente'        => $r->cliente,
+                    'referencia'     => $r->referencia,
+                    'valor_inicial'  => $valor_inicial,
+                    'total_pagar'    => $total,       // total sin rebajos (como pediste)
+                    'pagado'         => $pagado,
+                    'pendiente'      => $pendiente,
+                    'vehiculo'       => $r->vehiculo,
+                    'modelo'         => $r->model,
+                    'status'         => (int)$r->status === 1 ? 'Pendiente' : 'Cancelado',
+                    'sucursal'       => $r->sucursal,
+                ];
+            });
+
+            $subtotal_total     = $detalle->sum('total_pagar');
+            $subtotal_pagado    = $detalle->sum('pagado');
+            $subtotal_pendiente = $detalle->sum('pendiente');
+
+            return (object)[
+                'detalle'            => $detalle,
+                'subtotal_total'     => $subtotal_total,
+                'subtotal_pagado'    => $subtotal_pagado,
+                'subtotal_pendiente' => $subtotal_pendiente,
+            ];
+        });
+
+        // Totales generales
+        $total_general_total     = $grouped->sum('subtotal_total');
+        $total_general_pagado    = $grouped->sum('subtotal_pagado');
+        $total_general_pendiente = $grouped->sum('subtotal_pendiente');
+
+        return view('report.partials.cxc-modal', [
+            'grouped'                 => $grouped,
+            'rango'                   => $rango,
+            'total_general_total'     => $total_general_total,
+            'total_general_pagado'    => $total_general_pagado,
+            'total_general_pendiente' => $total_general_pendiente,
+        ]);
     }
 }

@@ -432,6 +432,10 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/expenses/generate-report', [ExpenseController::class, 'generateReport'])->name('expenses.generateReport');
     Route::post('/contacts/generate/customer/excel', [ContactController::class, 'generateReportExc'])->name('contact.generateReport');
     Route::post('/bills/generate-report', [BillVehicleController::class, 'generateReport'])->name('expenses.generateReport');
+    // routes/web.php
+    Route::get('/reports/cxc', 'ReportController@getCxcReport');
+    Route::post('/cxc/generate-report', 'ReportController@generateCxcReport')->name('cxc.generateReport');
+
     Route::post('/expenses/check-update', [ExpenseController::class, 'updateCheckReport'])->name('expenses.check_update');
     Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
@@ -486,7 +490,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     //Rutas para los tipo de planillas
     //Rutas para los tipo de planillas
     Route::get('/planilla-index', 'PlanillaController@index');
-    Route::get('/planilla-create', 'PlanillaController@create');    
+    Route::get('/planilla-create', 'PlanillaController@create');
     Route::post('/planilla-store', 'PlanillaController@store');
     Route::post('/planilla-update/{id}', 'PlanillaController@update');
     Route::post('/planilla-store-detalle/{id}', 'PlanillaController@createPlanillaDetalle');
