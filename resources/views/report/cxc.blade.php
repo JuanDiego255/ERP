@@ -44,7 +44,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+{{--                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('expense_payment_status', __('purchase.payment_status') . ':') !!}
                             {!! Form::select('expense_payment_status', ['2' => 'Pendiente', '1' => 'Cobrado'], null, [
@@ -52,12 +52,12 @@
                                 'style' => 'width:100%',
                             ]) !!}
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('location_id', __('Sucursal') . ':') !!}
-                            {!! Form::select('location_id', ['GRECIA' => 'GRECIA', 'NICOYA' => 'NICOYA'], null, [
+                            {!! Form::select('location_id', ['GRECIA' => 'GRECIA', 'NICOYA' => 'NICOYA','TODAS' => 'TODAS'], null, [
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%',
                             ]) !!}
@@ -124,7 +124,7 @@
                 let data = {
                     date_start: $('#date_report_start').val() ? $('#date_report_start').val() : null,
                     date_end: $('#date_report_end').val() ? $('#date_report_end').val() : null,
-                    status: $('#expense_payment_status').val(),
+                    //status: $('#expense_payment_status').val(),
                     location_id: $('#location_id').val()
                 };
                 console.log(data);
