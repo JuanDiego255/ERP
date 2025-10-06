@@ -3250,7 +3250,8 @@ class ReportController extends Controller
                 'v.name as vehiculo',
                 'v.model as model',
             ])
-            ->whereDate('revenues.created_at', '<=', $end->toDateString());
+            ->whereDate('revenues.created_at', '<=', $end->toDateString())
+            ->where('pv.tipo_plan', 2);
 
         // Filtro opcional por sucursal (sobre cuentas)
         if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
