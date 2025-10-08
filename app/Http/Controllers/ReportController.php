@@ -3241,7 +3241,7 @@ class ReportController extends Controller
             ->select([
                 'revenues.id as rev_id',
                 'revenues.referencia',
-                'revenues.status', // 0 = pendiente, 1 = cancelada (informativo)
+                'revenues.status',
                 'revenues.sucursal',
                 'revenues.valor_total',
                 'revenues.created_at',
@@ -3264,11 +3264,13 @@ class ReportController extends Controller
             ->orderBy('revenues.created_at', 'asc')
             ->get();
 
-        // 4) Pagos por MES (hasta fin del rango)
+        // 4) Pagos por MES (hasta fin del rango) - paga/amortiza para métricas y payoff
         $paymentsByMonthQ = DB::table('payment_revenues AS pr')
             ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
             ->where('r.business_id', $business_id)
             ->whereDate('pr.created_at', '<=', $end->toDateString())
+            ->where('pr.detalle', 'not like', '%PERDIDA%')
+            ->where('pr.detalle', 'not like', '%RECONOCIMIENTO%')
             ->select([
                 'pr.revenue_id',
                 DB::raw("DATE_FORMAT(pr.created_at, '%Y-%m') AS ym"),
@@ -3277,20 +3279,72 @@ class ReportController extends Controller
             ])
             ->groupBy('pr.revenue_id', 'ym');
 
-        // (Opcional) filtrar pagos por sucursal también
         if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
             $paymentsByMonthQ->where('r.sucursal', $request->location_id);
         }
 
         $paymentsByMonthRaw = $paymentsByMonthQ->get();
-        $pagaByRevenue     = []; // [rev_id][ym] => paga del mes
-        $amortizaByRevenue = []; // [rev_id][ym] => amortiza del mes
+        $pagaByRevenue     = []; // [rev_id][ym]
+        $amortizaByRevenue = []; // [rev_id][ym]
         foreach ($paymentsByMonthRaw as $p) {
             $pagaByRevenue[$p->revenue_id][$p->ym]     = (float)$p->paga_mes;
             $amortizaByRevenue[$p->revenue_id][$p->ym] = (float)$p->amortiza_mes;
         }
 
-        // 5) Amortización acumulada antes del inicio (semilla)
+        // 4bis) Último monto_general por cuenta/mes (hasta fin del rango)
+        $lastSaldoByRevYm = [];   // [rev_id][ym] => último monto_general del mes
+        $lastSaldoRowsQ = DB::table('payment_revenues AS pr')
+            ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
+            ->where('r.business_id', $business_id)
+            ->whereDate('pr.created_at', '<=', $end->toDateString())
+            ->select([
+                'pr.revenue_id',
+                DB::raw("DATE_FORMAT(pr.created_at, '%Y-%m') AS ym"),
+                'pr.created_at',
+                'pr.id',
+                'pr.monto_general',
+            ]);
+
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $lastSaldoRowsQ->where('r.sucursal', $request->location_id);
+        }
+
+        $lastSaldoRows = $lastSaldoRowsQ
+            ->orderBy('pr.created_at', 'asc')
+            ->orderBy('pr.id', 'asc')
+            ->get();
+
+        foreach ($lastSaldoRows as $row) {
+            $lastSaldoByRevYm[$row->revenue_id][$row->ym] = (float)$row->monto_general;
+        }
+
+        // 4ter) Último monto_general antes del inicio (saldo semilla)
+        $preStartSaldo = [];   // [rev_id] => último monto_general antes de $start
+        $preStartSaldoRowsQ = DB::table('payment_revenues AS pr')
+            ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
+            ->where('r.business_id', $business_id)
+            ->whereDate('pr.created_at', '<', $start->toDateString())
+            ->select([
+                'pr.revenue_id',
+                'pr.created_at',
+                'pr.id',
+                'pr.monto_general',
+            ]);
+
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $preStartSaldoRowsQ->where('r.sucursal', $request->location_id);
+        }
+
+        $preStartSaldoRows = $preStartSaldoRowsQ
+            ->orderBy('pr.created_at', 'asc')
+            ->orderBy('pr.id', 'asc')
+            ->get();
+
+        foreach ($preStartSaldoRows as $row) {
+            $preStartSaldo[$row->revenue_id] = (float)$row->monto_general; // queda el último
+        }
+
+        // 5) Amortización acumulada antes del inicio (para payoff/visibilidad)
         $preStartPaidQ = DB::table('payment_revenues AS pr')
             ->join('revenues AS r', 'pr.revenue_id', '=', 'r.id')
             ->where('r.business_id', $business_id)
@@ -3311,8 +3365,8 @@ class ReportController extends Controller
             $preStartPaid[$row->revenue_id] = (float)$row->pagado_previo;
         }
 
-        // 6) Construcción por cliente/mes (pendientes + canceladas EN el rango)
-        $EPS = 0.005; // tolerancia de centavos
+        // 6) Construcción por cliente/mes
+        $EPS = 0.005;
         $byClient    = [];
         $revByClient = $revenues->groupBy('cliente_id');
 
@@ -3320,33 +3374,46 @@ class ReportController extends Controller
             $clienteNombre = optional($clientRevs->first())->cliente ?? 'SIN NOMBRE';
 
             // 6.1 amortización acumulada por cuenta/mes + payoff
-            $accumAmortizaByRevYm = []; // [rev_id][ym] = amortiza acumulada
+            $accumAmortizaByRevYm = []; // [rev_id][ym] = amortiza acumulada (igual que antes, lo seguimos llenando)
             $payoffYmByRev        = []; // [rev_id] => 'YYYY-MM' | '__BEFORE__' | null
 
             foreach ($clientRevs as $rev) {
                 $revId       = $rev->rev_id;
                 $totalCuenta = (float)$rev->valor_total;
 
+                // amortización acumulada antes de $start (igual que antes)
                 $acum = $preStartPaid[$revId] ?? 0.0;
 
-                if ($acum + $EPS >= $totalCuenta) {
-                    // cancelada antes del rango → no mostrar
+                // --- semilla de SALDO REAL antes del inicio ---
+                $saldoCarry = isset($preStartSaldo[$revId])
+                    ? (float)$preStartSaldo[$revId]
+                    : max($totalCuenta - $acum, 0.0); // fallback si nunca hubo PR antes del inicio
+
+                // payoff antes del rango si el saldo real ya era ~0
+                if ($saldoCarry <= $EPS) {
                     $payoffYmByRev[$revId] = '__BEFORE__';
                 } else {
                     $payoffYmByRev[$revId] = null;
                 }
 
+                // rellenar amortización acumulada por mes (igual que antes)
                 foreach ($months as $ym) {
                     $acum += $amortizaByRevenue[$revId][$ym] ?? 0.0;
                     $accumAmortizaByRevYm[$revId][$ym] = $acum;
 
-                    if (is_null($payoffYmByRev[$revId]) && ($acum + $EPS >= $totalCuenta)) {
-                        $payoffYmByRev[$revId] = $ym; // primer mes con saldo 0
+                    // actualizar SALDO REAL por mes con el último monto_general de ese mes (si existe)
+                    if (isset($lastSaldoByRevYm[$revId][$ym])) {
+                        $saldoCarry = (float)$lastSaldoByRevYm[$revId][$ym];
+                    } // si no, se mantiene
+
+                    // marcar payoff cuando el SALDO REAL llega a ~0 por primera vez
+                    if (is_null($payoffYmByRev[$revId]) && $saldoCarry <= $EPS) {
+                        $payoffYmByRev[$revId] = $ym; // payoff por SALDO REAL, no por amortización
                     }
                 }
             }
 
-            // 6.2 Filtrar cuentas (excluir solo las canceladas antes del rango)
+            // 6.2 Filtrar cuentas (excluir canceladas antes del rango)
             $filteredRevs = $clientRevs->filter(function ($rev) use ($payoffYmByRev) {
                 $flag = $payoffYmByRev[$rev->rev_id] ?? null;
                 return $flag !== '__BEFORE__';
@@ -3356,8 +3423,10 @@ class ReportController extends Controller
                 continue;
             }
 
-            // 6.3 Armar filas por mes con reglas de inclusión por mes + descartar filas vacías
+            // 6.3 Armar filas por mes con saldo REAL (monto_general) y regla de inclusión por saldoCierreMes
             $rows = [];
+            $carrySaldoPorRev = []; // [rev_id] => último saldo conocido real
+
             foreach ($months as $ym) {
                 [$yy, $mm] = explode('-', $ym);
                 $monthEnd  = \Carbon\Carbon::createMidnightDate((int)$yy, (int)$mm, 1)->endOfMonth();
@@ -3367,6 +3436,7 @@ class ReportController extends Controller
                 $pagaMes   = 0.0;
                 $amortMes  = 0.0;
                 $amortAcum = 0.0;
+                $saldoMes  = 0.0;
 
                 foreach ($filteredRevs as $rev) {
                     $revId     = $rev->rev_id;
@@ -3375,15 +3445,15 @@ class ReportController extends Controller
 
                     $flag = $payoffYmByRev[$revId] ?? null;
 
-                    // regla de presencia por payoff
+                    // presencia por payoff
                     $showByPayoff = false;
                     if ($createdOk) {
                         if ($flag === '__BEFORE__') {
                             $showByPayoff = false;
                         } elseif (is_null($flag)) {
-                            $showByPayoff = true;              // pendiente
+                            $showByPayoff = true;
                         } else {
-                            $showByPayoff = ($ym <= $flag);    // hasta payoff inclusive
+                            $showByPayoff = ($ym <= $flag); // hasta payoff inclusive
                         }
                     }
                     if (!$showByPayoff) {
@@ -3393,31 +3463,52 @@ class ReportController extends Controller
                     // movimientos del mes
                     $pagaThis  = (float)($pagaByRevenue[$revId][$ym] ?? 0.0);
                     $amortThis = (float)($amortizaByRevenue[$revId][$ym] ?? 0.0);
+                    $hadMovement = (abs($pagaThis) > $EPS || abs($amortThis) > $EPS);
 
-                    // amortización acumulada previa (saldo al inicio del mes)
+                    // amortización acumulada previa (solo para métricas/“pagado”)
                     $amortAcumPrev = isset($accumAmortizaByRevYm[$revId][$prevYm])
                         ? (float)$accumAmortizaByRevYm[$revId][$prevYm]
                         : (float)($preStartPaid[$revId] ?? 0.0);
 
-                    $saldoPrev = max($totalCta - $amortAcumPrev, 0.0);
-
-                    // incluir SOLO si saldoPrev>0 ó hubo movimiento (paga/amortiza) este mes
-                    $hadMovement = (abs($pagaThis) > $EPS || abs($amortThis) > $EPS);
-                    if (!($saldoPrev > $EPS || $hadMovement)) {
-                        continue; // estaba en 0 y sin movimientos → no mostrar
+                    // --- saldo real de CIERRE del mes ---
+                    // a) si hay PR en el mes → último monto_general del mes
+                    if (isset($lastSaldoByRevYm[$revId][$ym])) {
+                        $carrySaldoPorRev[$revId] = (float)$lastSaldoByRevYm[$revId][$ym];
+                    } else {
+                        // b) si no hay PR en el mes pero ya tenemos carry → se mantiene
+                        if (!isset($carrySaldoPorRev[$revId])) {
+                            // c) si no hay carry aún → usar saldo semilla o (fallback) estimado
+                            $saldoPrevEstimado = max($totalCta - $amortAcumPrev, 0.0);
+                            $carrySaldoPorRev[$revId] = isset($preStartSaldo[$revId])
+                                ? (float)$preStartSaldo[$revId]
+                                : (float)$saldoPrevEstimado;
+                        }
                     }
 
-                    // acumular
+                    $saldoCierreMes = (float)$carrySaldoPorRev[$revId];
+
+                    // --- regla de inclusión SIEMPRE por saldoCierreMes o por movimiento ---
+                    if (!($saldoCierreMes > $EPS || $hadMovement)) {
+                        continue;
+                    }
+
+                    // acumular totales del mes
                     $totalMes  += $totalCta;
                     $pagaMes   += $pagaThis;
                     $amortMes  += $amortThis;
-                    $amortAcum += isset($accumAmortizaByRevYm[$revId][$ym])
+                    // DESPUÉS: el total real del mes para esta cuenta = saldo real de cierre + amortización acumulada al mes
+                    $amortAcumCuentaAlMes = isset($accumAmortizaByRevYm[$revId][$ym])
                         ? (float)$accumAmortizaByRevYm[$revId][$ym]
                         : ($amortAcumPrev + $amortThis);
+
+                    $totalRealCuentaMes = max($saldoCierreMes, 0.0) + max($amortAcumCuentaAlMes, 0.0);
+
+                    $totalMes  += $totalRealCuentaMes;
+                    $amortAcum += $amortAcumCuentaAlMes; // mantenemos esta métrica como antes
+                    $saldoMes  += max($saldoCierreMes, 0.0);
                 }
 
-                // si quedó "vacío", NO guardamos esta fila para el cliente/mes
-                $saldoMes = max($totalMes - $amortAcum, 0.0);
+                // descartar filas totalmente vacías
                 $isEmptyRow = (abs($totalMes) < $EPS) && (abs($pagaMes) < $EPS) && (abs($amortMes) < $EPS) && (abs($saldoMes) < $EPS);
 
                 if (!$isEmptyRow) {
@@ -3426,13 +3517,12 @@ class ReportController extends Controller
                         'paga_mes'      => $pagaMes,
                         'amortiza_mes'  => $amortMes,
                         'amortiza_acum' => $amortAcum,
-                        'saldo'         => $saldoMes,
+                        'saldo'         => $saldoMes, // ← viene de monto_general
                     ];
                 }
             }
 
             if (empty($rows)) {
-                // este cliente no tiene meses que mostrar según las reglas
                 continue;
             }
 
@@ -3442,7 +3532,7 @@ class ReportController extends Controller
 
             $byClient[$cliente_id] = [
                 'cliente' => $clienteNombre,
-                'rows'    => $rows, // SOLO meses válidos
+                'rows'    => $rows,
                 'final'   => $final,
             ];
         }
@@ -3450,22 +3540,21 @@ class ReportController extends Controller
         // 7) Totales por mes (solo con filas realmente generadas)
         $totalesPorMes = [];
         foreach ($months as $ym) {
-            $t = $paga_mes = $amort_mes = $amort_acum = 0.0;
+            $t = $paga_mes = $amort_mes = $amort_acum = $saldo_sum = 0.0;
 
             foreach ($byClient as $c) {
                 if (!isset($c['rows'][$ym])) {
-                    continue; // cliente no tiene fila ese mes (mes "vacío" fue descartado en backend)
+                    continue;
                 }
                 $row = $c['rows'][$ym];
                 $t          += $row['total'];
                 $paga_mes   += $row['paga_mes'];
                 $amort_mes  += $row['amortiza_mes'];
                 $amort_acum += $row['amortiza_acum'];
+                $saldo_sum  += $row['saldo']; // real
             }
 
-            $s = max($t - $amort_acum, 0.0);
-            if (abs($t) < $EPS && abs($paga_mes) < $EPS && abs($amort_mes) < $EPS && abs($s) < $EPS) {
-                // totales del mes en cero real: no guardar entrada
+            if (abs($t) < $EPS && abs($paga_mes) < $EPS && abs($amort_mes) < $EPS && abs($saldo_sum) < $EPS) {
                 continue;
             }
 
@@ -3473,14 +3562,13 @@ class ReportController extends Controller
                 'total'        => $t,
                 'paga_mes'     => $paga_mes,
                 'amortiza_mes' => $amort_mes,
-                'saldo'        => $s,
+                'saldo'        => $saldo_sum,
             ];
         }
 
         // 8) Estado al final del rango (último mes visible con totales)
         $lastYm = end($months);
         if (!isset($totalesPorMes[$lastYm])) {
-            // si el último mes quedó sin filas, calcula estado final con el último mes existente en totales
             $keys = array_keys($totalesPorMes);
             $lastYm = empty($keys) ? end($months) : end($keys);
         }
@@ -3498,14 +3586,16 @@ class ReportController extends Controller
 
         return view('report.partials.cxc-monthly-balance', [
             'months'                => $months,
-            'byClient'              => $byClient,          // cada cliente tiene solo meses válidos
-            'totalesPorMes'         => $totalesPorMes,     // solo meses con algo que mostrar
+            'byClient'              => $byClient,
+            'totalesPorMes'         => $totalesPorMes,
             'rango'                 => $rango,
             'estado_final_total'    => $estado_final_total,
             'estado_final_pagado'   => $estado_final_pagado,
             'estado_final_saldo'    => $estado_final_saldo,
         ]);
     }
+
+
 
 
     public function generateCxcReportDetailed(Request $request)
