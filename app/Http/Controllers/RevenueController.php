@@ -110,15 +110,16 @@ class RevenueController extends Controller
                 ])
                 ->groupBy('revenues.id', 'ct.contact_id', 'ct.name')
                 ->orderBy('rev_id', 'desc');
-
-            if (request()->has('status')) {
-                $status = request()->get('status');
+            $status = request()->get('status');
+            if (request()->has('status') && $status != 4) {
                 if ($status == 1) {
                     $revenues->where('revenues.status', 1);
                 }
-
                 if ($status == 2) {
                     $revenues->where('revenues.status', 0);
+                }
+                if ($status == 3) {
+                    $revenues->where('revenues.status', 2);
                 }
             }
 
@@ -173,8 +174,10 @@ class RevenueController extends Controller
                 ->editColumn(
                     'status',
                     function ($row) {
-                        if ($row->min_general_amount <= 0) {
-                            return '<span class="label bg-green">Cancelado</span>';
+                        if ($row->status == 2) {
+                            return '<span class="label bg-orange">Judicial</span>';
+                        } else if ($row->min_general_amount <= 0 || $row->status == 1) {
+                            return '<span class="label bg-blue">Cobrado</span>';
                         } else {
                             return '<span class="label bg-yellow">Pendiente</span>';
                         }
@@ -307,6 +310,7 @@ class RevenueController extends Controller
                 'rev.tipo_prestamo as tipo_prestamo',
                 'rev.moneda as moneda',
                 'rev.cuota as cuota',
+                'rev.status as status',
                 'rev.tasa as tasa',
                 'rev.valor_total as valor_total',
                 'rev.detalle as detalle',
@@ -524,7 +528,7 @@ class RevenueController extends Controller
                         $detalle_planilla->update($cxc_pay);
                         $data = $cxc_pay;
                         // Aplicar formato a los números
-                        $data['monto_general'] = number_format($data['monto_general'], 2, '.', ',');                        
+                        $data['monto_general'] = number_format($data['monto_general'], 2, '.', ',');
                         $data['interes_c'] = number_format($data['interes_c'], 2, '.', ',');
                         $data['amortiza'] = number_format($data['amortiza'], 2, '.', ',');
                     }

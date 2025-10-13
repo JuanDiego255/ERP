@@ -104,7 +104,7 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="form-group col-sm-3">
+                    <div class="form-group col-sm-2">
                         {!! Form::label('tipo_prestamo', 'Tipo prestamo') !!}
                         {!! Form::select('tipo_prestamo', ['1' => 'Cuota Nivelada', '2' => 'Intereses'], $item->tipo_prestamo, [
                             'class' => 'form-control',
@@ -114,12 +114,21 @@
                             'placeholder' => __('messages.please_select'),
                         ]) !!}
                     </div>
-                    <div class="form-group col-sm-3">
+                    <div class="form-group col-sm-2">
                         {!! Form::label('moneda', 'Moneda') !!}
                         {!! Form::select('moneda', ['1' => 'Colones', '2' => 'Dolares'], $item->moneda, [
                             'class' => 'form-control',
                             'id' => 'moneda',
                             'readonly',
+                            'required',
+                            'placeholder' => __('messages.please_select'),
+                        ]) !!}
+                    </div>
+                     <div class="form-group col-sm-2">
+                        {!! Form::label('status', 'Estado') !!}
+                        {!! Form::select('status', ['0' => 'Pendiente', '1' => 'Cobrado', '2' => 'Judicial'], $item->status, [
+                            'class' => 'form-control',
+                            'id' => 'status',
                             'required',
                             'placeholder' => __('messages.please_select'),
                         ]) !!}

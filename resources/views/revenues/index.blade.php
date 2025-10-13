@@ -16,7 +16,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('location_id',  __('Sucursal') . ':') !!}
-                        {!! Form::select('location_id', [ 'GRECIA' => 'GRECIA','NICOYA' => 'NICOYA'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        {!! Form::select('location_id', [ 'GRECIA' => 'GRECIA','NICOYA' => 'NICOYA','TODAS' => 'TODAS'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
                 
@@ -36,7 +36,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('expense_payment_status',  __('purchase.payment_status') . ':') !!}
-                        {!! Form::select('expense_payment_status', ['2' => 'Pendiente', '1' => 'Cobrado'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        {!! Form::select('expense_payment_status', ['2' => 'Pendiente', '1' => 'Cobrado', '3' => 'Judicial', '4' => 'TODOS'], null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
             @endcomponent

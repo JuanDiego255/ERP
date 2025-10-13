@@ -447,6 +447,7 @@ class PlanVentaController extends Controller
             if (request()->ajax()) {
                 DB::beginTransaction();
                 $cxc['tasa'] = $request->tasa;
+                $cxc['status'] = $request->status;
                 $cxc['detalle'] = $request->detalle;
                 $cxc_item->update($cxc);
                 DB::commit();
