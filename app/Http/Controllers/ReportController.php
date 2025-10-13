@@ -3245,6 +3245,7 @@ class ReportController extends Controller
                 'revenues.sucursal',
                 'revenues.valor_total',
                 'revenues.created_at',
+                'revenues.cuota', // <<< ADD: cuota mensual para efectividad
                 'ct.id as cliente_id',
                 'ct.name as cliente',
                 'v.name as vehiculo',
@@ -3370,18 +3371,22 @@ class ReportController extends Controller
         $byClient    = [];
         $revByClient = $revenues->groupBy('cliente_id');
 
+        // === ADD: Acumuladores globales para EFECTIVIDAD ===
+        $cuotaEsperadaPorMes = []; // [ym] => suma de cuota esperada del mes (denominador)
+        $recaudadoPorMes     = []; // [ym] => suma de paga real del mes (numerador)
+
         foreach ($revByClient as $cliente_id => $clientRevs) {
             $clienteNombre = optional($clientRevs->first())->cliente ?? 'SIN NOMBRE';
 
             // 6.1 amortización acumulada por cuenta/mes + payoff
-            $accumAmortizaByRevYm = []; // [rev_id][ym] = amortiza acumulada (igual que antes, lo seguimos llenando)
+            $accumAmortizaByRevYm = []; // [rev_id][ym] = amortiza acumulada
             $payoffYmByRev        = []; // [rev_id] => 'YYYY-MM' | '__BEFORE__' | null
 
             foreach ($clientRevs as $rev) {
                 $revId       = $rev->rev_id;
                 $totalCuenta = (float)$rev->valor_total;
 
-                // amortización acumulada antes de $start (igual que antes)
+                // amortización acumulada antes de $start
                 $acum = $preStartPaid[$revId] ?? 0.0;
 
                 // --- semilla de SALDO REAL antes del inicio ---
@@ -3396,7 +3401,7 @@ class ReportController extends Controller
                     $payoffYmByRev[$revId] = null;
                 }
 
-                // rellenar amortización acumulada por mes (igual que antes)
+                // rellenar amortización acumulada por mes
                 foreach ($months as $ym) {
                     $acum += $amortizaByRevenue[$revId][$ym] ?? 0.0;
                     $accumAmortizaByRevYm[$revId][$ym] = $acum;
@@ -3408,7 +3413,7 @@ class ReportController extends Controller
 
                     // marcar payoff cuando el SALDO REAL llega a ~0 por primera vez
                     if (is_null($payoffYmByRev[$revId]) && $saldoCarry <= $EPS) {
-                        $payoffYmByRev[$revId] = $ym; // payoff por SALDO REAL, no por amortización
+                        $payoffYmByRev[$revId] = $ym; // payoff por SALDO REAL
                     }
                 }
             }
@@ -3465,7 +3470,17 @@ class ReportController extends Controller
                     $amortThis = (float)($amortizaByRevenue[$revId][$ym] ?? 0.0);
                     $hadMovement = (abs($pagaThis) > $EPS || abs($amortThis) > $EPS);
 
-                    // amortización acumulada previa (solo para métricas/“pagado”)
+                    // === ADD: EFECTIVIDAD (denominador y numerador) ===
+                    // Denominador: suma de la cuota exacta de todas las cuentas "presentes" ese mes
+                    $cuotaRev = isset($rev->cuota) ? (float)$rev->cuota : 0.0;
+                    if (!isset($cuotaEsperadaPorMes[$ym])) $cuotaEsperadaPorMes[$ym] = 0.0;
+                    if (!isset($recaudadoPorMes[$ym]))     $recaudadoPorMes[$ym]     = 0.0;
+
+                    $cuotaEsperadaPorMes[$ym] += $cuotaRev; // cuenta aunque no haya movimiento
+                    $recaudadoPorMes[$ym]     += $pagaThis; // pagos reales de ese mes
+                    // === FIN ADD ===
+
+                    // amortización acumulada previa
                     $amortAcumPrev = isset($accumAmortizaByRevYm[$revId][$prevYm])
                         ? (float)$accumAmortizaByRevYm[$revId][$prevYm]
                         : (float)($preStartPaid[$revId] ?? 0.0);
@@ -3496,6 +3511,7 @@ class ReportController extends Controller
                     $totalMes  += $totalCta;
                     $pagaMes   += $pagaThis;
                     $amortMes  += $amortThis;
+
                     // DESPUÉS: el total real del mes para esta cuenta = saldo real de cierre + amortización acumulada al mes
                     $amortAcumCuentaAlMes = isset($accumAmortizaByRevYm[$revId][$ym])
                         ? (float)$accumAmortizaByRevYm[$revId][$ym]
@@ -3513,7 +3529,7 @@ class ReportController extends Controller
 
                 if (!$isEmptyRow) {
                     $rows[$ym] = [
-                        'total'         => $totalMes,
+                        'total'         => $totalCta,
                         'paga_mes'      => $pagaMes,
                         'amortiza_mes'  => $amortMes,
                         'amortiza_acum' => $amortAcum,
@@ -3566,6 +3582,29 @@ class ReportController extends Controller
             ];
         }
 
+        // 7bis) Efectividad por mes y global (ADD)
+        $efectividadPorMes = []; // [ym] => porcentaje (0..100) o null
+        $sumaCuotaGlobal   = 0.0;
+        $sumaRecaudoGlobal = 0.0;
+
+        foreach ($months as $ym) {
+            $den = $cuotaEsperadaPorMes[$ym] ?? 0.0; // cuota esperada
+            $num = $recaudadoPorMes[$ym]     ?? 0.0; // paga real
+
+            if ($den > $EPS) {
+                $efectividadPorMes[$ym] = ($num / $den) * 100.0;
+            } else {
+                $efectividadPorMes[$ym] = null; // sin cuota ese mes
+            }
+
+            $sumaCuotaGlobal   += $den;
+            $sumaRecaudoGlobal += $num;
+        }
+
+        $efectividadGlobal = ($sumaCuotaGlobal > $EPS)
+            ? ($sumaRecaudoGlobal / $sumaCuotaGlobal) * 100.0
+            : null;
+
         // 8) Estado al final del rango (último mes visible con totales)
         $lastYm = end($months);
         if (!isset($totalesPorMes[$lastYm])) {
@@ -3592,11 +3631,14 @@ class ReportController extends Controller
             'estado_final_total'    => $estado_final_total,
             'estado_final_pagado'   => $estado_final_pagado,
             'estado_final_saldo'    => $estado_final_saldo,
+
+            // ADD: métricas de efectividad
+            'cuotaEsperadaPorMes'   => $cuotaEsperadaPorMes, // denominador por mes
+            'recaudadoPorMes'       => $recaudadoPorMes,     // numerador por mes
+            'efectividadPorMes'     => $efectividadPorMes,   // %
+            'efectividadGlobal'     => $efectividadGlobal,   // %
         ]);
     }
-
-
-
 
     public function generateCxcReportDetailed(Request $request)
     {

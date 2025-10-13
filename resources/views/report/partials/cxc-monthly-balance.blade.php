@@ -34,8 +34,29 @@
             @endphp
             @forelse($months as $ym)
                 <div class="table-responsive">
-                    <h4 class="bg-ag" style="padding:8px;border-radius:4px;">{{ mesBonito($ym) }}</h4>
+                    @php
+                        $den = $cuotaEsperadaPorMes[$ym] ?? 0.0; // cuota esperada del mes
+                        $num = $recaudadoPorMes[$ym] ?? 0.0; // recaudo real (paga) del mes
+                        $eff = $efectividadPorMes[$ym] ?? null; // porcentaje o null si den=0
+                    @endphp
 
+                    <h4 class="bg-ag"
+                        style="padding:8px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+                        <span>{{ mesBonito($ym) }}</span>
+
+                        <span style="font-weight:600;">
+                            Efectividad:
+                            @if (!is_null($eff))
+                                {{ number_format($eff, 2) }}%
+                                <span style="font-weight:400;">
+                                    (₡{{ number_format($num, 2) }} / ₡{{ number_format($den, 2) }})
+                                </span>
+                            @else
+                                —
+                                <span style="font-weight:400;">(sin cuota registrada)</span>
+                            @endif
+                        </span>
+                    </h4>
                     <table class="table table-bordered">
                         <thead>
                             <tr class="bg-ag">
