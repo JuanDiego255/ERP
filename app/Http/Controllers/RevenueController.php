@@ -121,6 +121,9 @@ class RevenueController extends Controller
                 if ($status == 3) {
                     $revenues->where('revenues.status', 2);
                 }
+                if ($status == 5) {
+                    $revenues->where('revenues.status', 3);
+                }
             }
 
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
@@ -176,6 +179,8 @@ class RevenueController extends Controller
                     function ($row) {
                         if ($row->status == 2) {
                             return '<span class="label bg-orange">Judicial</span>';
+                        } else if ($row->status == 3) {
+                            return '<span class="label bg-red">Pérdida</span>';
                         } else if ($row->min_general_amount <= 0 || $row->status == 1) {
                             return '<span class="label bg-blue">Cobrado</span>';
                         } else {

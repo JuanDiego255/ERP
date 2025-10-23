@@ -3253,7 +3253,8 @@ class ReportController extends Controller
             ])
             ->whereDate('revenues.created_at', '<=', $end->toDateString())
             ->where('pv.tipo_plan', 2)
-            ->where('revenues.status', '!=', 2);
+            ->where('revenues.status', '!=', 2)
+            ->where('revenues.status', '!=', 3);
 
         // Filtro opcional por sucursal (sobre cuentas)
         if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {

@@ -124,14 +124,19 @@
                             'placeholder' => __('messages.please_select'),
                         ]) !!}
                     </div>
-                     <div class="form-group col-sm-2">
+                    <div class="form-group col-sm-2">
                         {!! Form::label('status', 'Estado') !!}
-                        {!! Form::select('status', ['0' => 'Pendiente', '1' => 'Cobrado', '2' => 'Judicial'], $item->status, [
-                            'class' => 'form-control',
-                            'id' => 'status',
-                            'required',
-                            'placeholder' => __('messages.please_select'),
-                        ]) !!}
+                        {!! Form::select(
+                            'status',
+                            ['0' => 'Pendiente', '1' => 'Cobrado', '2' => 'Judicial', '3' => 'Pérdida'],
+                            $item->status,
+                            [
+                                'class' => 'form-control',
+                                'id' => 'status',
+                                'required',
+                                'placeholder' => __('messages.please_select'),
+                            ],
+                        ) !!}
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -810,9 +815,9 @@
                                                 // Asignar el valor desde response.data al input
                                                 if (response.data[inputName] !==
                                                     undefined && response.data[
-                                                    inputName] !== null) {
+                                                        inputName] !== null) {
                                                     inputField.val(response.data[
-                                                    inputName]);
+                                                        inputName]);
                                                 }
                                             } else {
                                                 console.warn(
