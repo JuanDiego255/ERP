@@ -3211,6 +3211,16 @@ class ReportController extends Controller
 
         return view('report.cxc');
     }
+    public function getCxcReportVenc(Request $request)
+    {
+        if (!auth()->user()->can('profit_loss_report.view')) { // o crea un permiso nuevo si quieres
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        return view('report.cxc-venc');
+    }
 
     public function generateCxcReport(Request $request)
     {
@@ -3767,6 +3777,92 @@ class ReportController extends Controller
             'total_general_total'     => $total_general_total,
             'total_general_pagado'    => $total_general_pagado,
             'total_general_pendiente' => $total_general_pendiente,
+        ]);
+    }
+    public function generateCxcReportVenc(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $plazo = (int) $request->plazo; // 30, 60, 90
+
+        // Query base que usamos para todos los buckets
+        $baseQuery = \App\Models\Revenue::where('revenues.business_id', $business_id)
+            ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
+            ->leftJoin('payment_revenues AS pr', 'revenues.id', '=', 'pr.revenue_id')
+            ->leftJoin('plan_ventas AS pv', 'revenues.plan_venta_id', '=', 'pv.id')
+            ->leftJoin('products AS v', 'pv.vehiculo_venta_id', '=', 'v.id')
+            ->select([
+                'revenues.id as rev_id',
+                'revenues.referencia',
+                'revenues.valor_total',
+                'revenues.created_at',
+                'ct.id as cliente_id',
+                'ct.name as cliente',
+                'v.name as vehiculo',
+                'v.model as modelo',
+
+                // montos
+                DB::raw('COALESCE(SUM(pr.paga), 0) AS total_pagado'),
+                DB::raw('COALESCE(SUM(pr.amortiza), 0) AS total_amortizado'),
+
+                // saldo pendiente
+                DB::raw('COALESCE(MIN(pr.monto_general),-1) AS saldo_pendiente'),
+
+                // info de vencimiento / atraso
+                DB::raw('MAX(pr.fecha_interes) AS ultimo_pago_fecha'),
+                DB::raw('COALESCE(MAX(pr.fecha_interes), revenues.created_at) AS fecha_base'),
+                DB::raw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) AS dias_atraso'),
+            ])
+            ->where('revenues.status', '!=', 1)
+            ->where('revenues.status', '!=', 2)
+            ->where('revenues.status', '!=', 3)
+            ->groupBy(
+                'revenues.id',
+                'revenues.referencia',
+                'revenues.valor_total',
+                'revenues.created_at',
+                'ct.id',
+                'ct.name',
+                'v.name',
+                'v.model'
+            )
+            // saldo pendiente > 0
+            ->havingRaw('(revenues.valor_total - COALESCE(SUM(pr.amortiza),0)) > 0')
+            // evitar negativos si fecha_interes está en el futuro
+            ->havingRaw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) >= 0');
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $baseQuery->where('revenues.sucursal', $request->location_id);
+        }
+        // Buckets según días
+        $bucket30 = collect();
+        $bucket60 = collect();
+        $bucket90plus = collect();
+
+        if ($plazo >= 30) {
+            $bucket30 = (clone $baseQuery)
+                ->havingRaw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) = 30')
+                ->orderBy('dias_atraso', 'asc')
+                ->get();
+        }
+
+        if ($plazo >= 60) {
+            $bucket60 = (clone $baseQuery)
+                ->havingRaw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) = 60')
+                ->orderBy('dias_atraso', 'asc')
+                ->get();
+        }
+
+        if ($plazo >= 90) {
+            $bucket90plus = (clone $baseQuery)
+                ->havingRaw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) >= 90')
+                ->orderBy('dias_atraso', 'asc')
+                ->get();
+        }
+
+        return view('report.partials.cxc-venc-report', [
+            'plazo'        => $plazo,
+            'bucket30'     => $bucket30,
+            'bucket60'     => $bucket60,
+            'bucket90plus' => $bucket90plus,
         ]);
     }
 }

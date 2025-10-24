@@ -434,7 +434,9 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/bills/generate-report', [BillVehicleController::class, 'generateReport'])->name('expenses.generateReport');
     // routes/web.php
     Route::get('/reports/cxc', 'ReportController@getCxcReport');
+    Route::get('/reports/cxc-venc', 'ReportController@getCxcReportVenc');
     Route::post('/cxc/generate-report', 'ReportController@generateCxcReport')->name('cxc.generateReport');
+    Route::post('/cxc-venc/generate-report', 'ReportController@generateCxcReportVenc')->name('cxc-venc.generateReport');
 
     Route::post('/expenses/check-update', [ExpenseController::class, 'updateCheckReport'])->name('expenses.check_update');
     Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
