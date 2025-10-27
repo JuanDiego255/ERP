@@ -21,10 +21,10 @@
         <div class="modal-body">
 
             {{-- BLOQUE 30 DÍAS --}}
-            @if($plazo >= 30)
+            @if ($plazo >= 30)
                 <h4><strong>Clientes con 30 días de atraso</strong></h4>
 
-                @if($bucket30->isEmpty())
+                @if ($bucket30->isEmpty())
                     <p class="text-muted">No hay clientes con exactamente 30 días de atraso.</p>
                 @else
                     <div class="table-responsive">
@@ -32,21 +32,28 @@
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
-                                    <th>Último pago</th>
+                                    <th>Fecha del pago</th>
+                                    <th>Últ. Pago Interés</th>
                                     <th>Saldo pendiente</th>
                                     <th>Días de atraso</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($bucket30 as $rev)
+                                @foreach ($bucket30 as $rev)
                                     <tr>
                                         <td>
                                             <strong>{{ $rev->cliente }}</strong><br>
                                             <small>Ref: {{ $rev->referencia }}</small>
                                         </td>
-
                                         <td>
-                                            @if($rev->ultimo_pago_fecha)
+                                            @if ($rev->ultimo_pago_fecha)
+                                                {{ \Carbon\Carbon::parse($rev->pago_fecha)->format('d/m/Y') }}
+                                            @else
+                                                Sin pagos
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($rev->ultimo_pago_fecha)
                                                 {{ \Carbon\Carbon::parse($rev->ultimo_pago_fecha)->format('d/m/Y') }}
                                             @else
                                                 Sin pagos
@@ -72,10 +79,10 @@
 
 
             {{-- BLOQUE 60 DÍAS --}}
-            @if($plazo >= 60)
+            @if ($plazo >= 60)
                 <h4><strong>Clientes con 60 días de atraso</strong></h4>
 
-                @if($bucket60->isEmpty())
+                @if ($bucket60->isEmpty())
                     <p class="text-muted">No hay clientes con exactamente 60 días de atraso.</p>
                 @else
                     <div class="table-responsive">
@@ -83,21 +90,28 @@
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
-                                    <th>Último pago</th>
+                                    <th>Fecha del pago</th>
+                                    <th>Últ. Pago Interés</th>
                                     <th>Saldo pendiente</th>
                                     <th>Días de atraso</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($bucket60 as $rev)
+                                @foreach ($bucket60 as $rev)
                                     <tr>
                                         <td>
                                             <strong>{{ $rev->cliente }}</strong><br>
                                             <small>Ref: {{ $rev->referencia }}</small>
                                         </td>
-
                                         <td>
-                                            @if($rev->ultimo_pago_fecha)
+                                            @if ($rev->ultimo_pago_fecha)
+                                                {{ \Carbon\Carbon::parse($rev->pago_fecha)->format('d/m/Y') }}
+                                            @else
+                                                Sin pagos
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($rev->ultimo_pago_fecha)
                                                 {{ \Carbon\Carbon::parse($rev->ultimo_pago_fecha)->format('d/m/Y') }}
                                             @else
                                                 Sin pagos
@@ -123,10 +137,10 @@
 
 
             {{-- BLOQUE 90+ DÍAS --}}
-            @if($plazo >= 90)
+            @if ($plazo >= 90)
                 <h4><strong>Clientes con 90+ días de atraso</strong></h4>
 
-                @if($bucket90plus->isEmpty())
+                @if ($bucket90plus->isEmpty())
                     <p class="text-muted">No hay clientes con 90 días o más de atraso.</p>
                 @else
                     <div class="table-responsive">
@@ -134,21 +148,28 @@
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
-                                    <th>Último pago</th>
+                                    <th>Fecha del pago</th>
+                                    <th>Últ. Pago Interés</th>
                                     <th>Saldo pendiente</th>
                                     <th>Días de atraso</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($bucket90plus as $rev)
+                                @foreach ($bucket90plus as $rev)
                                     <tr>
                                         <td>
                                             <strong>{{ $rev->cliente }}</strong><br>
                                             <small>Ref: {{ $rev->referencia }}</small>
                                         </td>
-
                                         <td>
-                                            @if($rev->ultimo_pago_fecha)
+                                            @if ($rev->ultimo_pago_fecha)
+                                                {{ \Carbon\Carbon::parse($rev->pago_fecha)->format('d/m/Y') }}
+                                            @else
+                                                Sin pagos
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($rev->ultimo_pago_fecha)
                                                 {{ \Carbon\Carbon::parse($rev->ultimo_pago_fecha)->format('d/m/Y') }}
                                             @else
                                                 Sin pagos

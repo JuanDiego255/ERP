@@ -3809,6 +3809,7 @@ class ReportController extends Controller
 
                 // info de vencimiento / atraso
                 DB::raw('MAX(pr.fecha_interes) AS ultimo_pago_fecha'),
+                DB::raw('MAX(pr.created_at) AS pago_fecha'),
                 DB::raw('COALESCE(MAX(pr.fecha_interes), revenues.created_at) AS fecha_base'),
                 DB::raw('DATEDIFF(CURDATE(), COALESCE(MAX(pr.fecha_interes), revenues.created_at)) AS dias_atraso'),
             ])
