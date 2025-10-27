@@ -35,10 +35,12 @@
             @forelse($months as $ym)
                 <div class="table-responsive">
                     @php
-                        $den = $cuotaEsperadaPorMes[$ym] ?? 0.0; // cuota esperada del mes
-                        $num = $recaudadoPorMes[$ym] ?? 0.0; // recaudo real (paga) del mes
-                        $eff = $efectividadPorMes[$ym] ?? null; // porcentaje o null si den=0
+                        // Usar SOLO lo que realmente sale en la tabla (visibilidad del reporte)
+                        $den = $visibleCuotaPorMes[$ym] ?? 0.0; // suma de cuota_mes que sí se mostró
+                        $num = $visibleRecaudoPorMes[$ym] ?? 0.0; // suma de paga_mes que sí se mostró
+                        $eff = $visibleEfectividadPorMes[$ym] ?? null; // % calculado con esos dos
                     @endphp
+
 
                     <h4 class="bg-ag"
                         style="padding:8px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
@@ -49,7 +51,7 @@
                             @if (!is_null($eff))
                                 {{ number_format($eff, 2) }}%
                                 <span style="font-weight:400;">
-                                    (₡{{ number_format($num, 2) }} / ₡{{ number_format($den, 2) }})
+                                    (₡{{ number_format($num, 2) }} ÷ ₡{{ number_format($den, 2) }})
                                 </span>
                             @else
                                 —
@@ -62,15 +64,16 @@
                             <tr class="bg-ag">
                                 <th>Cliente</th>
                                 <th class="text-right">Total cuentas (al mes)</th>
+                                <th class="text-right">Cuota</th> {{-- NUEVO --}}
                                 <th class="text-right">Paga del mes</th>
                                 <th class="text-right">Amortiza del mes</th>
                                 <th class="text-right">Saldo a fin del mes</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             @php
                                 $mes_total = 0;
+                                $mes_cuota = 0;
                                 $mes_paga = 0;
                                 $mes_amort = 0;
                                 $mes_saldo = 0;
@@ -80,23 +83,30 @@
                                 @php
                                     $row = $info['rows'][$ym] ?? [
                                         'total' => 0,
+                                        'cuota_mes' => 0, // NUEVO fallback
                                         'paga_mes' => 0,
                                         'amortiza_mes' => 0,
                                         'saldo' => 0,
                                     ];
+
                                     $mes_total += $row['total'];
+                                    $mes_cuota += $row['cuota_mes']; // NUEVO
                                     $mes_paga += $row['paga_mes'];
                                     $mes_amort += $row['amortiza_mes'];
                                     $mes_saldo += $row['saldo'];
+
                                     $montoTotalGeneral += $row['total'];
                                     $montoTotalSaldo += $row['saldo'];
                                 @endphp
+
                                 <tr>
                                     <td>{{ $info['cliente'] }}</td>
                                     <td class="text-right">₡{{ number_format($row['total'], 2) }}</td>
+                                    <td class="text-right">₡{{ number_format($row['cuota_mes'], 2) }}</td>
+                                    {{-- NUEVO --}}
                                     <td class="text-right">₡{{ number_format($row['paga_mes'], 2) }}</td>
                                     <td class="text-right">₡{{ number_format($row['amortiza_mes'], 2) }}</td>
-                                    <td class="text-right text-danger">
+                                    <td class="text-right text-dark font-weight-bold">
                                         <strong>₡{{ number_format($row['saldo'], 2) }}</strong>
                                     </td>
                                 </tr>
@@ -104,14 +114,18 @@
                             <tr class="bg-gray font-16 footer-total">
                                 <td class="text-right"><strong>Subtotal del mes</strong></td>
                                 <td class="text-right"><strong>₡{{ number_format($mes_total, 2) }}</strong></td>
+                                <td class="text-right"><strong>₡{{ number_format($mes_cuota, 2) }}</strong></td>
+                                {{-- NUEVO --}}
                                 <td class="text-right"><strong>₡{{ number_format($mes_paga, 2) }}</strong></td>
                                 <td class="text-right"><strong>₡{{ number_format($mes_amort, 2) }}</strong></td>
                                 <td class="text-right"><strong>₡{{ number_format($mes_saldo, 2) }}</strong></td>
                             </tr>
+
                             <tr class="bg-gray font-16 footer-total">
                                 <td class="text-right"><strong></strong></td>
                                 <td class="text-right"><strong>Total Inicial</strong></td>
-                                <td class="text-right"><strong>Cuotas</strong></td>
+                                <td class="text-right"><strong>Cuotas</strong></td> {{-- NUEVO se mantiene en la 3ra numérica --}}
+                                <td class="text-right"><strong>Pagos</strong></td> {{-- antes "Paga del mes" --}}
                                 <td class="text-right"><strong>Amortización</strong></td>
                                 <td class="text-right"><strong>Saldo Pendiente</strong></td>
                             </tr>

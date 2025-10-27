@@ -3454,6 +3454,7 @@ class ReportController extends Controller
                 $amortMes  = 0.0;
                 $amortAcum = 0.0;
                 $saldoMes  = 0.0;
+                $cuotaMes  = 0.0;
 
                 foreach ($filteredRevs as $rev) {
                     $revId     = $rev->rev_id;
@@ -3520,6 +3521,7 @@ class ReportController extends Controller
                     }
 
                     // acumular totales del mes
+                    $cuotaMes += $cuotaRev;
                     $totalMes  += $totalCta;
                     $pagaMes   += $pagaThis;
                     $amortMes  += $amortThis;
@@ -3546,6 +3548,7 @@ class ReportController extends Controller
                         'amortiza_mes'  => $amortMes,
                         'amortiza_acum' => $amortAcum,
                         'saldo'         => $saldoMes, // ← viene de monto_general
+                        'cuota_mes'     => $cuotaMes,
                     ];
                 }
             }
@@ -3563,6 +3566,28 @@ class ReportController extends Controller
                 'rows'    => $rows,
                 'final'   => $final,
             ];
+        }
+        // 6.4) Métricas de efectividad VISIBLES (solo lo que sí terminó en el reporte)
+        $visibleCuotaPorMes    = []; // [ym] => suma de cuota_mes de filas visibles
+        $visibleRecaudoPorMes  = []; // [ym] => suma de paga_mes de filas visibles
+
+        foreach ($months as $ym) {
+            $vis_cuota  = 0.0;
+            $vis_paga   = 0.0;
+
+            foreach ($byClient as $c) {
+                if (!isset($c['rows'][$ym])) {
+                    continue;
+                }
+
+                $row = $c['rows'][$ym];
+
+                $vis_cuota += $row['cuota_mes']     ?? 0.0;
+                $vis_paga  += $row['paga_mes']      ?? 0.0;
+            }
+
+            $visibleCuotaPorMes[$ym]   = $vis_cuota;
+            $visibleRecaudoPorMes[$ym] = $vis_paga;
         }
 
         // 7) Totales por mes (solo con filas realmente generadas)
@@ -3635,6 +3660,30 @@ class ReportController extends Controller
             }
         }
 
+        // 7ter) Efectividad visible por mes (solo filas que realmente se muestran)
+        $visibleEfectividadPorMes = []; // [ym] => porcentaje o null
+        $sumaVisibleCuotaGlobal   = 0.0;
+        $sumaVisiblePagaGlobal    = 0.0;
+
+        foreach ($months as $ym) {
+            $denVis = $visibleCuotaPorMes[$ym]   ?? 0.0; // cuota visible
+            $numVis = $visibleRecaudoPorMes[$ym] ?? 0.0; // paga visible
+
+            if ($denVis > $EPS) {
+                $visibleEfectividadPorMes[$ym] = ($numVis / $denVis) * 100.0;
+            } else {
+                $visibleEfectividadPorMes[$ym] = null;
+            }
+
+            $sumaVisibleCuotaGlobal += $denVis;
+            $sumaVisiblePagaGlobal  += $numVis;
+        }
+
+        $visibleEfectividadGlobal = ($sumaVisibleCuotaGlobal > $EPS)
+            ? ($sumaVisiblePagaGlobal / $sumaVisibleCuotaGlobal) * 100.0
+            : null;
+
+
         return view('report.partials.cxc-monthly-balance', [
             'months'                => $months,
             'byClient'              => $byClient,
@@ -3643,7 +3692,10 @@ class ReportController extends Controller
             'estado_final_total'    => $estado_final_total,
             'estado_final_pagado'   => $estado_final_pagado,
             'estado_final_saldo'    => $estado_final_saldo,
-
+            'visibleCuotaPorMes'         => $visibleCuotaPorMes,
+            'visibleRecaudoPorMes'       => $visibleRecaudoPorMes,
+            'visibleEfectividadPorMes'   => $visibleEfectividadPorMes,
+            'visibleEfectividadGlobal'   => $visibleEfectividadGlobal,
             // ADD: métricas de efectividad
             'cuotaEsperadaPorMes'   => $cuotaEsperadaPorMes, // denominador por mes
             'recaudadoPorMes'       => $recaudadoPorMes,     // numerador por mes
