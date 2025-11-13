@@ -158,6 +158,7 @@
                         @endcan
                     @endif
                     <button id="generate_report" class="btn btn-primary">Rep. CUEPAG</button>
+                    
                     <button id="generate_report_detail" class="btn btn-primary">Rep. Cuentas Por Pagar (AG)</button>
 
                     <div class="table-responsive">

@@ -17,6 +17,9 @@ use App\Http\Controllers\Admin\BillVehicleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\SmsCampaignController;
+use App\Http\Controllers\SmsController;
 use App\Models\Transaction;
 use App\Models\Test;
 use Illuminate\Support\Facades\Auth;
@@ -434,11 +437,18 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/bills/generate-report', [BillVehicleController::class, 'generateReport'])->name('expenses.generateReport');
     // routes/web.php
     Route::get('/reports/cxc', 'ReportController@getCxcReport');
+    Route::get('/reports/cxc-cont', 'ReportController@getCxcReportCont');
     Route::get('/reports/cxc-venc', 'ReportController@getCxcReportVenc');
     Route::post('/cxc/generate-report', 'ReportController@generateCxcReport')->name('cxc.generateReport');
+    Route::post('/cxc-cont/generate-report', 'ReportController@generateCxcReportCont')->name('cxc.generateReportCont');
     Route::post('/cxc-venc/generate-report', 'ReportController@generateCxcReportVenc')->name('cxc-venc.generateReport');
+    //Envio de SMS
+    Route::post('/enviar-sms', [SmsController::class, 'send']);
+    Route::get('/envios-sms', [SmsController::class, 'index']);
 
     Route::post('/expenses/check-update', [ExpenseController::class, 'updateCheckReport'])->name('expenses.check_update');
+    Route::post('/revenues/check-sms', [RevenueController::class, 'updateCheckSms'])->name('expenses.check_update');
+    Route::post('/revenues/send-mass-sms', [RevenueController::class, 'sendMassSms'])->name('revenues.send_mass_sms');
     Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
     Route::get('/purchases/get_products', 'PurchaseController@getProducts');

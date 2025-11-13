@@ -29,5 +29,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'sms_empresarial' => [
+        'api_key' => env('SMS_EMPRESARIAL_API_KEY'),
+        'url'     => 'https://app.smsempresarial.com/webservice.php',
+    ],
 
 ];

@@ -47,17 +47,35 @@
                             ) !!}
                         </div>
                     </div>
+                    <div class="col-md-12 form-group">
+                        {!! Form::label('message', __('superadmin::lang.message') . ':*') !!}
+                        {!! Form::textarea('message', null, [
+                            'class' => 'form-control',
+                            'required',
+                            'rows' => 2,
+                            'id' => 'mass_sms_message', // IMPORTANTE: id para el JS
+                        ]) !!}
+                    </div>
                 @endcomponent
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary', 'title' => ''])
+                    @slot('tool')
+                        <div class="box-tools">
+                            <button type="button" class="btn btn-block btn-primary" id="send_mass_sms">
+                                <i class="fa fa-envelope"></i> Enviar SMS Masivo
+                            </button>
+                        </div>
+                    @endslot
+
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="revenue_table">
                             <thead>
                                 <tr>
                                     <th>@lang('messages.action')</th>
+                                    <th>Enviar SMS</th>
                                     <th>Cliente</th>
                                     <th>Plan de venta</th>
                                     <th>Valor Inicial</th>
@@ -70,7 +88,7 @@
                             </thead>
                             <tfoot>
                                 <tr class="bg-gray font-17 text-center footer-total">
-                                    <td colspan="2"><strong>@lang('sale.total'):</strong></td>
+                                    <td colspan="3"><strong>@lang('sale.total'):</strong></td>
                                     <td id="footer_payment_status_count"></td>
                                     <td><span class="display_currency" id="footer_revenue_total"
                                             data-currency_symbol ="true"></span></td>

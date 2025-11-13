@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendCampaignSmsJob;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Notification;
 use App\Models\Account;
 use App\Models\Contact;
 use App\Models\PaymentRevenue;
+use App\Models\SmsCampaign;
+use App\Models\SmsCampaignRecipient;
 use App\Notifications\CustomerNotification;
 use App\Utils\ContactUtil;
 use Carbon\Carbon;
@@ -96,6 +99,7 @@ class RevenueController extends Controller
                     'revenues.expense_category_id',
                     'revenues.location_id',
                     'revenues.status',
+                    'revenues.check_sms',
                     'revenues.sucursal',
                     'revenues.valor_total',
                     'revenues.detalle',
@@ -170,6 +174,10 @@ class RevenueController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn('mass_check', function ($row) {
+                    return '<input type="checkbox" class="row-select" value="' . $row->rev_id . '"'
+                        . ($row->check_sms == 1 ? ' checked' : '') . '>';
+                })
                 ->editColumn('amount_paid', function ($row) {
                     $due = $row->min_general_amount;
                     return '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $due . '">' . $due . '</span>';
@@ -201,7 +209,7 @@ class RevenueController extends Controller
                     '<span class="display_currency final-total" data-currency_symbol="true" data-orig-value="{{$valor_total}}">{{$valor_total}}</span>'
                 )
                 ->removeColumn('rev_id')
-                ->rawColumns(['action', 'checkbox', 'valor_total', 'status', 'amount_paid'])
+                ->rawColumns(['action', 'mass_check', 'checkbox', 'valor_total', 'status', 'amount_paid'])
                 ->make(true);
         }
 
@@ -874,5 +882,171 @@ class RevenueController extends Controller
         }
 
         return $output;
+    }
+    public function updateCheckSms(Request $request)
+    {
+        try {
+            $business_id = $request->session()->get('user.business_id');
+            $rev_id = $request->rev_id;
+            $checked = $request->checked;
+
+            $revenue = Revenue::where('id', $rev_id)
+                ->where('business_id', $business_id)
+                ->firstOrFail();
+
+            $data = [
+                'check_sms' => $checked
+            ];
+
+            $revenue->update($data);
+
+            return response()->json(['result' => $revenue->id]);
+        } catch (\Exception $th) {
+            // Manejo de errores
+            return response()->json(['result' => $th->getMessage()]);
+        }
+    }
+    public function sendMassSms(Request $request)
+    {
+        if (!auth()->user()->can('cxc.view')) {
+            return response()->json([
+                'message' => 'Acción no autorizada.',
+            ], 403);
+        }
+
+        $request->validate([
+            'message' => 'required|string|max:160', // ajusta si tu proveedor soporta más
+            'expense_payment_status' => 'required',
+            'location_id' => 'nullable|string',
+        ]);
+
+        $message = $request->input('message');
+        $paymentStatus = $request->input('expense_payment_status');
+        $locationId = $request->input('location_id');
+
+        // Seguridad: solo Cobrado (1)
+        if ($paymentStatus != 1 && $paymentStatus != '1') {
+            return response()->json([
+                'message' => 'Solo se pueden enviar SMS a clientes con estado COBRADO.',
+            ], 422);
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        // Base de la consulta: muy similar a index(), pero enfocada a lo que necesitamos
+        $revenues = Revenue::where('revenues.business_id', $business_id)
+            ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
+            ->leftJoin('payment_revenues AS pr', 'revenues.id', '=', 'pr.revenue_id')
+            ->select([
+                'revenues.id as rev_id',
+                'revenues.status',
+                'revenues.check_sms',
+                'revenues.sucursal',
+                'ct.id as cliente_id',
+                'ct.name',
+                DB::raw("
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    COALESCE(NULLIF(ct.mobile, ''), ct.landline),
+                                    '-', ''
+                                ),
+                                ' ', ''
+                            ),
+                            '.', ''
+                        ),
+                        '_', ''
+                    ) AS telefono
+                "),
+                DB::raw('COALESCE(MIN(pr.monto_general),-1) as min_general_amount'),
+            ])
+            ->groupBy('revenues.id', 'ct.id', 'ct.name', 'ct.mobile', 'revenues.status', 'revenues.check_sms', 'revenues.sucursal');
+
+        // Filtro de estado Cobrado (por coherencia con index)
+        // En tu index, "Cobrado" es: status == 1 o min_general_amount <= 0
+        // Aquí vamos a exigir status = 1 para ser estrictos con el filtro Cobrado
+        $revenues->where('revenues.status', 1);
+
+        // Filtro sucursal (location_id select)
+        if (!empty($locationId) && $locationId != 'TODAS') {
+            $revenues->where('revenues.sucursal', $locationId);
+        }
+
+        // Solo los marcados con check_sms = 1
+        $revenues->where('revenues.check_sms', 1);
+
+        // Solo contactos con teléfono no nulo
+        $revenues->whereRaw("
+            COALESCE(NULLIF(ct.mobile, ''), ct.landline) IS NOT NULL 
+            AND COALESCE(NULLIF(ct.mobile, ''), ct.landline) != ''
+        ");
+
+        // Ejecutamos consulta
+        $rows = $revenues->get();
+
+        if ($rows->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron cuentas COBRADAS marcadas para envío de SMS con teléfono válido.',
+            ], 422);
+        }
+
+        // Creamos campaña
+        $campaign = SmsCampaign::create([
+            'name'    => 'Campaña CxC ' . now()->format('Y-m-d H:i'),
+            'message' => $message,
+            'total_recipients' => 0,
+        ]);
+
+        $totalRecipients = 0;
+        $revenueIds = [];
+
+        // Si quieres evitar SMS duplicados por cliente en varias CxC, deduplica por cliente_id
+        // Aquí haremos un mapa por cliente_id
+        $byCustomer = $rows->groupBy('cliente_id');
+
+        foreach ($byCustomer as $clienteId => $revenuesByCustomer) {
+            $first = $revenuesByCustomer->first();
+            if (empty($first->telefono)) {
+                continue;
+            }
+
+            // Podrías decidir qué revenue_id asociar (el más reciente, etc.) Aquí uso el primero.
+            $revenueId = $first->rev_id;
+
+            $recipient = SmsCampaignRecipient::create([
+                'sms_campaign_id' => $campaign->id,
+                'cliente_id'      => $clienteId,
+                'revenue_id'      => $revenueId,
+                'telefono'        => $first->telefono,
+                'status'          => 'pending',
+            ]);
+
+            $totalRecipients++;
+            $revenueIds[] = $revenueId;
+
+            // Encolamos el job
+            SendCampaignSmsJob::dispatch($recipient->id);
+        }
+
+        // Actualizar total de destinatarios
+        $campaign->update([
+            'total_recipients' => $totalRecipients,
+        ]);
+
+        // Opcional: resetear check_sms de los revenues usados
+        if (!empty($revenueIds)) {
+            Revenue::whereIn('id', $revenueIds)->update(['check_sms' => 0]);
+        }
+
+        if ($totalRecipients === 0) {
+            return response()->json([
+                'message' => 'No se pudo crear ningún destinatario. Verifique que los clientes tengan teléfono.',
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Campaña creada. Destinatarios en cola: {$totalRecipients}",
+        ]);
     }
 }

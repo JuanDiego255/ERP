@@ -3221,7 +3221,13 @@ class ReportController extends Controller
 
         return view('report.cxc-venc');
     }
-
+    public function getCxcReportCont(Request $request)
+    {
+        if (!auth()->user()->can('profit_loss_report.view')) { // o crea un permiso nuevo si quieres
+            abort(403, 'Unauthorized action.');
+        }
+        return view('report.cxc-cont');
+    }
     public function generateCxcReport(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
@@ -3703,7 +3709,6 @@ class ReportController extends Controller
             'efectividadGlobal'     => $efectividadGlobal,   // %
         ]);
     }
-
     public function generateCxcReportDetailed(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
@@ -3916,6 +3921,75 @@ class ReportController extends Controller
             'bucket30'     => $bucket30,
             'bucket60'     => $bucket60,
             'bucket90plus' => $bucket90plus,
+        ]);
+    }
+    public function generateCxcReportCont(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $status = $request->status; // 0 = crédito, 1 = contado
+
+        // Subquery para obtener el último revenue cancelado de cada cliente
+        $sub = DB::table('revenues as r')
+            ->select(
+                DB::raw('MAX(r.id) as last_rev_id'),
+                'r.contact_id'
+            )
+            ->where('r.business_id', $business_id)
+            ->where('r.status', 1)
+            ->groupBy('r.contact_id');
+
+        // Query principal
+        $query = DB::table('revenues')
+            ->joinSub($sub, 'lr', function ($join) {
+                $join->on('revenues.id', '=', 'lr.last_rev_id');
+            })
+            ->leftJoin('contacts as ct', 'revenues.contact_id', '=', 'ct.id')
+            ->leftJoin('plan_ventas as pv', 'revenues.plan_venta_id', '=', 'pv.id')
+            ->leftJoin('products as v', 'pv.vehiculo_venta_id', '=', 'v.id')
+            ->where('revenues.business_id', $business_id)
+            ->where('revenues.status', 1)
+            ->select([
+                'revenues.id as rev_id',
+                'revenues.referencia',
+                'revenues.created_at as fecha_compra',
+                'ct.id as cliente_id',
+                'ct.name as cliente',
+                // Preferir mobile, si no existe usar landline
+                DB::raw("COALESCE(NULLIF(ct.mobile, ''), ct.landline) as telefono"),
+                'pv.tipo_plan',
+                'v.name as vehiculo',
+                'v.model as modelo',
+                'revenues.sucursal',
+                // Monto según tipo de plan
+                DB::raw("
+                CASE 
+                    WHEN pv.tipo_plan = 2 THEN pv.venta_sin_rebajos
+                    WHEN pv.tipo_plan = 1 THEN pv.total_financiado
+                    ELSE 0
+                END AS monto_pagado
+            "),
+            ]);
+
+        // Filtro por tipo de plan
+        if ($status !== null && $status !== '') {
+            if ((int) $status === 0) {
+                $query->where('pv.tipo_plan', 2); // crédito
+            } elseif ((int) $status === 1) {
+                $query->where('pv.tipo_plan', 1); // contado
+            }
+        }
+
+        // Filtro por sucursal
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $query->where('revenues.sucursal', $request->location_id);
+        }
+
+        // Ordenar por fecha de compra descendente
+        $clientes = $query->orderBy('revenues.created_at', 'desc')->get();
+
+        return view('report.partials.cxc-cont-report', [
+            'status'   => $status,
+            'clientes' => $clientes,
         ]);
     }
 }

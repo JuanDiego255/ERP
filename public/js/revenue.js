@@ -58,13 +58,16 @@ $(document).ready(function () {
                 searchable: false
             },
             {
+                data: 'mass_check'
+            },
+            {
                 data: 'contact',
                 name: 'ct.name'
             },
             {
                 data: 'referencia',
                 name: 'referencia'
-            },            
+            },
             {
                 data: 'valor_total',
                 name: 'valor_total'
@@ -110,7 +113,7 @@ $(document).ready(function () {
             $('.dataTables_paginate').css('margin-top', '15px');
 
             // Indices de las columnas donde quieres aplicar los filtros
-            var filterableColumns = [1, 2,5,6]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
+            var filterableColumns = [2, 5, 6, 7]; // Ejemplo: 2 es la tercera columna, 3 la cuarta, etc.
 
             // Agregar una fila en el encabezado para los filtros de búsqueda
             $('#revenue_table thead').append('<tr class="filter-row"></tr>');
@@ -144,6 +147,130 @@ $(document).ready(function () {
         },
         dom: '<"text-center"B><"top"p>rtip'
 
+    });
+    $(document).on('change', 'input.row-select', function () {
+        var checked = this.checked ? 1 : 0;
+        let url = '/revenues/check-sms';
+        let data = {
+            checked: checked,
+            rev_id: this.value
+        };
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: data,
+            success: function (result) {},
+            error: function (xhr, status, error) {
+                console.error('Error al cambiar el estado:', error);
+            }
+        });
+    });
+
+    $(document).on('click', '#send_mass_sms', function () {
+
+        // 1. Validar que el estado de pago sea Cobrado (valor 1)
+        var payment_status = $('select#expense_payment_status').val();
+
+        if (payment_status != '1') { // Cobrado
+            swal({
+                title: "Solo se pueden enviar SMS a clientes con estado COBRADO.",
+                icon: 'warning',
+                buttons: {
+                    confirm: {
+                        text: "OK",
+                        value: true,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    }
+                },
+                dangerMode: true,
+            });
+            return;
+        }
+
+        // 2. Tomar el mensaje
+        var message = $('#mass_sms_message').val();
+
+        if (!message || $.trim(message) === '') {
+            swal({
+                title: "Debe escribir un mensaje para enviar.",
+                icon: 'warning',
+                buttons: {
+                    confirm: {
+                        text: "OK",
+                        value: true,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    }
+                },
+                dangerMode: true,
+            }).then(function () {
+                $('#mass_sms_message').focus();
+            });
+            return;
+        }
+
+        // 3. Sucursal / Location
+        var location_id = $('select#location_id').val();
+
+        // 4. Confirmación
+        swal({
+            title: "¿Está seguro?",
+            text: "Se enviarán SMS a las cuentas COBRADAS que estén marcadas con 'Enviar SMS' y coincidan con los filtros.",
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: "Cancelar",
+                    visible: true,
+                    closeModal: true
+                },
+                confirm: {
+                    text: "Sí, enviar",
+                    visible: true,
+                    closeModal: false
+                }
+            },
+            dangerMode: true,
+        }).then(function (willSend) {
+            if (!willSend) {
+                return;
+            }
+
+            $.ajax({
+                url: '/revenues/send-mass-sms', // ruta que crearemos
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    message: message,
+                    expense_payment_status: payment_status,
+                    location_id: location_id
+                },
+                success: function (res) {
+                    swal({
+                        title: res.message || "Proceso completado",
+                        icon: 'success',
+                    });
+
+                    // Opcional: recargar la tabla, por si quieres actualizar check_sms, etc.
+                    if ($('#revenue_table').length && $('#revenue_table').DataTable) {
+                        $('#revenue_table').DataTable().ajax.reload();
+                    }
+                },
+                error: function (xhr) {
+                    var msg = "Error al enviar SMS masivo.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    swal({
+                        title: msg,
+                        icon: 'error',
+                    });
+                }
+            });
+        });
     });
 
 
