@@ -3992,4 +3992,313 @@ class ReportController extends Controller
             'clientes' => $clientes,
         ]);
     }
+    public function getCxpReport(Request $request)
+    {
+        if (!auth()->user()->can('profit_loss_report.view')) { // o crea un permiso nuevo si quieres
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        return view('report.cxp');
+    }
+    public function generateCxpReport(Request $request)
+    {
+        if (
+            !auth()->user()->can('expense.access') &&
+            !auth()->user()->can('view_own_expense')
+        ) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        // 1) RANGO DE MESES A MOSTRAR (igual que en CxC)
+        if ($request->filled('date_start') && $request->filled('date_end')) {
+            $start = Carbon::parse($request->date_start)->startOfMonth();
+            $end   = Carbon::parse($request->date_end)->endOfMonth();
+            $rango = "Reporte del: {$start->toDateString()} al {$end->toDateString()}";
+        } else {
+            $end   = $request->filled('date_end')
+                ? Carbon::parse($request->date_end)->endOfMonth()
+                : now()->endOfMonth();
+            $start = $end->copy()->subMonths(6)->startOfMonth();
+            $rango = "Reporte al: {$end->toDateString()}";
+        }
+
+        // 2) LISTA DE MESES EN FORMATO YYYY-MM
+        $months = [];
+        for ($c = $start->copy(); $c <= $end; $c->addMonth()) {
+            $months[] = $c->format('Y-m');
+        }
+
+        $EPS = 0.005;
+
+        // 3) FACTURAS (CXP) HASTA FIN DE RANGO
+        $expensesQ = Transaction::where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'expense')
+            ->leftJoin('contacts as ct', 'transactions.contact_id', '=', 'ct.id')
+            ->leftJoin('business_locations as bl', 'transactions.location_id', '=', 'bl.id')
+            ->select([
+                'transactions.id as exp_id',
+                'transactions.contact_id as proveedor_id',
+                'ct.name as proveedor',
+                'transactions.final_total',
+                'transactions.transaction_date',
+                'transactions.location_id',
+            ])
+            ->whereDate('transactions.transaction_date', '<=', $end->toDateString());
+        $expensesQ->where('transactions.location_id', 3);
+        $rango .= " (Sucursal: Grecia)";
+        $expenses = $expensesQ
+            ->orderBy('ct.name', 'asc')
+            ->orderBy('transactions.transaction_date', 'asc')
+            ->get();
+
+        if ($expenses->isEmpty()) {
+            return view('report.partials.cxp-monthly-balance', [
+                'months'        => $months,
+                'byProveedor'   => [],
+                'totalesPorMes' => [],
+                'rango'         => $rango,
+                'estado_final_total'  => 0,
+                'estado_final_pagado' => 0,
+                'estado_final_saldo'  => 0,
+            ]);
+        }
+
+        // 4) PAGOS POR MES (HASTA FIN DEL RANGO)
+        $paymentsByMonthQ = DB::table('transaction_payments as tp')
+            ->join('transactions as t', 'tp.transaction_id', '=', 't.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'expense')
+            ->whereDate('tp.paid_on', '<=', $end->toDateString())  // O created_at si aplica
+            ->select([
+                'tp.transaction_id',
+                DB::raw("DATE_FORMAT(tp.paid_on, '%Y-%m') as ym"),  // O created_at
+                DB::raw('SUM(tp.amount) as pagado_mes'),
+            ])
+            ->groupBy('tp.transaction_id', 'ym');
+
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $paymentsByMonthQ->where('t.location_id', $request->location_id);
+        }
+
+        $paymentsByMonthRaw = $paymentsByMonthQ->get();
+
+        $pagosByTrans = []; // [trans_id][ym] => pagado en ese mes
+        foreach ($paymentsByMonthRaw as $p) {
+            $pagosByTrans[$p->transaction_id][$p->ym] = (float) $p->pagado_mes;
+        }
+
+        // 5) PAGOS ANTES DEL INICIO (SALDO SEMILLA CXP)
+        $preStartPaidQ = DB::table('transaction_payments as tp')
+            ->join('transactions as t', 'tp.transaction_id', '=', 't.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'expense')
+            ->whereDate('tp.paid_on', '<', $start->toDateString())
+            ->select([
+                'tp.transaction_id',
+                DB::raw('SUM(tp.amount) as pagado_previo'),
+            ])
+            ->groupBy('tp.transaction_id');
+
+        if ($request->has('location_id') && !empty($request->location_id) && $request->location_id !== 'TODAS') {
+            $preStartPaidQ->where('t.location_id', $request->location_id);
+        }
+
+        $preStartPaidRaw = $preStartPaidQ->get();
+        $preStartPaid = []; // [trans_id] => suma de pagos antes de $start
+
+        foreach ($preStartPaidRaw as $row) {
+            $preStartPaid[$row->transaction_id] = (float) $row->pagado_previo;
+        }
+
+        // 6) AMORTIZACIÓN ACUMULADA Y PAYOFF POR FACTURA
+        $acumPagosByTransYm = []; // [trans_id][ym] => pagos acumulados hasta ese mes
+        $payoffYmByTrans    = []; // [trans_id] => 'YYYY-MM' | '__BEFORE__' | null
+
+        foreach ($expenses as $exp) {
+            $transId  = $exp->exp_id;
+            $totalCxp = (float) $exp->final_total;
+
+            $acum = $preStartPaid[$transId] ?? 0.0;
+            $saldoInicial = max($totalCxp - $acum, 0.0);
+
+            if ($saldoInicial <= $EPS) {
+                $payoffYmByTrans[$transId] = '__BEFORE__';
+            } else {
+                $payoffYmByTrans[$transId] = null;
+            }
+
+            foreach ($months as $ym) {
+                $acum += $pagosByTrans[$transId][$ym] ?? 0.0;
+                $acumPagosByTransYm[$transId][$ym] = $acum;
+
+                $saldo = max($totalCxp - $acum, 0.0);
+                if (is_null($payoffYmByTrans[$transId]) && $saldo <= $EPS) {
+                    $payoffYmByTrans[$transId] = $ym; // factura cancelada en este mes
+                }
+            }
+        }
+
+        // 7) CONSTRUCCIÓN POR PROVEEDOR/MES
+        $byProveedor   = [];
+        $expByProveedor = $expenses->groupBy('proveedor_id');
+
+        foreach ($expByProveedor as $proveedor_id => $provExpenses) {
+            $proveedorNombre = optional($provExpenses->first())->proveedor ?? 'SIN NOMBRE';
+
+            // Filtrar facturas pagadas totalmente antes del rango
+            $filteredExpenses = $provExpenses->filter(function ($exp) use ($payoffYmByTrans) {
+                $flag = $payoffYmByTrans[$exp->exp_id] ?? null;
+                return $flag !== '__BEFORE__';
+            })->values();
+
+            if ($filteredExpenses->isEmpty()) {
+                continue;
+            }
+
+            $rows = [];
+
+            foreach ($months as $ym) {
+                [$yy, $mm] = explode('-', $ym);
+                $monthEnd  = Carbon::createMidnightDate((int)$yy, (int)$mm, 1)->endOfMonth();
+
+                $totalMes   = 0.0;  // suma de totales de las facturas "vivas"
+                $pagadoMes  = 0.0;  // suma de pagos reales en el mes
+                $saldoMes   = 0.0;  // saldo total al cierre de ese mes
+                $cargosMes  = 0.0;  // nuevas facturas ese mes (opcional)
+
+                foreach ($filteredExpenses as $exp) {
+                    $transId      = $exp->exp_id;
+                    $montoTotal   = (float) $exp->final_total;
+                    $fechaFactura = Carbon::parse($exp->transaction_date);
+
+                    // facturas que aún no existen en ese mes
+                    if ($fechaFactura > $monthEnd) {
+                        continue;
+                    }
+
+                    $flag = $payoffYmByTrans[$transId] ?? null;
+
+                    // presencia por payoff (igual que en CxC)
+                    $showByPayoff = false;
+                    if ($flag === '__BEFORE__') {
+                        $showByPayoff = false;
+                    } elseif (is_null($flag)) {
+                        $showByPayoff = true;
+                    } else {
+                        $showByPayoff = ($ym <= $flag);
+                    }
+
+                    if (!$showByPayoff) {
+                        continue;
+                    }
+
+                    $pagadoThisMes = (float) ($pagosByTrans[$transId][$ym] ?? 0.0);
+                    $acumHastaMes  = $acumPagosByTransYm[$transId][$ym]
+                        ?? ($preStartPaid[$transId] ?? 0.0);
+
+                    $saldoFacturaMes = max($montoTotal - $acumHastaMes, 0.0);
+
+                    $hadMovement = (abs($pagadoThisMes) > $EPS || $saldoFacturaMes > $EPS);
+
+                    if (!$hadMovement) {
+                        continue;
+                    }
+
+                    $totalMes  += $montoTotal;
+                    $pagadoMes += $pagadoThisMes;
+                    $saldoMes  += $saldoFacturaMes;
+
+                    // Opcional: cargos (facturas nuevas) en este mes
+                    if ($fechaFactura->format('Y-m') === $ym) {
+                        $cargosMes += $montoTotal;
+                    }
+                }
+
+                // si no hay nada en este proveedor en ese mes, no agregamos fila
+                if (abs($totalMes) < $EPS && abs($pagadoMes) < $EPS && abs($saldoMes) < $EPS) {
+                    continue;
+                }
+
+                $rows[$ym] = [
+                    'total'      => $totalMes,
+                    'pagado_mes' => $pagadoMes,
+                    'saldo'      => $saldoMes,
+                    'cargos_mes' => $cargosMes, // por si lo quieres mostrar
+                ];
+            }
+
+            if (empty($rows)) {
+                continue;
+            }
+
+            // Estado final del proveedor (último mes del rango o último con datos)
+            $finalYm = end($months);
+            if (!isset($rows[$finalYm])) {
+                $keys = array_keys($rows);
+                $finalYm = end($keys);
+            }
+
+            $byProveedor[$proveedor_id] = [
+                'proveedor' => $proveedorNombre,
+                'rows'      => $rows,
+                'final'     => $rows[$finalYm],
+            ];
+        }
+
+        // 8) TOTALES GENERALES POR MES (SUMA DE TODO PROVEEDOR)
+        $totalesPorMes = [];
+        foreach ($months as $ym) {
+            $total      = 0.0;
+            $pagado     = 0.0;
+            $saldo      = 0.0;
+
+            foreach ($byProveedor as $prov) {
+                if (!isset($prov['rows'][$ym])) {
+                    continue;
+                }
+                $row = $prov['rows'][$ym];
+
+                $total  += $row['total'];
+                $pagado += $row['pagado_mes'];
+                $saldo  += $row['saldo'];
+            }
+
+            if (abs($total) < $EPS && abs($pagado) < $EPS && abs($saldo) < $EPS) {
+                continue;
+            }
+
+            $totalesPorMes[$ym] = [
+                'total'      => $total,
+                'pagado_mes' => $pagado,
+                'saldo'      => $saldo,
+            ];
+        }
+
+        // 9) ESTADO FINAL DEL RANGO (VISTA GLOBAL CXP)
+        $lastYm = end($months);
+        if (!isset($totalesPorMes[$lastYm])) {
+            $keys = array_keys($totalesPorMes);
+            $lastYm = empty($keys) ? end($months) : end($keys);
+        }
+
+        $estado_final_total = $totalesPorMes[$lastYm]['total'] ?? 0.0;
+        $estado_final_saldo = $totalesPorMes[$lastYm]['saldo'] ?? 0.0;
+
+        // Lo pagado final = suma de totales - saldo (o podrías recalcular por acumulado)
+        $estado_final_pagado = max($estado_final_total - $estado_final_saldo, 0.0);
+
+        return view('report.partials.cxp-monthly-balance', [
+            'months'              => $months,
+            'byProveedor'         => $byProveedor,
+            'totalesPorMes'       => $totalesPorMes,
+            'rango'               => $rango,
+            'estado_final_total'  => $estado_final_total,
+            'estado_final_pagado' => $estado_final_pagado,
+            'estado_final_saldo'  => $estado_final_saldo,
+        ]);
+    }
 }

@@ -437,11 +437,15 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/bills/generate-report', [BillVehicleController::class, 'generateReport'])->name('expenses.generateReport');
     // routes/web.php
     Route::get('/reports/cxc', 'ReportController@getCxcReport');
+
     Route::get('/reports/cxc-cont', 'ReportController@getCxcReportCont');
     Route::get('/reports/cxc-venc', 'ReportController@getCxcReportVenc');
     Route::post('/cxc/generate-report', 'ReportController@generateCxcReport')->name('cxc.generateReport');
     Route::post('/cxc-cont/generate-report', 'ReportController@generateCxcReportCont')->name('cxc.generateReportCont');
     Route::post('/cxc-venc/generate-report', 'ReportController@generateCxcReportVenc')->name('cxc-venc.generateReport');
+    //Reportes CXP
+    Route::get('/reports/cxp', 'ReportController@getCxpReport');
+    Route::post('/cxp/generate-report', 'ReportController@generateCxpReport')->name('cxp.generateReport');
     //Envio de SMS
     Route::post('/enviar-sms', [SmsController::class, 'send']);
     Route::get('/envios-sms', [SmsController::class, 'index']);

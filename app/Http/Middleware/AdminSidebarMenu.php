@@ -358,13 +358,35 @@ class AdminSidebarMenu
             if (auth()->user()->can('report.view')) {
                 $menu
                     ->dropdown(
-                        __('Reportes'),
+                        __('Reportes Cuentas Por Cobrar'),
                         function ($sub) use ($enabled_modules) {
-                            $sub->url('expense-report', __('Cuentas Por Pagar'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->path() == 'expense-report']);
-                            $sub->url(action('ReportController@getProfitLoss'), __('Gastos de vehículos'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'profit-loss']);
+
                             $sub->url(action('ReportController@getCxcReport'), __('Reporte CXC'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'cxc']);
                             $sub->url(action('ReportController@getCxcReportVenc'), __('Reporte por vencimiento CXC'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'cxc-venc']);
                             $sub->url(action('ReportController@getCxcReportCont'), __('Reporte por cliente de contado CXC'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'cxc-cont']);
+                        },
+                        ['icon' => 'fa fas fa-chart-bar', 'id' => 'tour_step8'],
+                    )
+                    ->order(55);
+            }
+            if (auth()->user()->can('report.view')) {
+                $menu
+                    ->dropdown(
+                        __('Reportes Cuentas Por Pagar'),
+                        function ($sub) use ($enabled_modules) {
+                            $sub->url('expense-report', __('Cuentas Por Pagar (CUEPAG)'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->path() == 'expense-report']);
+                            $sub->url(action('ReportController@getCxpReport'), __('Reporte CXP Mensual'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'cxp']);
+                        },
+                        ['icon' => 'fa fas fa-chart-bar', 'id' => 'tour_step8'],
+                    )
+                    ->order(55);
+            }
+            if (auth()->user()->can('report.view')) {
+                $menu
+                    ->dropdown(
+                        __('Reportes Varios'),
+                        function ($sub) use ($enabled_modules) {
+                            $sub->url(action('ReportController@getProfitLoss'), __('Gastos de vehículos'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'profit-loss']);
                             if (auth()->user()->can('report.audit')) {
                                 $sub->url('audits', __('Auditorias'), ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->path() == 'audits']);
                             }
