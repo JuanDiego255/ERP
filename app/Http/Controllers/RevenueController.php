@@ -1049,4 +1049,63 @@ class RevenueController extends Controller
             'message' => "Campaña creada. Destinatarios en cola: {$totalRecipients}",
         ]);
     }
+    public function massUpdateCheckSms(Request $request)
+    {
+        if (!auth()->user()->can('cxc.view')) {
+            return response()->json(['message' => 'Acción no autorizada.'], 403);
+        }
+
+        $request->validate([
+            'check_sms' => 'required|integer|in:0,1',
+            'expense_payment_status' => 'required',
+            'location_id' => 'nullable|string',
+        ]);
+
+        $checkSms = (int) $request->input('check_sms');
+        $statusFilter = $request->input('expense_payment_status');
+        $locationId = $request->input('location_id');
+
+        $business_id = $request->session()->get('user.business_id');
+
+        $revenues = Revenue::where('revenues.business_id', $business_id);
+
+        // === Mismo mapeo de estado que en index() ===
+        if (!empty($statusFilter) && $statusFilter != 4) {
+            if ($statusFilter == 1) {
+                $revenues->where('revenues.status', 1); // Cobrado
+            }
+            if ($statusFilter == 2) {
+                $revenues->where('revenues.status', 0); // Pendiente
+            }
+            if ($statusFilter == 3) {
+                $revenues->where('revenues.status', 2); // Judicial
+            }
+            if ($statusFilter == 5) {
+                $revenues->where('revenues.status', 3); // Pérdida
+            }
+        }
+
+        // Filtro de sucursal (location_id)
+        if (!empty($locationId) && $locationId != 'TODAS') {
+            $revenues->where('revenues.sucursal', $locationId);
+        }
+
+        // ⚠️ Si quieres que solo se marquen cobrados, aunque el filtro sea otro,
+        // podrías forzar aquí: $revenues->where('revenues.status', 1);
+
+        // Hacemos el update masivo
+        $updated = $revenues->update(['check_sms' => $checkSms]);
+
+        if ($updated === 0) {
+            return response()->json([
+                'message' => 'No se encontraron registros para actualizar con los filtros aplicados.',
+            ], 200);
+        }
+
+        $actionText = $checkSms === 1 ? 'marcados' : 'desmarcados';
+
+        return response()->json([
+            'message' => "Registros {$actionText} para SMS: {$updated}",
+        ]);
+    }
 }

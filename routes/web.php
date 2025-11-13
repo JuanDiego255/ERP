@@ -449,6 +449,7 @@ Route::middleware(['authh', 'auth', 'SetSessionData', 'language', 'timezone', 'A
     Route::post('/expenses/check-update', [ExpenseController::class, 'updateCheckReport'])->name('expenses.check_update');
     Route::post('/revenues/check-sms', [RevenueController::class, 'updateCheckSms'])->name('expenses.check_update');
     Route::post('/revenues/send-mass-sms', [RevenueController::class, 'sendMassSms'])->name('revenues.send_mass_sms');
+    Route::post('/revenues/mass-update-check-sms', [RevenueController::class, 'massUpdateCheckSms'])->name('revenues.mass_update_check_sms');
     Route::post('/expenses/generate-report-detail', [ExpenseController::class, 'generateReportDetail'])->name('expenses.generateReportDetail');
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
     Route::get('/purchases/get_products', 'PurchaseController@getProducts');

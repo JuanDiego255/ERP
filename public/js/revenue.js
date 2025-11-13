@@ -273,6 +273,92 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on('change', '#select_all_sms', function () {
+        var checked = $(this).is(':checked') ? 1 : 0;
+
+        var payment_status = $('select#expense_payment_status').val();
+        var location_id = $('select#location_id').val();
+
+        // Solo permitimos marcar si el filtro está en COBRADO (1)
+        if (checked === 1 && payment_status != '1') {
+            swal({
+                title: "Solo se pueden marcar para SMS los clientes con estado COBRADO.",
+                icon: 'warning',
+                buttons: {
+                    confirm: {
+                        text: "OK",
+                        value: true,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    }
+                },
+                dangerMode: true,
+            });
+            // Revertimos el check
+            $(this).prop('checked', false);
+            return;
+        }
+
+        swal({
+            title: checked ? "¿Marcar todos para enviar SMS?" : "¿Desmarcar todos?",
+            text: "Se aplicará a todos los registros que coincidan con los filtros actuales (Sucursal y Estado).",
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: "Cancelar",
+                    visible: true,
+                    closeModal: true
+                },
+                confirm: {
+                    text: "Sí, continuar",
+                    visible: true,
+                    closeModal: false
+                }
+            },
+            dangerMode: true,
+        }).then(function (willDo) {
+            if (!willDo) {
+                $('#select_all_sms').prop('checked', !checked); // revertir si cancelan
+                return;
+            }
+
+            $.ajax({
+                url: '/revenues/mass-update-check-sms',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    check_sms: checked,
+                    expense_payment_status: payment_status,
+                    location_id: location_id
+                },
+                success: function (res) {
+                    swal({
+                        title: res.message || "Actualización completada",
+                        icon: 'success',
+                    });
+
+                    // Recargar la tabla para ver los checks actualizados
+                    if ($('#revenue_table').length && $('#revenue_table').DataTable) {
+                        $('#revenue_table').DataTable().ajax.reload(null, false);
+                    }
+                },
+                error: function (xhr) {
+                    var msg = "Error al actualizar los registros.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    swal({
+                        title: msg,
+                        icon: 'error',
+                    });
+                    // Revertimos el check visualmente
+                    $('#select_all_sms').prop('checked', !checked);
+                }
+            });
+        });
+    });
 
     $(document).on('click', 'a.delete_revenue', function () {
         swal({

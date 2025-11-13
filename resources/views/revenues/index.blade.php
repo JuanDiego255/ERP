@@ -75,7 +75,10 @@
                             <thead>
                                 <tr>
                                     <th>@lang('messages.action')</th>
-                                    <th>Enviar SMS</th>
+                                    <th>
+                                        <input type="checkbox" id="select_all_sms">
+                                        Enviar SMS
+                                    </th>
                                     <th>Cliente</th>
                                     <th>Plan de venta</th>
                                     <th>Valor Inicial</th>
@@ -86,6 +89,7 @@
                                     <th>Estado</th>
                                 </tr>
                             </thead>
+
                             <tfoot>
                                 <tr class="bg-gray font-17 text-center footer-total">
                                     <td colspan="3"><strong>@lang('sale.total'):</strong></td>
