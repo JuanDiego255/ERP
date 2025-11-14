@@ -359,7 +359,7 @@ $(document).on('keypress', 'input.input_number', function (event) {
 
 //Select all input values on click
 $(document).on('click', 'input, textarea', function (event) {
-    $(this).select();
+    //$(this).select();
 });
 
 $(document).on('click', '.toggle-font-size', function (event) {
