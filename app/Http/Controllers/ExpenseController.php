@@ -200,7 +200,8 @@ class ExpenseController extends Controller
 
 
                         // Mostrar botón de editar si no es reporte
-                        $action .= '<li><a href="' . action('ExpenseController@edit', [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a></li>';
+                        if (auth()->user()->can('cxp.update'))
+                            $action .= '<li><a href="' . action('ExpenseController@edit', [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a></li>';
 
                         // Descargar documento
                         if ($row->document) {
@@ -211,13 +212,15 @@ class ExpenseController extends Controller
                         }
 
                         // Eliminar
-                        $action .= '<li><a data-href="' . action('ExpenseController@destroy', [$row->id]) . '" class="delete_expense"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</a></li>';
+                        if (auth()->user()->can('cxp.delete'))
+                            $action .= '<li><a data-href="' . action('ExpenseController@destroy', [$row->id]) . '" class="delete_expense"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</a></li>';
 
                         // Agregar pago si no está pagado
-                        if ($row->payment_status != "paid") {
+                        if ($row->payment_status != "paid" && auth()->user()->can('purchase.payments')) {
                             $action .= '<li><a href="' . action("TransactionPaymentController@addPayment", [$row->id]) . '" class="add_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true"></i> ' . __("purchase.add_payment") . '</a></li>';
                         }
-                        $action .= '<li><a href="' . action("TransactionPaymentController@show", [$row->id]) . '" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> ' . __("purchase.view_payments") . '</a></li>
+                        if (auth()->user()->can('purchase.view'))
+                            $action .= '<li><a href="' . action("TransactionPaymentController@show", [$row->id]) . '" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i> ' . __("purchase.view_payments") . '</a></li>
                     </ul>
                 </div>';
                     }
@@ -485,7 +488,7 @@ class ExpenseController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('expense.access')) {
+        if (!auth()->user()->can('expense.access') && !auth()->user()->can('cxp.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -617,7 +620,7 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('expense.access')) {
+        if (!auth()->user()->can('expense.access') && !auth()->user()->can('cxp.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -784,7 +787,7 @@ class ExpenseController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('expense.access')) {
+        if (!auth()->user()->can('expense.access') && !auth()->user()->can('cxp.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -840,7 +843,7 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('expense.access')) {
+        if (!auth()->user()->can('expense.access') && !auth()->user()->can('cxp.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -995,7 +998,7 @@ class ExpenseController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        if (!auth()->user()->can('expense.access')) {
+        if (!auth()->user()->can('expense.access') && !auth()->user()->can('cxp.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
