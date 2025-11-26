@@ -3231,6 +3231,7 @@ class ReportController extends Controller
     public function generateCxcReport(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
+        $allow = $request->allow;
 
         // 1) Rango visible (meses a mostrar)
         if ($request->filled('date_start') && $request->filled('date_end')) {
@@ -3707,6 +3708,7 @@ class ReportController extends Controller
             'recaudadoPorMes'       => $recaudadoPorMes,     // numerador por mes
             'efectividadPorMes'     => $efectividadPorMes,   // %
             'efectividadGlobal'     => $efectividadGlobal,   // %
+            'allow' => $allow
         ]);
     }
     public function generateCxcReportDetailed(Request $request)
@@ -4298,7 +4300,7 @@ class ReportController extends Controller
             'rango'               => $rango,
             'estado_final_total'  => $estado_final_total,
             'estado_final_pagado' => $estado_final_pagado,
-            'estado_final_saldo'  => $estado_final_saldo,
+            'estado_final_saldo'  => $estado_final_saldo
         ]);
     }
 }

@@ -63,11 +63,15 @@
                         <thead>
                             <tr class="bg-ag">
                                 <th>Cliente</th>
-                                <th class="text-right">Total cuentas (al mes)</th>
+                                @if ($allow == 1)
+                                    <th class="text-right">Total cuentas (al mes)</th>
+                                @endif
                                 <th class="text-right">Cuota</th> {{-- NUEVO --}}
                                 <th class="text-right">Paga del mes</th>
                                 <th class="text-right">Amortiza del mes</th>
-                                <th class="text-right">Saldo a fin del mes</th>
+                                @if ($allow == 1)
+                                    <th class="text-right">Saldo a fin del mes</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -101,33 +105,50 @@
 
                                 <tr>
                                     <td>{{ $info['cliente'] }}</td>
-                                    <td class="text-right">₡{{ number_format($row['total'], 2) }}</td>
+
+                                    @if ($allow == 1)
+                                        <td class="text-right">₡{{ number_format($row['total'], 2) }}</td>
+                                    @endif
                                     <td class="text-right">₡{{ number_format($row['cuota_mes'], 2) }}</td>
                                     {{-- NUEVO --}}
                                     <td class="text-right">₡{{ number_format($row['paga_mes'], 2) }}</td>
                                     <td class="text-right">₡{{ number_format($row['amortiza_mes'], 2) }}</td>
-                                    <td class="text-right text-dark font-weight-bold">
-                                        <strong>₡{{ number_format($row['saldo'], 2) }}</strong>
-                                    </td>
+                                    @if ($allow == 1)
+                                        <td class="text-right text-dark font-weight-bold">
+                                            <strong>₡{{ number_format($row['saldo'], 2) }}</strong>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                             <tr class="bg-gray font-16 footer-total">
                                 <td class="text-right"><strong>Subtotal del mes</strong></td>
-                                <td class="text-right"><strong>₡{{ number_format($mes_total, 2) }}</strong></td>
+                                @if ($allow == 1)
+                                    <td class="text-right"><strong>₡{{ number_format($mes_total, 2) }}</strong></td>
+                                @endif
+
                                 <td class="text-right"><strong>₡{{ number_format($mes_cuota, 2) }}</strong></td>
                                 {{-- NUEVO --}}
                                 <td class="text-right"><strong>₡{{ number_format($mes_paga, 2) }}</strong></td>
                                 <td class="text-right"><strong>₡{{ number_format($mes_amort, 2) }}</strong></td>
-                                <td class="text-right"><strong>₡{{ number_format($mes_saldo, 2) }}</strong></td>
+
+                                @if ($allow == 1)
+                                    <td class="text-right"><strong>₡{{ number_format($mes_saldo, 2) }}</strong></td>
+                                @endif
                             </tr>
 
                             <tr class="bg-gray font-16 footer-total">
                                 <td class="text-right"><strong></strong></td>
-                                <td class="text-right"><strong>Total Inicial</strong></td>
+                                @if ($allow == 1)
+                                    <td class="text-right"><strong>Total Inicial</strong></td>
+                                @endif
+
                                 <td class="text-right"><strong>Cuotas</strong></td> {{-- NUEVO se mantiene en la 3ra numérica --}}
                                 <td class="text-right"><strong>Pagos</strong></td> {{-- antes "Paga del mes" --}}
                                 <td class="text-right"><strong>Amortización</strong></td>
-                                <td class="text-right"><strong>Saldo Pendiente</strong></td>
+
+                                @if ($allow == 1)
+                                    <td class="text-right"><strong>Saldo Pendiente</strong></td>
+                                @endif
                             </tr>
                         </tbody>
                     </table>

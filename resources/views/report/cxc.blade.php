@@ -63,6 +63,15 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('allow', __('Mostrar Columnas Sensibles') . ':') !!}
+                            {!! Form::select('allow', ['1' => 'SI', '2' => 'NO'], null, [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                            ]) !!}
+                        </div>
+                    </div>
                 @endcomponent
             </div>
         </div>
@@ -125,7 +134,8 @@
                     date_start: $('#date_report_start').val() ? $('#date_report_start').val() : null,
                     date_end: $('#date_report_end').val() ? $('#date_report_end').val() : null,
                     //status: $('#expense_payment_status').val(),
-                    location_id: $('#location_id').val()
+                    location_id: $('#location_id').val(),
+                    allow: $('#allow').val()
                 };
                 console.log(data);
 
