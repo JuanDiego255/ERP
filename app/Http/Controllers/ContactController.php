@@ -1709,13 +1709,14 @@ class ContactController extends Controller
                 'mobile',
                 'contacts.id',
                 'is_default',
+                'r.cuota as cuota',
                 DB::raw("COALESCE(pr.total_paid, pr.total_paid) as total_paid"),
                 DB::raw("COALESCE(r.valor_total, r.valor_total) as total_gen"), // Deuda total
                 DB::raw("COALESCE(pr.min_monto_gen, pr.min_monto_gen) as total_debt"),
                 DB::raw("COALESCE(pr.last_payment_date, 'No hay pagos') as last_payment_date"), // Última fecha de pago
                 DB::raw("COALESCE(pr.last_int, 'No hay pagos') as last_int")
             ])
-            ->groupBy('contacts.id', 'r.valor_total', 'pr.total_paid', 'pr.last_payment_date', 'pr.last_int');
+            ->groupBy('contacts.id', 'r.valor_total','r.cuota', 'pr.total_paid', 'pr.last_payment_date', 'pr.last_int');
 
         // Filtros globales y de columnas
         if (request()->has('customer_filter')) {

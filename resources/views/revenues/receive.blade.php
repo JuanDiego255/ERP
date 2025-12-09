@@ -202,10 +202,10 @@
                     <div class="row">
                         <div class="col-sm-3">
                             <div class="form-group">
-                                {!! Form::label('name', __('Nombre')) !!}
-                                {!! Form::text('name', $item->name, [
+                                {!! Form::label('name_cli', __('Nombre')) !!}
+                                {!! Form::text('name_cli', $item->name, [
                                     'class' => 'form-control',
-                                    'id' => 'name',
+                                    'id' => 'name_cli',
                                     'readonly',
                                     'required',
                                 ]) !!}
@@ -358,11 +358,13 @@
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
+            var name_cli = $('#name_cli').val();
             var email = $('#email').val();
             var vehiculo = $('#vehiculo').val();
             var placa = $('#placa').val();
             var htmlContent = "";
             var modelo = $('#modelo').val();
+            const hoy = new Date().toISOString().split('T')[0];
             var can_update = $('#can_update').val();
             $('#contact_id').change(function() {
                 var selectedOption = $(this).find('option:selected');
@@ -584,14 +586,14 @@
                                     '/images/logo_ag.png" style="margin-bottom: 5px;" />' +
                                     '<div style="text-align: center; margin-bottom: 10px;">' +
                                     '<h3 style="margin: 0;">Reporte de Estado de cuenta de: ' +
-                                    name + '</h3>' +
+                                    name_cli + '</h3>' +
                                     '<p style="margin-top: 5px; text-align:center;">Generado al: ' +
-                                    dates + '</p>' +
+                                    hoy + '</p>' +
                                     '</div>' +
                                     '<div class="text-center" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background-color: #f9f9f9;">' +
                                     '<h4 style="text-align: center; margin: 0;">Información del Vehículo</h4>' +
                                     '<p style="margin: 5px 0;"><strong>Marca:</strong> ' +
-                                    vehiculo + '</p>' +
+                                    name + '</p>' +
                                     '<p style="margin: 5px 0;"><strong>Modelo:</strong> ' + modelo +
                                     '</p>' +
                                     '<p style="margin: 5px 0;"><strong>Placa:</strong> ' + placa +
