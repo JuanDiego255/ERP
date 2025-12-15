@@ -358,6 +358,7 @@
             var revenue_id = $('#revenue_id').val();
             var dates = $('#expense_date_range').val();
             var name = $('#name').val();
+            var status = $('#status').val();
             var name_cli = $('#name_cli').val();
             var email = $('#email').val();
             var vehiculo = $('#vehiculo').val();
@@ -706,9 +707,9 @@
                     // Validar que el número sea mayor o igual a 0
                     isValid = value >= 0;
                 }
-
+                console.log(isValid);
                 // Solo procede si el valor cambió, la entrada es válida y se pueden hacer actualizaciones
-                if (value != initialValue && isValid && saldo_anterior != 0) {
+                if (value != initialValue && isValid && (saldo_anterior != 0 || status == '0')) {                    
                     if (column_name === "paga") {
                         saldo_anterior = saldo_anterior.replace(/,/g, '');
                         var diasCalcPorSaldo = calcDiasInteres(saldo_anterior, tasa, value,
