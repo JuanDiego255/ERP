@@ -539,7 +539,6 @@
                                     '<td>' + row.fecha_pago + '</td>' +
                                     '<td>' + row.fecha_interes + '</td>' +
                                     '<td>' + row.referencia + '</td>' +
-                                    '<td>' + row.detalle + '</td>' +
                                     '<td>' + formattedPaga + '</td>' +
                                     '<td>' + formattedAmortiza + '</td>' +
                                     '<td>' + formattedInteres + '</td>' +
@@ -557,10 +556,9 @@
                             body.append(
                                 '<tr style="background-color: #d9d9d9;">' +
                                 // Fondo gris claro más oscuro para los totales
-                                '<td colspan="4" style="text-align: right;"><strong>Total:</strong></td>' +
+                                '<td colspan="3" style="text-align: right;"><strong>Total:</strong></td>' +
                                 '<td><strong>' + formattedGrandTotalPaga + '</strong></td>' +
                                 '<td><strong>' + formattedGrandTotalAmortiza +
-                                '</strong></td>' +
                                 '<td><strong>' + formattedGrandTotalInteres + '</strong></td>' +
                                 '<td></td>' + // Columna de saldo vacía en la fila de totales
                                 '</tr>'
@@ -571,7 +569,6 @@
                                 '<th style="background-color: #023b9d; color: white; padding:8px;">Fecha de pago</th>' +
                                 '<th style="background-color: #023b9d; color: white;  padding:8px;">Fecha de interés</th>' +
                                 '<th style="background-color: #023b9d; color: white;  padding:8px;">No. Ref</th>' +
-                                '<th style="background-color: #023b9d; color: white;  padding:8px;">Detalle</th>' +
                                 '<th style="background-color: #023b9d; color: white;  padding:8px;">Monto pagado</th>' +
                                 '<th style="background-color: #023b9d; color: white;  padding:8px;">Amortiza</th>' +
                                 '<th style="background-color: #023b9d; color: white;  padding:8px;">Interes Corriente</th>' +
