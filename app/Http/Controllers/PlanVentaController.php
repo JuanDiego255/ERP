@@ -448,6 +448,7 @@ class PlanVentaController extends Controller
                 DB::beginTransaction();
                 $cxc['tasa'] = $request->tasa;
                 $cxc['status'] = $request->status;
+                $cxc['cuota'] = $request->cuota;
                 $cxc['detalle'] = $request->detalle;
                 $cxc_item->update($cxc);
                 DB::commit();

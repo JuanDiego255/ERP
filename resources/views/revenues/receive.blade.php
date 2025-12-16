@@ -165,7 +165,6 @@
                             {!! Form::text('cuota', number_format($item->cuota, 2, '.', ','), [
                                 'class' => 'form-control',
                                 'id' => 'cuota',
-                                'readonly',
                                 'required',
                             ]) !!}
                         </div>

@@ -68,31 +68,24 @@ class RevenueController extends Controller
 
             $business_id = request()->session()->get('user.business_id');
 
+            $lastPr = DB::table('payment_revenues as pr2')
+                ->selectRaw('MAX(pr2.id) as last_id, pr2.revenue_id')
+                ->groupBy('pr2.revenue_id');
+
             $revenues = Revenue::where('revenues.business_id', $business_id)
-                ->leftJoin(
-                    'contacts AS ct',
-                    'revenues.contact_id',
-                    '=',
-                    'ct.id'
-                )
-                ->leftJoin(
-                    'payment_revenues AS pr',
-                    'revenues.id',
-                    '=',
-                    'pr.revenue_id'
-                )
-                ->leftJoin(
-                    'plan_ventas AS pv',
-                    'revenues.plan_venta_id',
-                    '=',
-                    'pv.id'
-                )
-                ->leftJoin(
-                    'products AS v',
-                    'pv.vehiculo_venta_id',
-                    '=',
-                    'v.id'
-                )
+                ->leftJoin('contacts AS ct', 'revenues.contact_id', '=', 'ct.id')
+
+                // Para sumar amortiza con TODAS las filas
+                ->leftJoin('payment_revenues AS pr', 'revenues.id', '=', 'pr.revenue_id')
+
+                // Para traer SOLO la última fila
+                ->leftJoinSub($lastPr, 'lpr', function ($join) {
+                    $join->on('lpr.revenue_id', '=', 'revenues.id');
+                })
+                ->leftJoin('payment_revenues AS pr_last', 'pr_last.id', '=', 'lpr.last_id')
+
+                ->leftJoin('plan_ventas AS pv', 'revenues.plan_venta_id', '=', 'pv.id')
+                ->leftJoin('products AS v', 'pv.vehiculo_venta_id', '=', 'v.id')
                 ->select([
                     'revenues.id as rev_id',
                     'revenues.referencia',
@@ -110,10 +103,18 @@ class RevenueController extends Controller
                     'v.model as model',
                     'ct.name',
                     DB::raw('COALESCE(SUM(pr.amortiza), 0) as amount_paid'),
-                    DB::raw('COALESCE(MIN(pr.monto_general),-1) as min_general_amount')
+
+                    // 👇 ahora es el monto_general de la última línea (no el mínimo)
+                    DB::raw('COALESCE(pr_last.monto_general, -1) as min_general_amount'),
                 ])
-                ->groupBy('revenues.id', 'ct.contact_id', 'ct.name')
+                ->groupBy(
+                    'revenues.id',
+                    'ct.contact_id',
+                    'ct.name',
+                    'pr_last.monto_general'
+                )
                 ->orderBy('rev_id', 'desc');
+
             $status = request()->get('status');
             if (request()->has('status') && $status != 4) {
                 if ($status == 1) {
