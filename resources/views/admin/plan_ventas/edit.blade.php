@@ -202,7 +202,8 @@
                                     'readonly',
                                 ]) !!}
                                 <span class="input-group-btn">
-                                    <a target="_blank" href="{{ url('/products/bills/' . $plan->veh_rec_id . '/1') }}" class="btn btn-default bg-white btn-flat" data-name=""><i
+                                    <a target="_blank" href="{{ url('/products/bills/' . $plan->veh_rec_id . '/1') }}"
+                                        class="btn btn-default bg-white btn-flat" data-name=""><i
                                             class="fa fa-eye text-primary fa-lg"></i></a>
                                 </span>
                             </div>
@@ -396,6 +397,18 @@
                         ]) !!}
                     </div>
                 @endcomponent
+                @if ($hasMultiplePayments)
+                    @component('components.widget', ['title' => __('Re-plantear Plan de Venta (Deja la cuenta actual en 0, y permite crear una nueva deuda con los datos digitados)')])
+                        <div class="col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    {!! Form::checkbox('is_new', 1, false, ['class' => 'input-icheck']) !!}
+                                    Replantear
+                                </label>
+                            </div>
+                        </div>
+                    @endcomponent
+                @endif
             </div>
         </div>
         @can('plan_venta.update')
