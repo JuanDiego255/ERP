@@ -634,7 +634,7 @@ class PlanVentaController extends Controller
                     $user_id = $request->session()->get('user.id');
                     $audit['type'] = "cxc";
                     $audit['type_transaction'] = "creación";
-                    $audit['change'] = "Nuevo monto general = " + $total_financiado_format; // Cada cambio en una nueva línea
+                    $audit['change'] = "Nuevo monto general = " . $total_financiado_format; // Cada cambio en una nueva línea
                     $audit['update_by'] = $user_id;
                     Audit::create($audit);
                 }
