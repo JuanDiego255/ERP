@@ -437,35 +437,45 @@ class PlanVentaController extends Controller
         if (!auth()->user()->can('plan_venta.update')) {
             abort(403, 'Unauthorized action.');
         }
+
         try {
             $business_id = $request->session()->get('user.business_id');
+
             $cxc_item = Revenue::where('business_id', $business_id)
                 ->where('plan_venta_id', $id)
                 ->firstOrFail();
-            $countPayment = PaymentRevenue::where('revenue_id', $cxc_item->id)->count();
 
+            $countPayment = PaymentRevenue::where('revenue_id', $cxc_item->id)->count();
+            $hasMultiplePayments = $countPayment > 1;
+
+            // Mantener comportamiento actual para AJAX (no tocamos esta parte)
             if (request()->ajax()) {
                 DB::beginTransaction();
-                $cxc['tasa'] = $request->tasa;
-                $cxc['status'] = $request->status;
-                $cxc['cuota'] = $request->cuota;
-                $cxc['detalle'] = $request->detalle;
+
+                $cxc = [
+                    'tasa'   => $request->tasa,
+                    'status' => $request->status,
+                    'cuota'  => $request->cuota,
+                    'detalle' => $request->detalle,
+                ];
+
                 $cxc_item->update($cxc);
                 DB::commit();
-                $output = [
+
+                return [
                     'success' => true,
                     'msg' => 'Se ha actualizado la información de la cuenta'
                 ];
-                return $output;
             }
-            if ($countPayment > 1) {
-                $output = [
-                    'success' => 0,
-                    'msg' => __("No puedes modificar un plan de ventas que tiene más de un pago realizado en su cuenta por cobrar")
-                ];
-                return redirect('/plan-ventas-index')->with('status', $output);
-            }
+
             DB::beginTransaction();
+
+            // Helper para parsear montos con comas
+            $moneyToFloat = function ($value) {
+                return isset($value) ? floatval(str_replace(',', '', $value)) : null;
+            };
+
+            // 1) Tomar datos del plan
             $plan_details = $request->only([
                 'numero',
                 'vehiculo_venta_id',
@@ -486,87 +496,127 @@ class PlanVentaController extends Controller
                 'venta_sin_rebajos'
             ]);
 
-            //Formatear montos
-            $total_financiado_format = isset($plan_details['total_financiado'])
-                ? floatval(str_replace(',', '', $plan_details['total_financiado']))
-                : null;
-            $total_recibido_format = isset($plan_details['total_recibido'])
-                ? floatval(str_replace(',', '', $plan_details['total_recibido']))
-                : null;
-            $monto_rec_format = isset($plan_details['monto_recibo'])
-                ? floatval(str_replace(',', '', $plan_details['monto_recibo']))
-                : null;
-            $monto_efect_format = isset($plan_details['monto_efectivo'])
-                ? floatval(str_replace(',', '', $plan_details['monto_efectivo']))
-                : null;
-            $monto_vent_format = isset($plan_details['venta_sin_rebajos'])
-                ? floatval(str_replace(',', '', $plan_details['venta_sin_rebajos']))
-                : null;
-
-            $plan_details['total_recibido'] = $total_recibido_format;
-            $plan_details['total_financiado'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
-            $plan_details['monto_recibo'] = $monto_rec_format;
-            $plan_details['monto_efectivo'] = $monto_efect_format;
-            $plan_details['venta_sin_rebajos'] = $monto_vent_format;
-            //Formatear montos
-
-            $plan_details['business_id'] = $business_id;
-            $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
-            $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden;
-            $plan_details['vehiculo_recibido_id_dos'] = $request->vehiculo_recibido_id_dos_hidden;
-            $plan = PlanVenta::where('business_id', $business_id)
-                ->findOrFail($id);
-
-            $plan->update($plan_details);
-            $cuota =  isset($request->cuota)
-                ? floatval(str_replace(',', '', $request->cuota))
-                : null;
-
-
-            $cxc['business_id'] = $business_id;
-            $cxc['referencia'] = $request->numero;
-            $cxc['detalle'] = $request->desc_forma_pago;
-            $cxc['sucursal'] = "GRECIA";
-            $cxc['valor_total'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
-            $cxc['status'] = 0;
-            $cxc['contact_id'] = $request->cliente_id;
-            $cxc['tasa'] = $request->tasa;
-            $cxc['cuota'] = $cuota;
-            $cxc['tipo_prestamo'] = $request->tipo_prestamo;
-            $cxc['moneda'] = $request->moneda;
-            $cxc['plan_venta_id'] = $plan->id;
-            $cxc['plazo'] = $request->plazo;
-            $cxc['status'] = $request->tipo_plan == 1 ? 1 : 0;
-            $cxc['created_by'] = Auth::user()->id;
-            $cxc_item->update($cxc);
-            //Primer linea de pago CxC
-            $cxc_pay = [
-                'cuota' => $cuota,
-                'monto_general' => $total_financiado_format,
-                'paga' => $request->tipo_plan == 1 ? $total_recibido_format : 0,
-                'interes_c' => 0,
-                'amortiza' => $request->tipo_plan == 1 ? $total_recibido_format : 0
+            // 2) Si hay múltiples pagos, NO permitir actualizar campos restringidos
+            $restrictedFields = [
+                'total_recibido',
+                'total_financiado',
+                'monto_recibo',
+                'monto_efectivo',
+                'venta_sin_rebajos',
+                'vehiculo_venta_id',
+                'vehiculo_recibido_id',
+                'vehiculo_recibido_id_dos',
+                'tipo_plan',
             ];
 
-            // Actualizar o crear el registro
-            $pay = PaymentRevenue::updateOrCreate(
-                ['revenue_id' => $cxc_item->id], // Criterio de búsqueda
-                $cxc_pay // Valores a actualizar o crear
-            );
-            $vehicle = Product::where('business_id', $business_id)
-                ->where('id', $request->vehiculo_venta_id_hidden)
-                ->firstOrFail();
-            $vendido['monto_venta'] = $monto_vent_format;
-            $vehicle->update($vendido);
+            if ($hasMultiplePayments) {
+                foreach ($restrictedFields as $field) {
+                    unset($plan_details[$field]);
+                }
+            }
+
+            // 3) Parsear montos (solo si NO hay múltiples pagos, porque esos campos no deben tocarse)
+            $total_financiado_format = $moneyToFloat($request->total_financiado);
+            $total_recibido_format   = $moneyToFloat($request->total_recibido);
+            $monto_rec_format        = $moneyToFloat($request->monto_recibo);
+            $monto_efect_format      = $moneyToFloat($request->monto_efectivo);
+            $monto_vent_format       = $moneyToFloat($request->venta_sin_rebajos);
+
+            if (!$hasMultiplePayments) {
+                $plan_details['total_recibido']    = $total_recibido_format;
+                $plan_details['total_financiado']  = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
+                $plan_details['monto_recibo']      = $monto_rec_format;
+                $plan_details['monto_efectivo']    = $monto_efect_format;
+                $plan_details['venta_sin_rebajos'] = $monto_vent_format;
+            }
+
+            // 4) Campos siempre válidos del plan
+            $plan_details['business_id'] = $business_id;
+
+            // Solo reasignar vehículos si NO hay múltiples pagos
+            if (!$hasMultiplePayments) {
+                $plan_details['vehiculo_venta_id'] = $request->vehiculo_venta_id_hidden;
+                $plan_details['vehiculo_recibido_id'] = $request->vehiculo_recibido_id_hidden;
+                $plan_details['vehiculo_recibido_id_dos'] = $request->vehiculo_recibido_id_dos_hidden;
+            }
+
+            $plan = PlanVenta::where('business_id', $business_id)->findOrFail($id);
+            $plan->update($plan_details);
+
+            // 5) Cuota (se puede actualizar siempre)
+            $cuota = $moneyToFloat($request->cuota);
+
+            // 6) Update del CxC (Revenue)
+            //    OJO: si hay múltiples pagos, NO recalcular ni tocar status/valor_total derivados de tipo_plan/montos
+            $cxc = [
+                'business_id'   => $business_id,
+                'referencia'    => $request->numero,
+                'detalle'       => $request->desc_forma_pago,
+                'sucursal'      => "GRECIA",
+                'contact_id'    => $request->cliente_id,
+                'tasa'          => $request->tasa,
+                'cuota'         => $cuota,
+                'tipo_prestamo' => $request->tipo_prestamo,
+                'moneda'        => $request->moneda,
+                'plan_venta_id' => $plan->id,
+                'plazo'         => $request->plazo,
+                'created_by'    => Auth::user()->id,
+            ];
+
+            if (!$hasMultiplePayments) {
+                $cxc['valor_total'] = $request->tipo_plan == 1 ? $total_recibido_format : $total_financiado_format;
+                $cxc['status']      = $request->tipo_plan == 1 ? 1 : 0;
+            }
+
+             $restrictedFields = [
+                'cuota'
+            ];
+
+            if ($hasMultiplePayments) {
+                foreach ($restrictedFields as $field) {
+                    unset($cxc[$field]);
+                }
+            }
+
+            $cxc_item->update($cxc);
+
+            // 7) PaymentRevenue::updateOrCreate SOLO si NO hay múltiples pagos
+            if (!$hasMultiplePayments) {
+                $cxc_pay = [
+                    'cuota'         => $cuota,
+                    'monto_general'  => $total_financiado_format,
+                    'paga'          => $request->tipo_plan == 1 ? $total_recibido_format : 0,
+                    'interes_c'     => 0,
+                    'amortiza'      => $request->tipo_plan == 1 ? $total_recibido_format : 0,
+                ];
+
+                PaymentRevenue::updateOrCreate(
+                    ['revenue_id' => $cxc_item->id],
+                    $cxc_pay
+                );
+
+                // 8) Update de monto_venta del vehículo SOLO si NO hay múltiples pagos (depende de venta_sin_rebajos)
+                $vehicle = Product::where('business_id', $business_id)
+                    ->where('id', $request->vehiculo_venta_id_hidden)
+                    ->firstOrFail();
+
+                $vehicle->update(['monto_venta' => $monto_vent_format]);
+            }
+
             DB::commit();
+            $msg = __("Plan de venta actualizado con éxito");
+            if ($hasMultiplePayments)
+                $msg = __("Plan de venta actualizado con éxito (Este plan ya cuenta con pagos realizados, por lo cual los montos no se modificarán)");
+
             $output = [
                 'success' => 1,
-                'msg' => __("Plan de venta actualizado con éxito")
+                'msg' => $msg
             ];
         } catch (\Exception $e) {
             DB::rollBack();
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
             dd($e->getMessage());
+
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage() . " " . $e->getLine()
