@@ -380,7 +380,7 @@
                     </div>
                     <div class="form-group col-sm-3">
                         {!! Form::label('tipo_prestamo', 'Tipo prestamo' . ':*') !!}
-                        {!! Form::select('tipo_prestamo', ['1' => 'Cuota Nivelada', '2' => 'Intereses'], $plan->tipo_prestamo, [
+                        {!! Form::select('tipo_prestamo', ['1' => 'Cuota Nivelada', '2' => 'Intereses', '3' => 'Re adecuación de deuda'], $plan->tipo_prestamo, [
                             'class' => 'form-control',
                             'id' => 'tipo_prestamo',
                             'required',
